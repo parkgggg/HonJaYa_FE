@@ -1,4 +1,3 @@
-import React from 'react';
 import KakaoLogin from '../../_components/kakaoLogin';  // 경로 수정이 필요할 수 있습니다.
 
 const LoginPage = () => {
