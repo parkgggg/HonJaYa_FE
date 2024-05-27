@@ -2,7 +2,7 @@
 let socket: WebSocket;
 
 export const connectWebSocket = (url: string, onMessage: (message: any) => void) => {
-    socket = new WebSocket(url);
+    socket = new WebSocket(url); // 웹소켓 연결
 
     socket.onopen = () => {
         console.log('WebSocket connection established');

@@ -3,44 +3,53 @@
 import { useState } from 'react';
 import CustomNumberInput from '../../_components/customNum';
 import StepIndicator from '../../_components/stepIndicator';
+import NavigationButtons from './navigationbuttons/NavigationButtons';
 
 const mbtiTypes = ['INFJ', 'INFP', 'ENFJ', 'ENFP', 'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ', 'INTJ', 'INTP', 'ENTJ', 'ENTP', 'ISTP', 'ISFP', 'ESTP', 'ESFP'];
 const religionTypes = ['기독교', '불교', '천주교', '이슬람', '기타', '무교'];
 const drinkingTypes = ['알쓰', '평균', '술고래'];
 
-export default function Step4({ nextStep, prevStep, updateFormData }) {
-    const [showAllMbti, setShowAllMbti] = useState(false);
-    const [selectedMbti, setSelectedMbti] = useState(null);
-    const [selectedReligion, setSelectedReligion] = useState(null);
-    const [selectedDrinking, setSelectedDrinking] = useState(null);
-    const [height, setHeight] = useState(170);
-    const [weight, setWeight] = useState(70);
+interface FormData {
+    height?: number;
+    weight?: number;
+    mbti?: string;
+    religion?: string;
+    drinking_capacity?: string;
+}
 
-    const handleSubmit = async (event) => {
+interface Step4Props {
+    nextStep: () => void;
+    prevStep: () => void;
+    updateFormData: (data: Partial<FormData>) => void;
+}
+
+const Step4: React.FC<Step4Props> = ({ nextStep, prevStep, updateFormData }) => {
+    const [showAllMbti, setShowAllMbti] = useState(false);
+    const [selectedMbti, setSelectedMbti] = useState<string | undefined>(undefined);
+    const [selectedReligion, setSelectedReligion] = useState<string | undefined>(undefined);
+    const [selectedDrinking, setSelectedDrinking] = useState<string | undefined>(undefined);
+    const [height, setHeight] = useState<number>(170);
+    const [weight, setWeight] = useState<number>(70);
+
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        const data = {
+        const data: FormData = {
             height,
             weight,
             mbti: selectedMbti,
-            religiion: selectedReligion,
+            religion: selectedReligion,
             drinking_capacity: selectedDrinking,
         };
         updateFormData(data);
-        // 백엔드 전송할 데이터
         nextStep();
     };
-
 
     return (
         <div className="flex items-center justify-center min-h-screen">
             <div className="w-full max-w-xl p-12 bg-white shadow-md rounded-lg border-4 border-red-300">
-                {/* 스텝 인디케이터 */}
                 <StepIndicator currentStep={4} />
-
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <label htmlFor="additional-info" className="block text-4xl text-center mb-10">추가 정보</label>
-
-                    {/* 신체 스펙 */}
                     <div className="text-center">
                         <label htmlFor="physical-specs" className="block text-2xl mb-2">신체 스펙</label>
                         <div className="flex justify-center items-center space-x-8">
@@ -66,8 +75,6 @@ export default function Step4({ nextStep, prevStep, updateFormData }) {
                             </div>
                         </div>
                     </div>
-
-                    {/* MBTI */}
                     <div className="text-center">
                         <label htmlFor="mbti" className="mt-10 mb-4 block text-2xl">MBTI</label>
                         <div className="grid grid-cols-4 gap-2">
@@ -92,8 +99,6 @@ export default function Step4({ nextStep, prevStep, updateFormData }) {
                             </button>
                         </div>
                     </div>
-
-                    {/* 종교 */}
                     <div className="text-center">
                         <label htmlFor="religion" className="block text-2xl mb-4">종교</label>
                         <div className="grid grid-cols-3 gap-2">
@@ -109,8 +114,6 @@ export default function Step4({ nextStep, prevStep, updateFormData }) {
                             ))}
                         </div>
                     </div>
-
-                    {/* 주량 */}
                     <div className="text-center">
                         <label htmlFor="drinking-capacity" className="block text-2xl mb-4">주량</label>
                         <div className="grid grid-cols-3 gap-2">
@@ -126,24 +129,11 @@ export default function Step4({ nextStep, prevStep, updateFormData }) {
                             ))}
                         </div>
                     </div>
-
-                    <div className="py-2 flex flex-col items-center space-y-4">
-                        <button
-                            type="submit"
-                            className="text-xl font-bold py-1 px-20 border-red-300 rounded-md shadow-sm text-white bg-gradient-to-br from-red-300 via-red-200 to-white hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400"
-                        >
-                            다음
-                        </button>
-                        <button
-                            type="button"
-                            onClick={prevStep}
-                            className="font-bold py-1 px-16 border-gray-600 rounded-md shadow-sm text-sm text-white bg-gradient-to-br from-gray-500 via-gray-300 to-white hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-gray-200"
-                        >
-                            뒤로
-                        </button>
-                    </div>
+                    <NavigationButtons onNext={handleSubmit} onPrevious={prevStep} />
                 </form>
             </div>
         </div>
     );
 }
+
+export default Step4;

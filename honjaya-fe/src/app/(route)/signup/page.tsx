@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import { submitFormData } from '../../api/api';
 import Step1 from '../../_components/signupsteps/Step1';
 import Step2 from '../../_components/signupsteps/Step2';
 import Step3 from '../../_components/signupsteps/Step3';
@@ -32,22 +33,10 @@ const SignupPage: React.FC = () => {
     setFormData((prev) => ({ ...prev, ...newData }));
   };
 
-  const submitData = async () => {
+  const handleSubmit = async () => {
     try {
-      // Backend 받으면 주소 넣기
-      const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_API_URL!, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        console.log("Data submitted successfully");
-      } else {
-        console.error('Failed to submit data:', response.statusText);
-      }
+      await submitFormData(formData);
+      console.log("Data submitted successfully");
     } catch (error) {
       console.error('Failed to submit data:', error);
     }
@@ -59,7 +48,7 @@ const SignupPage: React.FC = () => {
       {step === 2 && <Step2 nextStep={nextStep} prevStep={prevStep} updateFormData={updateFormData} />}
       {step === 3 && <Step3 nextStep={nextStep} prevStep={prevStep} updateFormData={updateFormData} />}
       {step === 4 && <Step4 nextStep={nextStep} prevStep={prevStep} updateFormData={updateFormData} />}
-      {step === 5 && <Step5 nextStep={submitData} prevStep={prevStep} updateFormData={updateFormData} />}
+      {step === 5 && <Step5 nextStep={handleSubmit} prevStep={prevStep} updateFormData={updateFormData} />}
     </div>
   );
 }

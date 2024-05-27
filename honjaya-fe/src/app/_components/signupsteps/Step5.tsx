@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from "react";
 import StepIndicator from "../../_components/stepIndicator";
+import NavigationButtons from './navigationbuttons/NavigationButtons';
 
 export default function Step5({ nextStep, prevStep, updateFormData }) {
     const [agree, setAgree] = useState(false);
@@ -38,21 +39,7 @@ export default function Step5({ nextStep, prevStep, updateFormData }) {
                             {agree ? '동의 완료' : '위치 정보 제공에 동의'}
                         </button>
                     </div>
-                    <div className="py-2 flex flex-col items-center space-y-4">
-                        <button
-                            type="submit"
-                            className="text-xl font-bold py-1 px-20 border-red-300 rounded-md shadow-sm text-white bg-gradient-to-br from-red-300 via-red-200 to-white hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400"
-                        >
-                            제출
-                        </button>
-                        <button
-                            type="button"
-                            onClick={prevStep}
-                            className="font-bold py-1 px-16 border-gray-600 rounded-md shadow-sm text-sm text-white bg-gradient-to-br from-gray-500 via-gray-300 to-white hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-gray-200"
-                        >
-                            뒤로
-                        </button>
-                    </div>
+                    <NavigationButtons onNext={handleSubmit} onPrevious={prevStep} />
                 </form>
             </div>
             {isModalOpen && (
