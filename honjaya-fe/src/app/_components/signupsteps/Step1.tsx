@@ -1,5 +1,7 @@
 "use client"
 
+import React from "react";
+
 // 이 컴포넌트는 클라이언트에서 실행됩니다.
 export default function Step1({ nextStep }) {
     // 이벤트를 처리하는 함수

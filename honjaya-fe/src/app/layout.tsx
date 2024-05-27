@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 // import { FontClassNames } from "./Styles/Font";
 // import "./Styles/GlobalStyles.css";
+import React from "react";
 import Script from "next/script";
 import './globals.css'
+import ReduxProvider from "@/state/provider";
+
 
 export const metadata: Metadata = {
   title: "honjaya",
@@ -25,7 +28,11 @@ export default function RootLayout({
 }) {
   return (
     <html>
-      <body>안녕하세요{children}</body>
+      <body>
+        <ReduxProvider>
+          {children}
+        </ReduxProvider>
+      </body>
       <Script
         src="https://developers.kakao.com/sdk/js/kakao.js"
         strategy="afterInteractive"
