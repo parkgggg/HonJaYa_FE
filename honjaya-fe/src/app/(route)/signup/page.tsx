@@ -24,8 +24,8 @@ const SignupPage: React.FC = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({});
 
-//   const nextStep = () => setStep((prev) => prev + 1);
-//   const prevStep = () => setStep((prev) => prev - 1);
+  const nextStep = () => setStep((prev) => prev + 1);
+  const prevStep = () => setStep((prev) => prev - 1);
 
   // Partial 타입은 FormData를 부분적으로 업데이트 가능
   // 이는 수정이 필요할 때, 그 수정필요한 데이터만 업데이트 되게 부분적인 처리가 가능하다.

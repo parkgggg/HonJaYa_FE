@@ -23,20 +23,27 @@ export const submitFormData = async (formData: FormData) => {
     }
 };
 
-// fetchMessages: 특정 채팅방의 메시지를 가져오는 함수 (GET 요청)
-export const fetchMessages = async (chatId: string) => {
-    const response = await fetch(`/api/chat/${chatId}/messages`);
+
+
+// 현재 로그인된 사용자 정보를 가져오는 API를 호출하고, 이를 기반으로 사용자 ID를 저장하는 로직
+export const fetchCurrentUser = async () => {
+    const response = await fetch('/user/current');
+    if (!response.ok) {
+        throw new Error('Failed to fetch current user');
+    }
     return response.json();
 };
 
-// sendMessage: 특정 채팅방에 메시지를 전송하는 함수 (POST 요청)
-export const sendMessage = async (chatId: string, message: string) => {
-    const response = await fetch(`/api/chat/${chatId}/messages`, {
+export const registerUserPreferences = async (userId: string, preferences: any) => {
+    const response = await fetch(`/user/${userId}/ideal`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify(preferences),
     });
+    if (!response.ok) {
+        throw new Error('Failed to register user preferences');
+    }
     return response.json();
 };
