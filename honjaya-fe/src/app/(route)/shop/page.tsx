@@ -1,11 +1,13 @@
-import React from 'react'
+import ShopNavbar from '@/app/_components/shop/ShopNavbar';
+import ItemPurchase from '@/app/_components/shop/ItemPurchase';
 
-type Props = {}
-
-const page = (props: Props) => {
+const ShopPage = () => {
   return (
-    <div>page</div>
-  )
-}
+    <>
+      <ShopNavbar />
+      <ItemPurchase />
+    </>
+  );
+};
 
-export default page
+export default ShopPage;

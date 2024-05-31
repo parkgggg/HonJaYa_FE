@@ -1,20 +1,49 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import StepIndicator from "../../_components/stepIndicator";
 import NavigationButtons from './navigationbuttons/NavigationButtons';
+import { fetchCurrentUser, registerUserPreferences } from '../../api/api';
 
-export default function Step5({ nextStep, prevStep, updateFormData }) {
+interface Step5Props {
+    nextStep: () => void;
+    prevStep: () => void;
+    updateFormData: (data: { location_agreement: boolean }) => void;
+    formData: any; // FormData 인터페이스에 맞게 설정 필요
+}
+
+export default function Step5({ nextStep, prevStep, updateFormData, formData }: Step5Props) {
     const [agree, setAgree] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentUser, setCurrentUser] = useState<any>(null); // 사용자 정보 상태 추가
     const router = useRouter();
 
-    const handleSubmit = (event) => {
+    useEffect(() => {
+        const loadCurrentUser = async () => {
+            try {
+                const user = await fetchCurrentUser();
+                setCurrentUser(user);
+            } catch (error) {
+                console.error('Failed to fetch current user:', error);
+            }
+        };
+
+        loadCurrentUser();
+    }, []);
+
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        if (agree) {
+        if (agree && currentUser) {
             updateFormData({ location_agreement: agree });
-            setIsModalOpen(true);
+
+            try {
+                await registerUserPreferences(currentUser.id, formData);
+                setIsModalOpen(true);
+            } catch (error) {
+                console.error('Failed to register user preferences:', error);
+                alert('취향 정보를 등록하는 데 실패했습니다.');
+            }
         } else {
             alert("위치 정보 제공에 동의해주세요.");
         }

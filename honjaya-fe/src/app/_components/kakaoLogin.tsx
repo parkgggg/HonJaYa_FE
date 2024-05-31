@@ -1,7 +1,6 @@
-"use client";
-
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+// KakaoLogin.client.tsx
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 const KakaoLogin = () => {
     const router = useRouter();
@@ -9,11 +8,9 @@ const KakaoLogin = () => {
     const redirect_uri = process.env.NEXT_PUBLIC_REDIRECT_URI!;
     const kakaoCallbackUrl = process.env.NEXT_PUBLIC_KAKAO_CALLBACK_URL!;
 
-    // 카카오 인증 코드 처리
     useEffect(() => {
         const code = new URL(window.location.href).searchParams.get('code');
         if (code) {
-            // 인증 코드가 있으면 백엔드로 전달
             fetch(kakaoCallbackUrl, {
                 method: 'POST',
                 headers: {
@@ -24,11 +21,10 @@ const KakaoLogin = () => {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // 로그인 성공 시 메인 페이지로 이동
                         router.push('/main');
                     } else {
-                        // 로그인 실패 시 에러 처리
                         console.error('Login failed:', data.message);
+                        // Optionally update UI here to reflect login failure
                     }
                 })
                 .catch(error => console.error('Error:', error));
