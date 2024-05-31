@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import ChatMessage from './chatMessage';
 import ChatInput from './chatInput';
-import { fetchMessages, sendMessage } from '../../api/api';
+import { fetchMessages, sendMessage } from '../../api/chatApi';
 import { connectWebSocket, sendMessageWebSocket, disconnectWebSocket } from '../../api/websocket';
 
 interface ChatWindowProps {
@@ -24,8 +24,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId }) => {
             setMessages((prevMessages) => [...prevMessages, message]);
         };
 
-        // 웹소켓 URL을 생성하여 연결하는 부분
-        // chatId : 특정 채팅방 식별
+        // WebSocket 연결 설정
         connectWebSocket(`wss://your-websocket-server.com/chat/${chatId}`, handleNewMessage);
 
         return () => {
@@ -33,10 +32,16 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId }) => {
         };
     }, [chatId]);
 
+    // 미시지 전송 및 상태 업데이트 
     const handleSendMessage = async (message: string) => {
-        const newMessage = { chatId, content: message, isOwnMessage: true, timestamp: new Date().toLocaleTimeString() };
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
+        const newMessage = { roomId: chatId, content: message, isOwnMessage: true, timestamp: new Date().toLocaleTimeString() };
+
+        // 기존 메시지 목록에 새로운 메시지 추가
+        // 즉, 새로운 메시지가 도착할 때마다 메시지 목록이 갱신되어 화면에 표시됨
+        setMessages((prevMessages) => [...prevMessages, newMessage]); // 스프레드 연산자를 이용하여 prevMessages의 모든 요소를 복사 후 그 뒤에 newMessage를 추가하는 배열 생성
+
         sendMessageWebSocket(newMessage);
+        await sendMessage({ roomId: chatId, content: message });
     };
 
     return (

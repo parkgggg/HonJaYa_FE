@@ -1,35 +1,34 @@
-// src/utils/websocket.ts
-let socket: WebSocket;
+let ws: WebSocket;
 
 export const connectWebSocket = (url: string, onMessage: (message: any) => void) => {
-    socket = new WebSocket(url); // 웹소켓 연결
+    ws = new WebSocket(url);
 
-    socket.onopen = () => {
+    ws.onopen = () => {
         console.log('WebSocket connection established');
     };
 
-    socket.onmessage = (event) => {
+    ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
         onMessage(data);
     };
 
-    socket.onclose = () => {
+    ws.onclose = () => {
         console.log('WebSocket connection closed');
     };
 
-    socket.onerror = (error) => {
+    ws.onerror = (error) => {
         console.error('WebSocket error:', error);
     };
 };
 
 export const sendMessageWebSocket = (message: any) => {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify(message));
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(message));
     }
 };
 
 export const disconnectWebSocket = () => {
-    if (socket) {
-        socket.close();
+    if (ws) {
+        ws.close();
     }
 };
