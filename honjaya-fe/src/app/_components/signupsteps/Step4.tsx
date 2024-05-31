@@ -61,6 +61,8 @@ const Step4: React.FC<Step4Props> = ({ nextStep, prevStep, updateFormData }) => 
                                     unit="cm"
                                     value={height}
                                     onChange={(e) => setHeight(Number(e.target.value))}
+                                    max = {300}
+                                    min = {0}
                                 />
                             </div>
                             <div className="flex flex-col items-center">
@@ -71,6 +73,8 @@ const Step4: React.FC<Step4Props> = ({ nextStep, prevStep, updateFormData }) => 
                                     unit="kg"
                                     value={weight}
                                     onChange={(e) => setWeight(Number(e.target.value))}
+                                    max = {300}
+                                    min = {0}
                                 />
                             </div>
                         </div>

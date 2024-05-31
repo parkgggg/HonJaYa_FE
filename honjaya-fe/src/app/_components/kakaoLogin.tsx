@@ -25,7 +25,7 @@ const KakaoLogin = () => {
                 .then(data => {
                     if (data.success) {
                         // 로그인 성공 시 메인 페이지로 이동
-                        router.push('/main');
+                        router.push('/landing');
                     } else {
                         // 로그인 실패 시 에러 처리
                         console.error('Login failed:', data.message);

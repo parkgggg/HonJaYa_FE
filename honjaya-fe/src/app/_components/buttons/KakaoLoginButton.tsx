@@ -9,12 +9,12 @@ const KakaoLoginButton = () => {
     // oauth 요청 URL
     // const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${Rest_api_key}&redirect_uri=${redirect_uri}&response_type=code`
 
-    const handleLogin = () => {
-        //배포 주소로 추후 변경
-        if (typeof window !== 'undefined') {
-            window.location.href = "http://localhost:8080/api/oauth2/authorization/kakao";
-        }
-    }
+    // const handleLogin = () => {
+    //     //배포 주소로 추후 변경
+    //     if (typeof window !== 'undefined') {
+    //         window.location.href = "http://localhost:8080/api/oauth2/authorization/kakao";
+    //     }
+    // }
 
     return (
         <div className="flex w-4/5 h-4/5">

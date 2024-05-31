@@ -53,7 +53,7 @@ const FilterModal = ({ setFilterOpen }: Props) => {
     }
 
     return (
-        <div className=" animate-fade-in-down-left z-20 bg-white w-3/10 h-64 mt-56 flex flex-col items-center justify-center border-main-color border-4 rounded-lg">
+        <div className=" animate-fade-in-down-left z-20 bg-white w-full h-64 flex flex-col items-center justify-center border-main-color border-4 rounded-lg">
             <div className="text-lg">나이</div>
             <div className="text-sm">{age[0]}세 ~ {age[1]}세</div>
             <div className="w-4/5 h-1/10 box-border ">

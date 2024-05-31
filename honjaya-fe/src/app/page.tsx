@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link";
-import Main from "./(route)/main/page";
+// import Main from "./(route)/main/page";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
@@ -10,7 +10,7 @@ const Home = () => {
   const router = useRouter();
 
   useEffect(() => {
-    router.push('/main')
+    router.push('/landing')
   }, [router])
   
   //여기서 Link로 각 페이지에 라우팅을 해줘야 하는 건가? 

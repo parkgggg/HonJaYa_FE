@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const CustomNumberInput = ({ id, name, initialValue, unit, value, onChange }) => {
+const CustomNumberInput = ({ id, name, initialValue, unit, value, onChange, max, min }) => {
     const [internalValue, setInternalValue] = useState(initialValue);
 
     useEffect(() => {
@@ -8,7 +8,7 @@ const CustomNumberInput = ({ id, name, initialValue, unit, value, onChange }) =>
     }, [value]);
 
     const handleWheel = (event) => {
-        const newValue = event.deltaY < 0 ? internalValue + 1 : internalValue - 1;
+        const newValue = event.deltaY < 0 && internalValue < max && internalValue > min ? internalValue + 1 : internalValue - 1;
         setInternalValue(newValue);
         onChange({ target: { name, value: newValue } });
     };

@@ -1,22 +1,23 @@
 'use client'
 
-import { useEffect, useState, } from "react";
-import SingleWaitingRoom from "./SingleWaitingRoom";
-// import Link from "next/link";
-import { approve } from "@/state/actions";
+import { useEffect } from "react";
+import { approve, deny } from "@/state/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/state/reducers/rootReducer";
+import Loading from "@/app/_components/common/Loading";
+import { useRouter } from "next/navigation";
+import { getData } from "@/app/api/api";
 
 //next/Router의 useRouter말고, next/navigation의 useRouter를 써야지 클라이언트 사이드에서 네비게이션 기능함
-import { useRouter } from "next/navigation";
+//근데 지금은 Link 쓸 거라 사용x
+// import { useRouter } from "next/navigation";
 
 
 
 
 //isAuth(로그인 유지 상태)는 전역 상태로 관리하자. 
 //(토큰값을 전역 상태에 저장하려고 생각해보았는데, 토큰 값은  것은 새로고침하면 사라지니, 그냥 로컬 스토리지에 저장하자)
-const Main = () => {
-    const isTeam = false;
+const AuthCallBack = () => {
     const dispatch = useDispatch();
     const isAuthState = useSelector((state: RootState) => state.authenticationCheck.isAuthed)
     const router = useRouter();
@@ -28,21 +29,47 @@ const Main = () => {
     //useRouter로 토큰 값 가져와서 리다이렉팅은 불가 => 클라이언트 컴포넌트에서만 사용하는 것은 불가?
     //window객체 사용으로 ㄱ
     //if (typeof window !== 'undefined') {
-    const urlParams = new URLSearchParams(window.location.search);
-    const accessToken = urlParams.get('access_token');
+
 
     // } 
 
 
 
     useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const accessToken = urlParams.get('access_token');
+        console.log(accessToken);
         // if (typeof window !== 'undefined') {
         if (accessToken) {
             localStorage.setItem('access_token', accessToken);
-            dispatch(approve());
-            router.push('/main');
-            //window.location.replace("main");
 
+            const verifyUser = async () => {
+                try {
+                    const kakaoUserData = await getData("/user/current");
+                    const userId = kakaoUserData.data.id;
+                    console.log(userId);
+                    dispatch(approve());
+                    localStorage.setItem('user_id', userId);
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                    dispatch(deny());
+                    router.push('/landing');
+                }
+            }
+
+            const joinCheck = async () => {
+                try {
+                    const userId = localStorage.getItem('user_id');
+                    const ourUserData = await getData(`/user/${userId}/ideal`);
+                    console.log(ourUserData);
+                    router.push('/landing');
+                } catch (error) {
+                    console.error("Error fetching user ideal data:", error);
+                    router.push('/signup');
+                }
+            }            
+            verifyUser();
+            joinCheck();
             //윈도우 객체를 사용하려다가 만 이유 -> 윈도우 객체를 통한 리다이렉팅 시 
             // 브라우저의 히스토리 스택을 업데이트 하지 않는다. -> 뒤로 가기 안 먹힘
             // 새로고침 되면서 전역 상태도 초기화된다. 
@@ -59,7 +86,6 @@ const Main = () => {
             // useEffect의 accessToken에 대한 의존성도 적용된다.
             //
         }
-        console.log(isAuthState);
         // 로그인 유지 x 인 상태(로그인 실패한 경우 && 토큰 만료(로직 만들어야함))
         // 랜딩 페이지로
         // if (!isAuthState) window.location.replace("/landing");
@@ -68,17 +94,18 @@ const Main = () => {
         //생각해보니 accessToken에 대한 의존성은 필요없을 것 같은데?
         // router.push 하면 어차피 의존성 상관없이 다시 useEffect 불러올 거고,
         // 사실, 그 전에 dispatch(approve())로 전역 상태 변경하면 어차피 리렌더링되는 거 아닌가? 
-    }, [accessToken])
+    }, [])
+
     //코드 라우팅 구조? 가 너무 복잡해진다.
     //useRouter 사용해서 리다이렉팅하는 방법이 나을 듯.
     return (
-        isTeam ? (<TogetherWaitingRoom />) : (<SingleWaitingRoom />)
+        <Loading />
     )
 };
 
 //아예 백에서 landing 페이지로 
 //
 
-export default Main;
+export default AuthCallBack;
 
 
