@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/state/reducers/rootReducer";
 import ToggleSwitch from "@/app/_components/buttons/ToggleSwitch";
 import Image from "next/image";
-import TeamCreateButton from "@/app/_components/buttons/TeamCreateButton";
+import TeamChatButtons from "@/app/_components/buttons/TeamChatButtons";
 //이미지 배열((매칭됨 && 시간 유효한 유저)들의 이미지 정보 배열)은 추후 fetching
 //얘를 
 const images: string[] = ["1", "2", "3", "4", "5", "6", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"];
@@ -99,7 +99,7 @@ const SingleWaitingRoom = () => {
                 />
                 <div className="w-full h-2/10">
                     { withTeam ? 
-                    <TeamCreateButton 
+                    <TeamChatButtons
                         openTeamCreateModal={openTeamCreateModal}
                         setOpenTeamCreateModal={()=>{setOpenTeamCreateModal((prev)=>(!prev))}}/> : <MatchingButton/>}
                 </div>

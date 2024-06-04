@@ -11,9 +11,14 @@ const Navigationbar = () => {
     };
 
     return (
-        <div style={{ height: "10%" }} className="flex w-full items-center justify-between text-lg bg-main-color">
+        <div className="flex w-full h-1/10 items-center justify-between text-lg bg-main-color">
             <div className='relative w-1/12 h-full overflow-hidden'>
-                <img src='./logo1.png' className="w-auto h-full" alt="로고1" />
+                <div className="flex-col animate-slide">
+                    <img src='./logo1.png' className="w-auto" alt="로고1" />
+                    <img src='./logo2.png' className="w-auto" alt="로고2" />
+                    <img src='./logo1.png' className="w-auto" alt="로고1_for_loop" />
+                    <img src='./logo2.png' className="w-auto" alt="로고2_for_loop" />
+                </div>
             </div>
             <div
                 className='relative flex font-light text-white items-center justify-center w-1/12 h-full hover:underline'

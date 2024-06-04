@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { approve, deny } from "@/state/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/state/reducers/rootReducer";
@@ -19,6 +19,7 @@ import { getData } from "@/app/api/api";
 //(토큰값을 전역 상태에 저장하려고 생각해보았는데, 토큰 값은  것은 새로고침하면 사라지니, 그냥 로컬 스토리지에 저장하자)
 const AuthCallBack = () => {
     const dispatch = useDispatch();
+    const [isJoined, setIsJoined] = useState(false)
     const isAuthState = useSelector((state: RootState) => state.authenticationCheck.isAuthed)
     const router = useRouter();
     //랜딩 페이지에서 카카오 로그인 => 백에서 주소에 토큰값 넣어서 리다이렉트
@@ -45,31 +46,21 @@ const AuthCallBack = () => {
 
             const verifyUser = async () => {
                 try {
-                    const kakaoUserData = await getData("/user/current");
+                    const kakaoUserData = await getData("/user/current", "honjaya");
+
                     const userId = kakaoUserData.data.id;
-                    console.log(userId);
-                    dispatch(approve());
                     localStorage.setItem('user_id', userId);
+                    console.log(userId);
+                    setIsJoined(() => {return kakaoUserData.data.status === "new"? false : true})
+                    dispatch(approve());
                 } catch (error) {
-                    console.error("Error fetching user data:", error);
+                    console.error("Error fetching user dataff:", error);
                     dispatch(deny());
                     router.push('/landing');
                 }
-            }
-
-            const joinCheck = async () => {
-                try {
-                    const userId = localStorage.getItem('user_id');
-                    const ourUserData = await getData(`/user/${userId}/ideal`);
-                    console.log(ourUserData);
-                    router.push('/landing');
-                } catch (error) {
-                    console.error("Error fetching user ideal data:", error);
-                    router.push('/signup');
-                }
-            }            
+            }     
             verifyUser();
-            joinCheck();
+            isJoined? router.push('/landing') : router.push('/signup');
             //윈도우 객체를 사용하려다가 만 이유 -> 윈도우 객체를 통한 리다이렉팅 시 
             // 브라우저의 히스토리 스택을 업데이트 하지 않는다. -> 뒤로 가기 안 먹힘
             // 새로고침 되면서 전역 상태도 초기화된다. 
