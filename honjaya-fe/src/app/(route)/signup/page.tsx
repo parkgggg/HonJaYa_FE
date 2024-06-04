@@ -8,7 +8,7 @@ import Step4 from '../../_components/signupsteps/Step4';
 import Step5 from '../../_components/signupsteps/Step5';
 
 // "?"를 사용하여 초기상태에 모두 존재하지 않아도 오류가 발생하지 않는다.
-interface FormData {
+export interface FormData {
   name?: string;
   birthday?: string;
   gender?: string;
@@ -16,7 +16,9 @@ interface FormData {
   weight?: number;
   mbti?: string;
   religion?: string;
-  drinking_capacity?: string;
+  drinkAmount?: string;
+  smoke?: boolean;
+  address?: string;
   location_agreement?: boolean;
 }
 
@@ -30,7 +32,7 @@ const SignupPage: React.FC = () => {
   // Partial 타입은 FormData를 부분적으로 업데이트 가능
   // 이는 수정이 필요할 때, 그 수정필요한 데이터만 업데이트 되게 부분적인 처리가 가능하다.
   const updateFormData = (newData: Partial<FormData>) => {
-    setFormData((prev) => ({ ...prev, ...newData }));
+     setFormData((prev) => ({ ...prev, ...newData }));
   };
 
   const handleSubmit = async () => {
@@ -47,8 +49,8 @@ const SignupPage: React.FC = () => {
       {step === 1 && <Step1 nextStep={nextStep} updateFormData={updateFormData} />}
       {step === 2 && <Step2 nextStep={nextStep} prevStep={prevStep} updateFormData={updateFormData} />}
       {step === 3 && <Step3 nextStep={nextStep} prevStep={prevStep} updateFormData={updateFormData} />}
-      {step === 4 && <Step4 nextStep={nextStep} prevStep={prevStep} updateFormData={updateFormData} />}
-      {step === 5 && <Step5 nextStep={handleSubmit} prevStep={prevStep} updateFormData={updateFormData} />}
+      {step === 4 && <Step4 nextStep={nextStep} prevStep={prevStep} updateFormData={updateFormData} formData={formData}/>}
+      {step === 5 && <Step5 nextStep={handleSubmit} prevStep={prevStep} updateFormData={updateFormData} formData={formData}/>}
     </div>
   );
 }

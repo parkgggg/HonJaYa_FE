@@ -4,53 +4,91 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from "react";
 import StepIndicator from "../../_components/stepIndicator";
 import NavigationButtons from './navigationbuttons/NavigationButtons';
-import { fetchCurrentUser, registerUserPreferences } from '../../api/api';
+import { fetchCurrentUser, getData, postData, registerUserPreferences } from '../../api/api';
+import { FormData } from '@/app/(route)/signup/page';
+import useCurrentLocation from '@/app/hooks/getCurrentLoaction';
 
 interface Step5Props {
     nextStep: () => void;
     prevStep: () => void;
-    updateFormData: (data: { location_agreement: boolean }) => void;
-    formData: any; // FormData 인터페이스에 맞게 설정 필요
+    updateFormData: (data: { address: string }) => void;
+    formData: Partial<FormData>; // FormData 인터페이스에 맞게 설정 필요
 }
 
 export default function Step5({ nextStep, prevStep, updateFormData, formData }: Step5Props) {
     const [agree, setAgree] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [currentUser, setCurrentUser] = useState<any>(null); // 사용자 정보 상태 추가
+    const {location, error, setCurrentLocation} = useCurrentLocation();
     const router = useRouter();
 
     useEffect(() => {
-        const loadCurrentUser = async () => {
-            try {
-                const user = await fetchCurrentUser();
-                setCurrentUser(user);
-            } catch (error) {
-                console.error('Failed to fetch current user:', error);
-            }
-        };
+        const asyncronizedSetter = async () => {
+            await setCurrentLocation();
+        }
 
-        loadCurrentUser();
+        asyncronizedSetter();
     }, []);
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        if (agree && currentUser) {
-            updateFormData({ location_agreement: agree });
-
+        if (agree) {
+            const data = {
+                birthday: formData.birthday,
+                gender: formData.gender,
+                height: formData.height,    
+                weight: formData.weight,
+                mbti: formData.mbti,
+                religion: formData.religion,
+                drinkAmount: formData.drinkAmount,
+                smoke: formData.smoke,
+                address: formData.address
+            }
             try {
-                await registerUserPreferences(currentUser.id, formData);
+                console.log(localStorage.getItem('access_token'));
+                await postData(`/user/${localStorage.getItem("user_id")}/profile`, data, "honjaya")
                 setIsModalOpen(true);
             } catch (error) {
                 console.error('Failed to register user preferences:', error);
                 alert('취향 정보를 등록하는 데 실패했습니다.');
             }
         } else {
+            console.log(formData)
             alert("위치 정보 제공에 동의해주세요.");
         }
     };
 
-    const handleGoToSurvey = () => {
-        router.push('/survey');
+    const setPresentLocation = async () => {
+        const getLocation = async () => {
+            try {
+                await setCurrentLocation();
+                if(error) throw (error);
+                const kakaoLocation = await getData(`/local/geo/coord2regioncode.json?x=${location.lon}&y=${location.lat}`, "kakao");
+                updateFormData({ address: kakaoLocation.documents[0].region_2depth_name.split(" ")[1] });
+            }
+            catch(error) {
+                console.log(error)
+            }
+        }
+
+        setAgree((prev) => {
+            if(prev) return false;
+            getLocation();
+            return true;    
+        })
+    }
+
+    const handleGoToSurvey = async () => {
+        // try {
+        //     const userData = await getData(`/user/${localStorage.getItem("user_id")}/ideal`, "honjaya")
+        //     console.log(userData);
+        // } catch (error) {
+        //     console.error('Failed to get user preferences:', error);
+        // }
+
+        console.log(formData);
+        
+        // router.push('/survey');
+        router.push('/landing');
     };
 
     return (
@@ -62,7 +100,7 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
                     <div className="text-center">
                         <button
                             type="button"
-                            onClick={() => setAgree(!agree)}
+                            onClick={setPresentLocation}
                             className={`py-2 px-6 border-4 rounded-lg text-2xl ${agree ? 'border-red-500 bg-red-300 text-white' : 'border-red-300 bg-white text-black'}`}
                         >
                             {agree ? '동의 완료' : '위치 정보 제공에 동의'}

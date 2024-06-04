@@ -8,26 +8,22 @@ import NavigationButtons from './navigationbuttons/NavigationButtons';
 const mbtiTypes = ['INFJ', 'INFP', 'ENFJ', 'ENFP', 'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ', 'INTJ', 'INTP', 'ENTJ', 'ENTP', 'ISTP', 'ISFP', 'ESTP', 'ESFP'];
 const religionTypes = ['기독교', '불교', '천주교', '이슬람', '기타', '무교'];
 const drinkingTypes = ['알쓰', '평균', '술고래'];
-
-interface FormData {
-    height?: number;
-    weight?: number;
-    mbti?: string;
-    religion?: string;
-    drinking_capacity?: string;
-}
+const smokeTypes = ['흡연', '비흡연']
+import { FormData } from '@/app/(route)/signup/page';
 
 interface Step4Props {
     nextStep: () => void;
     prevStep: () => void;
     updateFormData: (data: Partial<FormData>) => void;
+    formData: Partial<FormData>;
 }
 
-const Step4: React.FC<Step4Props> = ({ nextStep, prevStep, updateFormData }) => {
+const Step4: React.FC<Step4Props> = ({ nextStep, prevStep, updateFormData, formData }) => {
     const [showAllMbti, setShowAllMbti] = useState(false);
     const [selectedMbti, setSelectedMbti] = useState<string | undefined>(undefined);
     const [selectedReligion, setSelectedReligion] = useState<string | undefined>(undefined);
     const [selectedDrinking, setSelectedDrinking] = useState<string | undefined>(undefined);
+    const [smoke, setSmoke] = useState<boolean>(false);
     const [height, setHeight] = useState<number>(170);
     const [weight, setWeight] = useState<number>(70);
 
@@ -38,7 +34,8 @@ const Step4: React.FC<Step4Props> = ({ nextStep, prevStep, updateFormData }) => 
             weight,
             mbti: selectedMbti,
             religion: selectedReligion,
-            drinking_capacity: selectedDrinking,
+            drinkAmount: selectedDrinking,
+            smoke
         };
         updateFormData(data);
         nextStep();
@@ -61,6 +58,8 @@ const Step4: React.FC<Step4Props> = ({ nextStep, prevStep, updateFormData }) => 
                                     unit="cm"
                                     value={height}
                                     onChange={(e) => setHeight(Number(e.target.value))}
+                                    max = {300}
+                                    min = {0}
                                 />
                             </div>
                             <div className="flex flex-col items-center">
@@ -71,6 +70,8 @@ const Step4: React.FC<Step4Props> = ({ nextStep, prevStep, updateFormData }) => 
                                     unit="kg"
                                     value={weight}
                                     onChange={(e) => setWeight(Number(e.target.value))}
+                                    max = {300}
+                                    min = {0}
                                 />
                             </div>
                         </div>
@@ -125,6 +126,21 @@ const Step4: React.FC<Step4Props> = ({ nextStep, prevStep, updateFormData }) => 
                                     className={`py-1 px-2 border-2 border-red-300 rounded-2xl text-sm ${selectedDrinking === drinking ? 'bg-red-300 text-white' : 'bg-white text-black'}`}
                                 >
                                     {drinking}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="text-center">
+                        <label htmlFor="drinking-capacity" className="block text-2xl mb-4">흡연 여부</label>
+                        <div className="grid grid-cols-2 gap-2">
+                            {smokeTypes.map((smokeOrNot) => (
+                                <button
+                                    key={smokeOrNot}
+                                    type="button"
+                                    onClick={() => setSmoke(() => smokeOrNot === "비흡연"? false : true)}
+                                    className={`py-1 px-2 border-2 border-red-300 rounded-2xl text-sm ${(smoke && smokeOrNot === "흡연") || (!smoke && smokeOrNot === "비흡연") ? 'bg-red-300 text-white' : 'bg-white text-black'}`}
+                                >
+                                    {smokeOrNot}
                                 </button>
                             ))}
                         </div>
