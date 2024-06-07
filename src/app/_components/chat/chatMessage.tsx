@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Avatar from './avatar';
 import HeartButton from './HeartButton';
-import { FaHeart } from 'react-icons/fa';
+// import { FaHeart } from 'react-icons/fa';
 
 interface ChatMessageProps {
     message: string;
@@ -11,8 +11,8 @@ interface ChatMessageProps {
 }
 
 const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage, timestamp }) => {
-    const [isHovered, setIsHovered] = useState(false);
-    const [isLiked, setIsLiked] = useState(false);
+    const [isHovered, setIsHovered] = useState<boolean>(false);
+    const [isLiked, setIsLiked] = useState<boolean>(false);
 
     const handleMouseEnter = () => {
         setIsHovered(true);
@@ -41,9 +41,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage, timest
                     )}
                 </div>
                 <span className="text-xs text-gray-500 mt-1">{timestamp}</span>
-                {isLiked && (
+                {/* {isLiked && (
                     <FaHeart className="text-red-500 mt-1" />
-                )}
+                )} */}
             </div>
             {isOwnMessage && <Avatar />}
         </div>

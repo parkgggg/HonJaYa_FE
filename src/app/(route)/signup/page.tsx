@@ -23,7 +23,7 @@ export interface FormData {
 }
 
 const SignupPage: React.FC = () => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState<number>(1);
   const [formData, setFormData] = useState<FormData>({});
 
   const nextStep = () => setStep((prev) => prev + 1);

@@ -9,7 +9,7 @@ interface Step1Props {
 }
 
 const Step1: React.FC<Step1Props> = ({ nextStep, updateFormData }) => {
-    const [name, setName] = useState("");
+    const [name, setName] = useState<string>("");
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();

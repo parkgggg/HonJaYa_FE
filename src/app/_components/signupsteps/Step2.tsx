@@ -10,7 +10,7 @@ interface Step2Props {
 }
 
 const Step2: React.FC<Step2Props> = ({ nextStep, prevStep, updateFormData }) => {
-    const [birthday, setBirthday] = useState("");
+    const [birthday, setBirthday] = useState<string>("");
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();

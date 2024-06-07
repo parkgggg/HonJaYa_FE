@@ -11,7 +11,7 @@ interface Props {
 const Regions = ["서울", "경기", "강원", "충청", "전라", "경상", "제주"]
 
 export const RegionSelector = ({ open, setOpen }: { open: boolean; setOpen: () => void; }) => {
-    const [selectedRegion, setSelectedRegion] = useState("서울")
+    const [selectedRegion, setSelectedRegion] = useState<string>("서울")
     return (
         <div className="w-4/5 h-1/10 z-30">
             <button
