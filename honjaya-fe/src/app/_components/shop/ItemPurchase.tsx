@@ -15,6 +15,7 @@ const ItemPurchase = () => {
         { id: 7, price: 50000, diamonds: 7, image: "/zemImages/zem7.png", zem: 5000 },
         { id: 8, price: 100000, diamonds: 8, image: "/zemImages/zem8.png", zem: 12000, originalZem: 10000 },
     ];
+    const token = localStorage.getItem('access_token');
 
     const userZem = 1000;
 
@@ -23,8 +24,49 @@ const ItemPurchase = () => {
     };
 
     const handlePaymentClick = () => {
-        // 결제 로직 추가
-        alert("결제하기 버튼이 클릭되었습니다.");
+
+        if (selectedItem === null) {
+            alert('아이템을 선택해 주세요.');
+            return;
+        }
+
+        const selectedItemData = items.find(item => item.id === selectedItem);
+
+        if (!selectedItemData) {
+            alert('선택된 아이템을 찾을 수 없습니다.');
+            return;
+        }
+
+        const payInfoDto = {
+            price: selectedItemData.price,
+            itemName: "zem_"+selectedItemData.zem
+        };
+
+        // 결제 로직 추가 npm run dev
+        fetch('http://localhost:8080/api/payment/ready', {
+            method: 'POST',
+            headers: {
+                // 'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payInfoDto)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const redirectUrl = data;
+            window.location.href = redirectUrl;
+        })
+        .catch(error => {
+            console.error('Error payment:', error);
+            alert('Payment failed');
+        });
+
+        // alert("결제하기 버튼이 클릭되었습니다.");
     };
 
     return (
