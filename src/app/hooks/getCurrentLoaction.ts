@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 const useCurrentLocation = () => {
-  const [location, setLocation] = useState({ lat: 0, lon: 0 });
-  const [error, setError] = useState("");
+  const [location, setLocation] = useState<{lat: number, lon: number}>({ lat: 0, lon: 0 });
+  const [error, setError] = useState<string>("");
 
   const setCurrentLocation = async () => {
     if ("geolocation" in navigator) {

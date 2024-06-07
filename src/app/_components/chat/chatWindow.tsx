@@ -10,8 +10,16 @@ interface ChatWindowProps {
     chatId: string;
 }
 
+interface Message {
+    roomId: string;
+    content: string;
+    isOwnMessage: boolean;
+    timestamp: string;
+}
+
+
 const ChatWindow: React.FC<ChatWindowProps> = ({ chatId }) => {
-    const [messages, setMessages] = useState([]);
+    const [messages, setMessages] = useState<Message[]>([]);
 
     useEffect(() => {
         const loadMessages = async () => {
@@ -20,7 +28,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId }) => {
         };
         loadMessages();
 
-        const handleNewMessage = (message: any) => {
+        const handleNewMessage = (message: Message) => {
             setMessages((prevMessages) => [...prevMessages, message]);
         };
 

@@ -16,8 +16,8 @@ interface Step5Props {
 }
 
 export default function Step5({ nextStep, prevStep, updateFormData, formData }: Step5Props) {
-    const [agree, setAgree] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [agree, setAgree] = useState<boolean>(false);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const {location, error, setCurrentLocation} = useCurrentLocation();
     const router = useRouter();
 

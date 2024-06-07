@@ -33,7 +33,7 @@ interface Props {
 }
 
 const Containers = ({withTeam, objects, prevSlide, nextSlide, currentPage, objectsPerPage}: Props) => {
-    const [isHovered, setIsHovered] = useState(false);
+    const [isHovered, setIsHovered] = useState<boolean>(false);
     //페이지 = 이미지 페이지를 의미
     //각 페이지 첫 번째로 가져올 이미지의 인덱스(화살표 클릭 시 변경됨)
     const startIndex = currentPage * objectsPerPage;

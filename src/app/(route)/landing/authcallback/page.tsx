@@ -19,7 +19,7 @@ import { getData } from "@/app/api/api";
 //(토큰값을 전역 상태에 저장하려고 생각해보았는데, 토큰 값은  것은 새로고침하면 사라지니, 그냥 로컬 스토리지에 저장하자)
 const AuthCallBack = () => {
     const dispatch = useDispatch();
-    const [isJoined, setIsJoined] = useState(false)
+    const [isJoined, setIsJoined] = useState<boolean>(false)
     const isAuthState = useSelector((state: RootState) => state.authenticationCheck.isAuthed)
     const router = useRouter();
     //랜딩 페이지에서 카카오 로그인 => 백에서 주소에 토큰값 넣어서 리다이렉트

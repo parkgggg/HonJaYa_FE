@@ -7,9 +7,9 @@ import React, { useEffect, useState } from 'react'
 
 type Props = {}
 
-const page = (props: Props) => {
+const MyPage = (props: Props) => {
 
-  const [profileImage, setProfileImage] = useState("")
+  const [profileImage, setProfileImage] = useState<string>("")
 
   useEffect(() => {
     const getCurrentUserInfo = async () => {
@@ -31,7 +31,7 @@ const page = (props: Props) => {
       <div className='w-4/10 h-full flex flex-col justify-around items-center'>
         <div className='w-full h-6/10 border-main-color border-2'>
           <Image
-            src={profileImage}
+            src = {profileImage}
             width={500}
             height={700}
             alt='profile_image'/>
@@ -49,4 +49,4 @@ const page = (props: Props) => {
   )
 }
 
-export default page
+export default MyPage;

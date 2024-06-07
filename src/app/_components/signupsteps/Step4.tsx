@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, ChangeEvent} from 'react';
 import CustomNumberInput from '../../_components/customNum';
 import StepIndicator from '../../_components/stepIndicator';
 import NavigationButtons from './navigationbuttons/NavigationButtons';
@@ -19,7 +19,7 @@ interface Step4Props {
 }
 
 const Step4: React.FC<Step4Props> = ({ nextStep, prevStep, updateFormData, formData }) => {
-    const [showAllMbti, setShowAllMbti] = useState(false);
+    const [showAllMbti, setShowAllMbti] = useState<boolean>(false);
     const [selectedMbti, setSelectedMbti] = useState<string | undefined>(undefined);
     const [selectedReligion, setSelectedReligion] = useState<string | undefined>(undefined);
     const [selectedDrinking, setSelectedDrinking] = useState<string | undefined>(undefined);
@@ -57,9 +57,7 @@ const Step4: React.FC<Step4Props> = ({ nextStep, prevStep, updateFormData, formD
                                     initialValue={175}
                                     unit="cm"
                                     value={height}
-                                    onChange={(e) => setHeight(Number(e.target.value))}
-                                    max = {300}
-                                    min = {0}
+                                    onChange={(e: ChangeEvent<HTMLInputElement>) => setHeight(Number(e.target.value))}
                                 />
                             </div>
                             <div className="flex flex-col items-center">
@@ -69,9 +67,7 @@ const Step4: React.FC<Step4Props> = ({ nextStep, prevStep, updateFormData, formD
                                     initialValue={80}
                                     unit="kg"
                                     value={weight}
-                                    onChange={(e) => setWeight(Number(e.target.value))}
-                                    max = {300}
-                                    min = {0}
+                                    onChange={(e: ChangeEvent<HTMLInputElement>) => setWeight(Number(e.target.value))}
                                 />
                             </div>
                         </div>

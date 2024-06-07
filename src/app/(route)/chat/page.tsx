@@ -1,8 +1,14 @@
 // src/app/(route)/chat/[chatId]/page.tsx
 "use client"
 import ChatWindow from '../../_components/chat/chatWindow';
+import { FC } from 'react';
 
-const ChatPage = ({ params }) => {
+interface ChatPageProps {
+    params: {
+        chatId: string;
+    };
+}
+const ChatPage: FC<ChatPageProps> = ({ params }) => {
     const { chatId } = params;
 
     return (

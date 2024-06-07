@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 const Navigationbar = () => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState<boolean>(false);
 
     const handleHovering = () => {
         setOpen((prevState) => {return !prevState});

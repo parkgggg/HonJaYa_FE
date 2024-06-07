@@ -3,9 +3,14 @@
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 
-const GuideModal = ({ isOpen, onClose }) => {
-    const [showModal, setShowModal] = useState(false);
-    const [animateModal, setAnimateModal] = useState(false);
+type Props = {
+    isOpen: boolean,
+    onClose: ()=>void,
+}
+
+const GuideModal = ({ isOpen, onClose } : Props) => {
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const [animateModal, setAnimateModal] = useState<boolean>(false);
 
     useEffect(() => {
         if (isOpen) {

@@ -1,20 +1,34 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent, WheelEvent } from 'react';
 
-const CustomNumberInput = ({ id, name, initialValue, unit, value, onChange, max, min }) => {
-    const [internalValue, setInternalValue] = useState(initialValue);
+interface CustomNumberInputProps {
+    id: string;
+    name: string;
+    initialValue: number;
+    unit: string;
+    value: number;
+    onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+}
+
+const CustomNumberInput: React.FC<CustomNumberInputProps> = ({ id, name, initialValue, unit, value, onChange }) => { const [internalValue, setInternalValue] = useState(initialValue);
 
     useEffect(() => {
         setInternalValue(value);
     }, [value]);
 
-    const handleWheel = (event) => {
-        const newValue = event.deltaY < 0 && internalValue < max && internalValue > min ? internalValue + 1 : internalValue - 1;
+    const handleWheel = (event: WheelEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        const newValue = event.deltaY < 0 ? internalValue + 1 : internalValue - 1;
         setInternalValue(newValue);
-        onChange({ target: { name, value: newValue } });
-    };
+        const inputEvent = {
+            target: {
+                name: name,
+                value: newValue.toString(),
+            }
+        } as ChangeEvent<HTMLInputElement>;
+        onChange(inputEvent);    };
 
-    const handleChange = (event) => {
-        const newValue = Number(event.target.value);
+        const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+            const newValue = Number(event.target.value);
         setInternalValue(newValue);
         onChange(event);
     };

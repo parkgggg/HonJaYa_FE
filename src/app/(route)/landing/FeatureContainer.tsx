@@ -12,8 +12,8 @@ type Props = {
 
 const FeatureContainer = ({ index, imageFirst, imageUrl, contents }: Props) => {
     //지연 렌더링(스크롤 내려야지 하단 특징 컨테이너 렌더링)
-    const [showImage, setShowImage] = useState(false);
-    const [showContent, setShowContent] = useState(false);
+    const [showImage, setShowImage] = useState<boolean>(false);
+    const [showContent, setShowContent] = useState<boolean>(false);
 
     const imageRef = useRef(null);
     const contentRef = useRef(null);

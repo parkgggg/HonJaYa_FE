@@ -15,11 +15,11 @@ import TeamChatButtons from "@/app/_components/buttons/TeamChatButtons";
 const images: string[] = ["1", "2", "3", "4", "5", "6", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"];
 
 const SingleWaitingRoom = () => {
-    const [currentPage, setCurrentPage] = useState(0);
-    const [objectsPerPage, setObjectsPerPage] = useState(8);
-    const [open, setOpen] = useState(false)
-    const [withTeam, setWithTeam] = useState(false);
-    const [openTeamCreateModal, setOpenTeamCreateModal] = useState(false)
+    const [currentPage, setCurrentPage] = useState<number>(0);
+    const [objectsPerPage, setObjectsPerPage] = useState<number>(8);
+    const [open, setOpen] = useState<boolean>(false)
+    const [withTeam, setWithTeam] = useState<boolean>(false);
+    const [openTeamCreateModal, setOpenTeamCreateModal] = useState<boolean>(false)
     const isAuthState = useSelector((state: RootState) => state.authenticationCheck.isAuthed)
 
     useEffect(() => {
