@@ -85,7 +85,7 @@ export const submitFormData = async (formData: FormData) => {
 
 // 현재 로그인된 사용자 정보를 가져오는 API를 호출하고, 이를 기반으로 사용자 ID를 저장하는 로직
 export const fetchCurrentUser = async () => {
-    const response = await fetch('/user/current');
+    const response = await fetch('/users/current');
     if (!response.ok) {
         throw new Error('Failed to fetch current user');
     }
@@ -93,7 +93,7 @@ export const fetchCurrentUser = async () => {
 };
 
 export const registerUserPreferences = async (userId: string, preferences: any) => {
-    const response = await fetch(`/user/${userId}/ideal`, {
+    const response = await fetch(`/users/${userId}/ideal`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

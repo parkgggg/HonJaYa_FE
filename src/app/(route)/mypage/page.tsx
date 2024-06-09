@@ -14,7 +14,7 @@ const MyPage = (props: Props) => {
   useEffect(() => {
     const getCurrentUserInfo = async () => {
       try{
-        const userInfo = await getData("/user/current", "honjaya")
+        const userInfo = await getData("/users/current", "honjaya")
         setProfileImage(userInfo.profileImage);
       } catch (e) {
         console.error(e);
