@@ -46,7 +46,7 @@ const AuthCallBack = () => {
 
             const verifyUser = async () => {
                 try {
-                    const kakaoUserData = await getData("/user/current", "honjaya");
+                    const kakaoUserData = await getData("/users/current", "honjaya");
 
                     const userId = kakaoUserData.data.id;
                     localStorage.setItem('user_id', userId);

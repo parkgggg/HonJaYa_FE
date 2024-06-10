@@ -45,7 +45,7 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
             }
             try {
                 console.log(localStorage.getItem('access_token'));
-                await postData(`/user/${localStorage.getItem("user_id")}/profile`, data, "honjaya")
+                await postData(`/users/${localStorage.getItem("user_id")}/profile`, data, "honjaya")
                 setIsModalOpen(true);
             } catch (error) {
                 console.error('Failed to register user preferences:', error);
@@ -79,7 +79,7 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
 
     const handleGoToSurvey = async () => {
         // try {
-        //     const userData = await getData(`/user/${localStorage.getItem("user_id")}/ideal`, "honjaya")
+        //     const userData = await getData(`/users/${localStorage.getItem("user_id")}/ideal`, "honjaya")
         //     console.log(userData);
         // } catch (error) {
         //     console.error('Failed to get user preferences:', error);

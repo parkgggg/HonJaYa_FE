@@ -1,16 +1,15 @@
-// src/app/(route)/modal/@modal/shopguide/page.tsx
 'use client';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 
-type Props = {
-    isOpen: boolean,
-    onClose: ()=>void,
+interface GuideModalProps {
+    isOpen: boolean;
+    onClose: () => void;
 }
 
-const GuideModal = ({ isOpen, onClose } : Props) => {
-    const [showModal, setShowModal] = useState<boolean>(false);
-    const [animateModal, setAnimateModal] = useState<boolean>(false);
+const GuideModal: React.FC<GuideModalProps> = ({ isOpen, onClose }) => {
+    const [showModal, setShowModal] = useState(false);
+    const [animateModal, setAnimateModal] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -68,8 +67,6 @@ const GuideModal = ({ isOpen, onClose } : Props) => {
             </div>
         </div>
     );
-
-
 };
 
 export default GuideModal;

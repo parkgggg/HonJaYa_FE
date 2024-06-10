@@ -1,13 +1,13 @@
 import ShopNavbar from '@/app/_components/shop/ShopNavbar';
-import ItemPurchase from '@/app/_components/shop/ItemPurchase';
+import ZemShop from '@/app/_components/shop/ZemShop';
 
 const ShopPage = () => {
-  return (
-    <>
-      <ShopNavbar />
-      <ItemPurchase />
-    </>
-  );
+    return (
+        <>
+            <ShopNavbar />
+            <ZemShop />
+        </>
+    );
 };
 
 export default ShopPage;

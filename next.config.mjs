@@ -6,6 +6,7 @@ const nextConfig = {
   images: {
     domains: ['d2v80xjmx68n4w.cloudfront.net']
   },
+  output: 'standalone', // standalone 설정 추가
 };
 
 export default nextConfig;

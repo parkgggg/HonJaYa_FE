@@ -1,7 +1,9 @@
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+"use client";
 
-const ModalLayout = ({ children }) => {
+import { useRouter } from 'next/navigation';
+import React, { useEffect } from 'react';
+
+const ModalLayout = ({ children }: { children: React.ReactNode }) => {
     const router = useRouter();
 
     const closeModal = () => {
@@ -9,7 +11,7 @@ const ModalLayout = ({ children }) => {
     };
 
     useEffect(() => {
-        const handleEscape = (event) => {
+        const handleEscape = (event: any) => {
             if (event.key === 'Escape') {
                 closeModal();
             }
