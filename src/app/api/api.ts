@@ -85,40 +85,25 @@ export const submitFormData = async (formData: FormData) => {
 
 // 현재 로그인된 사용자 정보를 가져오는 API를 호출하고, 이를 기반으로 사용자 ID를 저장하는 로직
 export const fetchCurrentUser = async () => {
-  const response = await fetch('/users/current');
-  if (!response.ok) {
-    throw new Error('Failed to fetch current user');
-  }
-  return response.json();
+    const response = await fetch('/users/current');
+    if (!response.ok) {
+        throw new Error('Failed to fetch current user');
+    }
+    return response.json();
 };
 
 export const registerUserPreferences = async (userId: string, preferences: any) => {
-  const response = await fetch(`/users/${userId}/ideal`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(preferences),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to register user preferences');
-  }
-  return response.json();
-};
-
-// 취향 정보 수정
-export const updateUserPreferences = async (userId: string, preferences: any) => {
-  const response = await fetch(`/user/${userId}/ideal`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(preferences),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to update user preferences');
-  }
-  return response.json();
+    const response = await fetch(`/users/${userId}/ideal`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(preferences),
+    });
+    if (!response.ok) {
+        throw new Error('Failed to register user preferences');
+    }
+    return response.json();
 };
 
 
