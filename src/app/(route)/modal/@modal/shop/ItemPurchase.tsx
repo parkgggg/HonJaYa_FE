@@ -4,12 +4,16 @@ import { useState } from 'react';
 import Image from 'next/image';
 import PurchaseModal from '@/app/(route)/modal/@modal/shop/PurchaseModal';
 
-export type Item = {
-    id: number,
-    name: string,
-    price: number,
-    endpoint: string,
-    image: string
+interface Item {
+    id: number;
+    name: string;
+    price: number;
+    endpoint: string;
+    image: string;
+}
+
+interface ItemPurchaseProps {
+    userZem: number;
 }
 
 const items: Item[] = [
@@ -19,17 +23,11 @@ const items: Item[] = [
     { id: 4, name: '슈퍼하트', price: 2500, endpoint: '/get/Blade', image: '/itemImages/blade.png' },
 ];
 
-const ItemPurchase = ({ userZem }: {userZem: number}) => {
-    const [selectedItem, setSelectedItem] = useState<Item>({
-        id: 0,
-        name: "",
-        price: 0,
-        endpoint: "",
-        image: ""
-    });
+const ItemPurchase: React.FC<ItemPurchaseProps> = ({ userZem }) => {
+    const [selectedItem, setSelectedItem] = useState<Item | null>(null);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-    const handleItemClick = (item : Item) => {
+    const handleItemClick = (item: Item) => {
         setSelectedItem(item);
         setIsModalOpen(true);
     };
@@ -54,7 +52,7 @@ const ItemPurchase = ({ userZem }: {userZem: number}) => {
                     </div>
                 ))}
             </div>
-            {isModalOpen && (
+            {isModalOpen && selectedItem && (
                 <PurchaseModal item={selectedItem} onClose={closeModal} userZem={userZem} />
             )}
         </div>

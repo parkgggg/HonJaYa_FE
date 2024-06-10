@@ -1,12 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import axios from 'axios';
-import { Item } from './ItemPurchase';
- 
-const PurchaseModal = ({ item, onClose, userZem } : {item: Item, onClose: ()=>void, userZem: number}) => {
+import { purchaseItem } from '@/app/api/api'; // API 파일 경로에 맞게 수정하세요
+
+interface Item {
+    name: string;
+    price: number;
+    endpoint: string;
+}
+
+interface PurchaseModalProps {
+    item: Item;
+    onClose: () => void;
+    userZem: number;
+}
+
+const PurchaseModal: React.FC<PurchaseModalProps> = ({ item, onClose, userZem }) => {
     const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<String>("");
+    const [error, setError] = useState<string | null>(null);
     const [isZemInsufficient, setIsZemInsufficient] = useState<boolean>(false);
 
     const handlePurchase = async () => {
@@ -16,11 +27,11 @@ const PurchaseModal = ({ item, onClose, userZem } : {item: Item, onClose: ()=>vo
         }
         setLoading(true);
         try {
-            const response = await axios.post(item.endpoint);
+            await purchaseItem(item.endpoint);
             alert('구매가 완료되었습니다!');
             onClose();
         } catch (error) {
-            setError('구매에 실패했습니다. 다시 시도해주세요.');
+            setError((error as Error).message);
         } finally {
             setLoading(false);
         }

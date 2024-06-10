@@ -16,11 +16,12 @@ const MyPage = (props: Props) => {
       try{
         const userInfo = await getData("/users/current", "honjaya")
         setProfileImage(userInfo.profileImage);
+        console.log(userInfo);
       } catch (e) {
         console.error(e);
       }
-
     }
+    getCurrentUserInfo();
   }
 )
   return (
