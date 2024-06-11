@@ -44,11 +44,12 @@ export const getData = async (endpoint: any, dest: any) => {
 // POST 요청 메서드
 export const postData = async (endpoint: any, data: any, dest: any) => {
   try {
-    const response = await fetch(`${dest === "honjaya" ? `${baseURL}${endpoint}` : `${kakaoURL}${endpoint}`}`, {
-      method: "POST",
-      headers: setHeaders(dest),
-      body: JSON.stringify(data),
-    });
+      const response = await fetch(`${dest === "honjaya" ? `${baseURL}${endpoint}` : `${kakaoURL}${endpoint}`}`, {
+        method: "POST",
+        headers: setHeaders(dest),
+        body: JSON.stringify(data),
+      });
+
     if (!response.ok) {
       throw new Error(`Failed to post data to ${endpoint}: ${response.statusText}`);
     }
@@ -58,6 +59,26 @@ export const postData = async (endpoint: any, data: any, dest: any) => {
     throw error;
   }
 };
+
+// DELETE 요청 메서드
+export const deleteData = async (endpoint: any, dest: any) => {
+  try {
+      const response = await fetch(`${dest === "honjaya" ? `${baseURL}${endpoint}` : `${kakaoURL}${endpoint}`}`, {
+        method: "DELETE",
+        headers: setHeaders(dest),
+      });
+
+    if (!response.ok) {
+      throw new Error(`Failed to delete data to ${endpoint}: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`Failed to delete data to ${endpoint}:`, error);
+    throw error;
+  }
+};
+
+
 
 // FormData를 백엔드에 제출하는 함수
 export const submitFormData = async (formData: FormData) => {
@@ -85,40 +106,25 @@ export const submitFormData = async (formData: FormData) => {
 
 // 현재 로그인된 사용자 정보를 가져오는 API를 호출하고, 이를 기반으로 사용자 ID를 저장하는 로직
 export const fetchCurrentUser = async () => {
-  const response = await fetch('/users/current');
-  if (!response.ok) {
-    throw new Error('Failed to fetch current user');
-  }
-  return response.json();
+    const response = await fetch('/users/current');
+    if (!response.ok) {
+        throw new Error('Failed to fetch current user');
+    }
+    return response.json();
 };
 
 export const registerUserPreferences = async (userId: string, preferences: any) => {
-  const response = await fetch(`/users/${userId}/ideal`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(preferences),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to register user preferences');
-  }
-  return response.json();
-};
-
-// 취향 정보 수정
-export const updateUserPreferences = async (userId: string, preferences: any) => {
-  const response = await fetch(`/user/${userId}/ideal`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(preferences),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to update user preferences');
-  }
-  return response.json();
+    const response = await fetch(`/users/${userId}/ideal`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(preferences),
+    });
+    if (!response.ok) {
+        throw new Error('Failed to register user preferences');
+    }
+    return response.json();
 };
 
 

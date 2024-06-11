@@ -45,7 +45,7 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
             }
             try {
                 console.log(localStorage.getItem('access_token'));
-                await postData(`/users/${localStorage.getItem("user_id")}/profile`, data, "honjaya")
+                await postData(`/users/${localStorage.getItem("user_id")}/profiles`, data, "honjaya")
                 setIsModalOpen(true);
             } catch (error) {
                 console.error('Failed to register user preferences:', error);
@@ -63,7 +63,8 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
                 await setCurrentLocation();
                 if(error) throw (error);
                 const kakaoLocation = await getData(`/local/geo/coord2regioncode.json?x=${location.lon}&y=${location.lat}`, "kakao");
-                updateFormData({ address: kakaoLocation.documents[0].region_2depth_name.split(" ")[1] });
+                console.log(kakaoLocation);
+                updateFormData({ address: kakaoLocation.documents[0].addree_name.split(" ")[1] });
             }
             catch(error) {
                 console.log(error)

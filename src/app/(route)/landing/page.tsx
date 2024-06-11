@@ -12,6 +12,7 @@ import FeatureContainer from "../landing/FeatureContainer";
 
 
 const Landing = () => {
+  
   const features = Object.entries(FEATURE_OF_HONJAYA);
   const isAuthState = useSelector((state: RootState) => state.authenticationCheck.isAuthed)
 

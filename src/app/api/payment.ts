@@ -1,7 +1,7 @@
 // src/api/payment.ts
 export const requestPayment = async (payInfoDto: { price: number; itemName: string }) => {
     try {
-        const response = await fetch('/api/payment/ready', {
+        const response = await fetch('http://localhost:8080/api/payment/ready', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

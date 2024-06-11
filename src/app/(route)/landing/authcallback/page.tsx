@@ -29,29 +29,23 @@ const AuthCallBack = () => {
     //const accessToken = "";
     //useRouter로 토큰 값 가져와서 리다이렉팅은 불가 => 클라이언트 컴포넌트에서만 사용하는 것은 불가?
     //window객체 사용으로 ㄱ
-    //if (typeof window !== 'undefined') {
-
-
-    // } 
-
 
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const accessToken = urlParams.get('access_token');
         console.log(accessToken);
-        // if (typeof window !== 'undefined') {
         if (accessToken) {
             localStorage.setItem('access_token', accessToken);
 
             const verifyUser = async () => {
                 try {
                     const kakaoUserData = await getData("/users/current", "honjaya");
-
+                    console.log(kakaoUserData);
                     const userId = kakaoUserData.data.id;
                     localStorage.setItem('user_id', userId);
                     console.log(userId);
-                    setIsJoined(() => {return kakaoUserData.data.status === "new"? false : true})
+                    setIsJoined(() => (kakaoUserData.data.status === "new"? false : true))
                     dispatch(approve());
                 } catch (error) {
                     console.error("Error fetching user dataff:", error);
