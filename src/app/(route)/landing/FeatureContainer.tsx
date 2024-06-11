@@ -12,8 +12,8 @@ type Props = {
 
 const FeatureContainer = ({ index, imageFirst, imageUrl, contents }: Props) => {
     //지연 렌더링(스크롤 내려야지 하단 특징 컨테이너 렌더링)
-    const [showImage, setShowImage] = useState(false);
-    const [showContent, setShowContent] = useState(false);
+    const [showImage, setShowImage] = useState<boolean>(false);
+    const [showContent, setShowContent] = useState<boolean>(false);
 
     const imageRef = useRef(null);
     const contentRef = useRef(null);
@@ -59,45 +59,45 @@ const FeatureContainer = ({ index, imageFirst, imageUrl, contents }: Props) => {
 
 
     return (
-        imageFirst ? (
-            <div className='w-full h-8/10 flex justify-around my-4 items-center'>
-                <div ref={imageRef} className=' border-main-color border-4 rounded-lg'>
-                    {showImage && (
-                        <Image src={imageUrl}
-                            width={500}
-                            height={500}
-                            alt={`${index}`}
-                        />
-                    )}
+            imageFirst ? (
+                <div className='w-full h-8/10 flex justify-around my-4 items-center'>
+                    <div ref={imageRef} className=' border-main-color border-4 rounded-lg'>
+                        {showImage && (
+                            <Image src={imageUrl}
+                                width={500}
+                                height={500}
+                                alt={`${index}`} 
+                            />
+                        )}
+                    </div>
+                    <div className='w-1/2 h-full' ref={contentRef}>
+                        {showContent && (
+                            <div className='w-full h-full box-border text-2xl font-jua text-center text-wrap p-4 overflow-hidden animate-fade-in-up'>
+                                {contents}
+                            </div>
+                        )}
+                    </div>
                 </div>
-                <div className='w-1/2 h-full' ref={contentRef}>
-                    {showContent && (
-                        <div className='w-full h-full box-border text-2xl font-jua text-center text-wrap p-4 overflow-hidden animate-fade-in-up'>
+            ) : (
+                <div className='w-full h-8/10 flex justify-around my-4 items-center'>
+                    <div className='w-1/2 h-full' ref={contentRef}>
+                        {showContent && (
+                            <div className='w-full h-full box-border text-2xl font-jua text-center text-wrap p-4 overflow-hidden animate-fade-in-up'>
                             {contents}
-                        </div>
-                    )}
+                            </div>
+                        )}
+                    </div>
+                    <div ref={imageRef} className=' border-main-color border-4 rounded-lg'>
+                        {showImage && (
+                            <Image src={imageUrl}
+                                width={500}
+                                height={500}
+                                alt={`${index}`} 
+                            />
+                        )}
+                    </div>
                 </div>
-            </div>
-        ) : (
-            <div className='w-full h-8/10 flex justify-around my-4 items-center'>
-                <div className='w-1/2 h-full' ref={contentRef}>
-                    {showContent && (
-                        <div className='w-full h-full box-border text-2xl font-jua text-center text-wrap p-4 overflow-hidden animate-fade-in-up'>
-                            {contents}
-                        </div>
-                    )}
-                </div>
-                <div ref={imageRef} className=' border-main-color border-4 rounded-lg'>
-                    {showImage && (
-                        <Image src={imageUrl}
-                            width={500}
-                            height={500}
-                            alt={`${index}`}
-                        />
-                    )}
-                </div>
-            </div>
-        )
+            )
     )
 
 }

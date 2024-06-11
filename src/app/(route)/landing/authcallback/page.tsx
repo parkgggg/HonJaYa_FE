@@ -19,7 +19,7 @@ import { getData } from "@/app/api/api";
 //(토큰값을 전역 상태에 저장하려고 생각해보았는데, 토큰 값은  것은 새로고침하면 사라지니, 그냥 로컬 스토리지에 저장하자)
 const AuthCallBack = () => {
     const dispatch = useDispatch();
-    const [isJoined, setIsJoined] = useState(false)
+    const [isJoined, setIsJoined] = useState<boolean>(false)
     const isAuthState = useSelector((state: RootState) => state.authenticationCheck.isAuthed)
     const router = useRouter();
     //랜딩 페이지에서 카카오 로그인 => 백에서 주소에 토큰값 넣어서 리다이렉트
@@ -29,38 +29,32 @@ const AuthCallBack = () => {
     //const accessToken = "";
     //useRouter로 토큰 값 가져와서 리다이렉팅은 불가 => 클라이언트 컴포넌트에서만 사용하는 것은 불가?
     //window객체 사용으로 ㄱ
-    //if (typeof window !== 'undefined') {
-
-
-    // } 
-
 
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const accessToken = urlParams.get('access_token');
         console.log(accessToken);
-        // if (typeof window !== 'undefined') {
         if (accessToken) {
             localStorage.setItem('access_token', accessToken);
 
             const verifyUser = async () => {
                 try {
-                    const kakaoUserData = await getData("/user/current", "honjaya");
-
+                    const kakaoUserData = await getData("/users/current", "honjaya");
+                    console.log(kakaoUserData);
                     const userId = kakaoUserData.data.id;
                     localStorage.setItem('user_id', userId);
                     console.log(userId);
-                    setIsJoined(() => { return kakaoUserData.data.status === "new" ? false : true })
+                    setIsJoined(() => (kakaoUserData.data.status === "new"? false : true))
                     dispatch(approve());
                 } catch (error) {
                     console.error("Error fetching user dataff:", error);
                     dispatch(deny());
                     router.push('/landing');
                 }
-            }
+            }     
             verifyUser();
-            isJoined ? router.push('/landing') : router.push('/signup');
+            isJoined? router.push('/landing') : router.push('/signup');
             //윈도우 객체를 사용하려다가 만 이유 -> 윈도우 객체를 통한 리다이렉팅 시 
             // 브라우저의 히스토리 스택을 업데이트 하지 않는다. -> 뒤로 가기 안 먹힘
             // 새로고침 되면서 전역 상태도 초기화된다. 
@@ -98,3 +92,5 @@ const AuthCallBack = () => {
 //
 
 export default AuthCallBack;
+
+

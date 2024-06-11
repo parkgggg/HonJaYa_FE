@@ -1,4 +1,4 @@
-// src/app/_components/shop/ShopNavbar.tsx
+// src/app/(route)/ShopNavbar.tsx
 'use client';
 
 import { useState, MouseEvent } from 'react';

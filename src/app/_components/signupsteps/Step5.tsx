@@ -4,63 +4,92 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from "react";
 import StepIndicator from "../../_components/stepIndicator";
 import NavigationButtons from './navigationbuttons/NavigationButtons';
-import { fetchCurrentUser, registerUserPreferences } from '../../api/api';
-import CompleteModal from '@/app/(route)/modal/@modal/complete/page';
+import { fetchCurrentUser, getData, postData, registerUserPreferences } from '../../api/api';
+import { FormData } from '@/app/(route)/signup/FormData';
+import useCurrentLocation from '@/app/hooks/getCurrentLoaction';
 
 interface Step5Props {
     nextStep: () => void;
     prevStep: () => void;
-    updateFormData: (data: { location_agreement: boolean }) => void;
-    formData: any;
+    updateFormData: (data: Partial<FormData>) => void;
+    formData: Partial<FormData>; // FormData 인터페이스에 맞게 설정 필요
 }
 
-const Step5: React.FC<Step5Props> = ({ nextStep, prevStep, updateFormData, formData }) => {
-    const [agree, setAgree] = useState(formData?.location_agreement || false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [currentUser, setCurrentUser] = useState<any>(null);
+export default function Step5({ nextStep, prevStep, updateFormData, formData }: Step5Props) {
+    const [agree, setAgree] = useState<boolean>(false);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const {location, error, setCurrentLocation} = useCurrentLocation();
     const router = useRouter();
 
     useEffect(() => {
-        const loadCurrentUser = async () => {
-            try {
-                const user = await fetchCurrentUser();
-                setCurrentUser(user);
-                console.log('Current user:', user);
-            } catch (error) {
-                console.error('Failed to fetch current user:', error);
-            }
-        };
+        const asyncronizedSetter = async () => {
+            await setCurrentLocation();
+        }
 
-        loadCurrentUser();
+        asyncronizedSetter();
     }, []);
-
-    const handleAgreeClick = () => {
-        const newAgreeState = !agree;
-        setAgree(newAgreeState);
-        updateFormData({ location_agreement: newAgreeState });
-        console.log('Agree state updated:', newAgreeState);
-    };
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        console.log('Agree state during submit:', agree);
-        console.log('Current user during submit:', currentUser);
-        console.log('Form data during submit:', formData);
-        if (currentUser === null) {
-            alert("사용자의 정보가 더 필요합니다");
-        } else if (!agree) {
-            alert("위치 정보 제공에 동의해주세요.");
-        } else {
+        if (agree) {
+            const data = {
+                birthday: formData.birthday,
+                gender: formData.gender,
+                height: formData.height,    
+                weight: formData.weight,
+                mbti: formData.mbti,
+                religion: formData.religion,
+                drinkAmount: formData.drinkAmount,
+                smoke: formData.smoke,
+                address: formData.address
+            }
             try {
-                console.log('Submitting form data:', formData);
-                await registerUserPreferences(currentUser.id, formData);
-                console.log('Form data submitted successfully');
+                console.log(localStorage.getItem('access_token'));
+                await postData(`/users/${localStorage.getItem("user_id")}/profiles`, data, "honjaya")
                 setIsModalOpen(true);
             } catch (error) {
                 console.error('Failed to register user preferences:', error);
                 alert('취향 정보를 등록하는 데 실패했습니다.');
             }
+        } else {
+            console.log(formData)
+            alert("위치 정보 제공에 동의해주세요.");
         }
+    };
+
+    const setPresentLocation = async () => {
+        const getLocation = async () => {
+            try {
+                await setCurrentLocation();
+                if(error) throw (error);
+                const kakaoLocation = await getData(`/local/geo/coord2regioncode.json?x=${location.lon}&y=${location.lat}`, "kakao");
+                console.log(kakaoLocation);
+                updateFormData({ address: kakaoLocation.documents[0].addree_name.split(" ")[1] });
+            }
+            catch(error) {
+                console.log(error)
+            }
+        }
+
+        setAgree((prev) => {
+            if(prev) return false;
+            getLocation();
+            return true;    
+        })
+    }
+
+    const handleGoToSurvey = async () => {
+        // try {
+        //     const userData = await getData(`/users/${localStorage.getItem("user_id")}/ideal`, "honjaya")
+        //     console.log(userData);
+        // } catch (error) {
+        //     console.error('Failed to get user preferences:', error);
+        // }
+
+        console.log(formData);
+        
+        // router.push('/survey');
+        router.push('/landing');
     };
 
     return (
@@ -72,7 +101,7 @@ const Step5: React.FC<Step5Props> = ({ nextStep, prevStep, updateFormData, formD
                     <div className="text-center">
                         <button
                             type="button"
-                            onClick={handleAgreeClick}
+                            onClick={setPresentLocation}
                             className={`py-2 px-6 border-4 rounded-lg text-2xl ${agree ? 'border-red-500 bg-red-300 text-white' : 'border-red-300 bg-white text-black'}`}
                         >
                             {agree ? '동의 완료' : '위치 정보 제공에 동의'}
@@ -84,12 +113,16 @@ const Step5: React.FC<Step5Props> = ({ nextStep, prevStep, updateFormData, formD
             {isModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-                        <CompleteModal />
+                        <h2 className="text-2xl mb-4">회원 정보 입력이 완료되었습니다.</h2>
+                        <button
+                            onClick={handleGoToSurvey}
+                            className="text-xl font-bold py-1 px-20 border-red-300 rounded-md shadow-sm text-white bg-gradient-to-br from-red-300 via-red-200 to-white hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400"
+                        >
+                            취향 조사하러가기
+                        </button>
                     </div>
                 </div>
             )}
         </div>
     );
 }
-
-export default Step5;

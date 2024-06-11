@@ -12,7 +12,7 @@ interface FormData {
     weight?: number;
     mbti?: string;
     religion?: string;
-    drinking_capacity?: string;
+    drinkAmount?: string;
 }
 
 interface Step4Props {
@@ -45,7 +45,7 @@ const Step4: React.FC<Step4Props> = ({ nextStep, prevStep, updateFormData, formD
             weight,
             mbti: selectedMbti,
             religion: selectedReligion,
-            drinking_capacity: selectedDrinking,
+            drinkAmount: selectedDrinking,
         };
         updateFormData(data);
         nextStep();
