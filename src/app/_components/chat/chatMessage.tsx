@@ -35,7 +35,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage, timest
         >
             {!isOwnMessage && <Avatar />}
             <div className={`flex flex-col ${isOwnMessage ? 'items-end' : 'items-start'}`}>
+<<<<<<< HEAD
                 <div className={`relative p-2 m-2 ${isOwnMessage ? 'rounded-bl-xl rounded-tl-xl rounded-br-xl' : 'rounded-tr-xl rounded-br-xl rounded-bl-xl'} ${isOwnMessage ? 'bg-green-400 text-black' : 'bg-gray-200'}`}>
+=======
+                <div className={`relative p-2 m-2 ${isOwnMessage ? 'rounded-bl-xl rounded-tl-xl rounded-br-xl' : 'rounded-tr-xl rounded-br-xl rounded-bl-xl'} ${isOwnMessage ? 'bg-green-400 text-black' : 'bg-gray-200'}`} style={{ whiteSpace: 'pre-wrap' }}>
+>>>>>>> 08e28c1 (chat 캘린더 기능 추가)
                     {message}
                     {isHovered && (
                         <>
