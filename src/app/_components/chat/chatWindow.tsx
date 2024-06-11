@@ -1,3 +1,4 @@
+//수정
 import React, { useEffect, useState } from 'react';
 import ChatMessage from './chatMessage';
 import ChatInput from './chatInput';
