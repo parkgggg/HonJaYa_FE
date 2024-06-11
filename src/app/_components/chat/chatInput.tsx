@@ -27,7 +27,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
 
     const handleScheduleSave = (date: string, time: string, title: string) => {
         const calendarIcon = "📅";
-        const formattedMessage = `일정이 공유되었어요.\n----------\n${calendarIcon} ${date} ${time}\n제목: ${title}\n----------`;
+        const formattedMessage = `일정이 공유되었어요.\n${calendarIcon} ${date}\n${time}\n제목: ${title}`;
         onSendMessage(formattedMessage);
         setShowScheduleModal(false);
     };

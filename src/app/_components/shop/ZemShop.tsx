@@ -64,8 +64,18 @@ const ZemShop = ({ initialZem, isLoggedIn }: ZemShopProps) => {
             itemName: "zem_" + selectedItemData.zem
         };
 
+        // user_id부분
+        const userIdString = localStorage.getItem("user_id");
+        let userId;
+
+        if (userIdString !== null && userIdString !== undefined) {
+            userId = parseInt(userIdString, 10);
+        } else {
+            userId = 0;
+        }
+
         try {
-            const data = await requestPayment(payInfoDto);
+            const data = await requestPayment(payInfoDto, userId);
             const redirectUrl = data.redirectUrl;
             window.location.href = redirectUrl;
         } catch (error) {

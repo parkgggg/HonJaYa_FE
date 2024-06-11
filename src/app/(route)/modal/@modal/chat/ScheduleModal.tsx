@@ -30,16 +30,16 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose, onSave }) => {
     };
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg w-96">
-                <h2 className="text-3xl font-bold mb-4">일정 등록</h2>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20">
+            <div className="bg-white p-6 rounded-lg w-100">
+                <h2 className="text-2xl font-bold mb-4">일정 등록</h2>
                 <div className="mb-4">
-                    <label className="block text-lg mb-2">일정 제목을 입력해 주세요.</label>
+                    <label className="block text-lg mb-2">일정을 입력해 주세요.</label>
                     <input
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        className="w-full p-2 border rounded-lg"
+                        className="w-full p-1 border"
                     />
                 </div>
                 <div className="mb-4 flex items-center">
