@@ -1,6 +1,6 @@
-// src/app/(route)/chat/[chatId]/page.tsx
 "use client"
-import ChatWindow from '../../_components/chat/chatWindow';
+
+import ChatWindow from '@/app/_components/chat/chatWindow';
 import { FC } from 'react';
 
 interface ChatPageProps {
@@ -13,7 +13,7 @@ const ChatPage: FC<ChatPageProps> = ({ params }) => {
 
     return (
         <div className="flex flex-col h-screen">
-            <ChatWindow chatId={chatId} />
+            <ChatWindow chatId={chatId} isGroupChat={} />
         </div>
     );
 };

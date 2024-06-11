@@ -1,4 +1,3 @@
-// src/api/chatApi.ts
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 // 채팅 나가기
@@ -12,7 +11,7 @@ export const leaveChatRoom = async (roomId: string) => {
     return response.json();
 };
 
-// 채팅 시간 종료
+// 채팅 세션 종료
 export const endChatSession = async (roomId: string) => {
     const response = await fetch(`${API_BASE_URL}/chat/room/end/${roomId}`, {
         method: 'DELETE',
@@ -50,8 +49,8 @@ export const fetchMessages = async (roomId: string) => {
 };
 
 // 채팅 메시지 삭제
-export const deleteMessage = async (messageId: string) => {
-    const response = await fetch(`${API_BASE_URL}/chat/message/${messageId}`, {
+export const deleteMessage = async (roomId: string, messageId: string) => {
+    const response = await fetch(`${API_BASE_URL}/chat/room/${roomId}/message/${messageId}`, {
         method: 'DELETE',
     });
     if (!response.ok) {
@@ -60,7 +59,7 @@ export const deleteMessage = async (messageId: string) => {
     return response.json();
 };
 
-// 단체 채팅 리스트 보기
+// 단체 채팅방 목록 조회
 export const fetchChatRooms = async () => {
     const response = await fetch(`${API_BASE_URL}/chat/rooms`, {
         method: 'GET',

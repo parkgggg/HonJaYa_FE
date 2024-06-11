@@ -1,24 +1,23 @@
-// 웹소켓 연결 컴포넌트
-
 import React, { useEffect, useState } from 'react';
 import ChatMessage from './chatMessage';
 import ChatInput from './chatInput';
-import { fetchMessages, sendMessage } from '../../api/chatApi';
+import { fetchMessages, sendMessage, deleteMessage } from '../../api/chatApi';
 import { connectWebSocket, sendMessageWebSocket, disconnectWebSocket } from '../../api/websocket';
 
 interface ChatWindowProps {
     chatId: string;
+    isGroupChat: boolean;
 }
 
 interface Message {
     roomId: string;
+    messageId: string;
     content: string;
     isOwnMessage: boolean;
     timestamp: string;
 }
 
-
-const ChatWindow: React.FC<ChatWindowProps> = ({ chatId }) => {
+const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, isGroupChat }) => {
     const [messages, setMessages] = useState<Message[]>([]);
 
     useEffect(() => {
@@ -32,31 +31,52 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId }) => {
             setMessages((prevMessages) => [...prevMessages, message]);
         };
 
-        // WebSocket 연결 설정
-        connectWebSocket(`wss://your-websocket-server.com/chat/${chatId}`, handleNewMessage);
+        if (isGroupChat) {
+            const eventSource = new EventSource(`https://your-server.com/sse/chat/${chatId}`);
+            eventSource.onmessage = (event) => {
+                const message: Message = JSON.parse(event.data);
+                handleNewMessage(message);
+            };
+            return () => {
+                eventSource.close();
+            };
+        } else {
+            connectWebSocket(`wss://your-websocket-server.com/chat/${chatId}`, handleNewMessage);
+            return () => {
+                disconnectWebSocket();
+            };
+        }
+    }, [chatId, isGroupChat]);
 
-        return () => {
-            disconnectWebSocket();
-        };
-    }, [chatId]);
-
-    // 미시지 전송 및 상태 업데이트 
     const handleSendMessage = async (message: string) => {
-        const newMessage = { roomId: chatId, content: message, isOwnMessage: true, timestamp: new Date().toLocaleTimeString() };
+        const newMessage: Message = { roomId: chatId, messageId: `${Date.now()}`, content: message, isOwnMessage: true, timestamp: new Date().toLocaleTimeString() };
 
-        // 기존 메시지 목록에 새로운 메시지 추가
-        // 즉, 새로운 메시지가 도착할 때마다 메시지 목록이 갱신되어 화면에 표시됨
-        setMessages((prevMessages) => [...prevMessages, newMessage]); // 스프레드 연산자를 이용하여 prevMessages의 모든 요소를 복사 후 그 뒤에 newMessage를 추가하는 배열 생성
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
 
-        sendMessageWebSocket(newMessage);
-        await sendMessage({ roomId: chatId, content: message });
+        if (isGroupChat) {
+            await sendMessage({ roomId: chatId, content: message });
+        } else {
+            sendMessageWebSocket(newMessage);
+            await sendMessage({ roomId: chatId, content: message });
+        }
+    };
+
+    const handleDeleteMessage = async (messageId: string) => {
+        await deleteMessage(chatId, messageId);
+        setMessages((prevMessages) => prevMessages.filter(msg => msg.messageId !== messageId));
     };
 
     return (
         <div className="flex flex-col h-full">
             <div className="flex-grow overflow-y-auto p-4">
                 {messages.map((msg, index) => (
-                    <ChatMessage key={index} message={msg.content} isOwnMessage={msg.isOwnMessage} timestamp={msg.timestamp} />
+                    <ChatMessage
+                        key={index}
+                        message={msg.content}
+                        isOwnMessage={msg.isOwnMessage}
+                        timestamp={msg.timestamp}
+                        onDelete={() => handleDeleteMessage(msg.messageId)}
+                    />
                 ))}
             </div>
             <ChatInput onSendMessage={handleSendMessage} />

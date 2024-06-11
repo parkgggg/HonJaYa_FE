@@ -5,13 +5,13 @@ import { useState, useEffect } from "react";
 import StepIndicator from "../../_components/stepIndicator";
 import NavigationButtons from './navigationbuttons/NavigationButtons';
 import { fetchCurrentUser, getData, postData, registerUserPreferences } from '../../api/api';
-import { FormData } from '@/app/(route)/signup/page';
+import { FormData } from '@/app/(route)/signup/FormData';
 import useCurrentLocation from '@/app/hooks/getCurrentLoaction';
 
 interface Step5Props {
     nextStep: () => void;
     prevStep: () => void;
-    updateFormData: (data: { address: string }) => void;
+    updateFormData: (data: Partial<FormData>) => void;
     formData: Partial<FormData>; // FormData 인터페이스에 맞게 설정 필요
 }
 

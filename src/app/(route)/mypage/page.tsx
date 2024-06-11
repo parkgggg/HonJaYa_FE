@@ -4,7 +4,7 @@ import Navigationbar from '@/app/_components/common/Navigationbar'
 import { getData } from '@/app/api/api'
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image';
-import { FormData } from '../signup/page';
+import { FormData } from '../signup/FormData';
 
 
 type Props = {}

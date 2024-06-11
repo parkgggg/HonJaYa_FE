@@ -3,13 +3,21 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import ItemPurchase from '@/app/(route)/modal/@modal/shop/ItemPurchase';
+import LoginModal from '@/app/(route)/modal/@modal/shop/LoginModal';
 import { requestPayment } from '@/app/api/payment';
+import { GetServerSideProps } from 'next';
 
-const ZemShop = () => {
-    const [selectedItem, setSelectedItem] = useState<number | null>(null); // 사용자가 선택한 아이템의 ID 저장
-    const [isItemShopOpen, setIsItemShopOpen] = useState(false); // 아이템 샵 모달
-    const [token, setToken] = useState<string | null>(null); // 토큰 상태 추가
-    const userZem = 1000; // 사용자가 보유한 ZEM 수량
+interface ZemShopProps {
+    initialZem: number;
+    isLoggedIn: boolean;
+}
+
+const ZemShop = ({ initialZem, isLoggedIn }: ZemShopProps) => {
+    const [selectedItem, setSelectedItem] = useState<number | null>(null);
+    const [isItemShopOpen, setIsItemShopOpen] = useState(false);
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [token, setToken] = useState<string | null>(null);
+    const [userZem, setUserZem] = useState<number>(initialZem);
 
     const items = [
         { id: 1, price: 100, diamonds: 1, image: "/zemImages/zem1.png", zem: 10 },
@@ -29,14 +37,16 @@ const ZemShop = () => {
         }
     }, []);
 
-    // 아이템 클릭 핸들러
     const handleItemClick = (id: number) => {
         setSelectedItem(id);
     };
 
-    // 결제 처리 핸들러
-    // 백엔드에서 응답 받은 redirection URL로 이동
     const handlePaymentClick = async () => {
+        if (!isLoggedIn) {
+            setIsLoginModalOpen(true);
+            return;
+        }
+
         if (selectedItem === null) {
             alert('아이템을 선택해 주세요.');
             return;
@@ -56,7 +66,7 @@ const ZemShop = () => {
 
         try {
             const data = await requestPayment(payInfoDto);
-            const redirectUrl = data.redirectUrl; // 서버에서 반환되는 redirection URL
+            const redirectUrl = data.redirectUrl;
             window.location.href = redirectUrl;
         } catch (error) {
             console.error('Error payment:', error);
@@ -64,7 +74,6 @@ const ZemShop = () => {
         }
     };
 
-    // 아이템 샵 모달 핸들러
     const openItemShop = () => {
         setIsItemShopOpen(true);
     };
@@ -72,12 +81,16 @@ const ZemShop = () => {
         setIsItemShopOpen(false);
     };
 
+    const closeLoginModal = () => {
+        setIsLoginModalOpen(false);
+    };
+
     return (
         <div className="p-20">
             <div className="relative flex justify-center mt-8 mb-12 max-w-5xl mx-auto">
                 <div
                     className="flex flex-col items-start justify-center py-12 px-12 bg-cover bg-center w-full"
-                    style={{ backgroundImage: "url('/zem-banner1.jpg')", backgroundPosition: "center top 1%" }}  // backgroundPosition 값을 조정
+                    style={{ backgroundImage: "url('/zem-banner1.jpg')", backgroundPosition: "center top 1%" }}
                 >
                     <h2 className="text-sm font-semibold text-white mb-2 text-left">행운을 빕니다.</h2>
                     <h2 className="text-4xl text-white text-left">Zem을 충전하여 매칭해보세요!!</h2>
@@ -108,11 +121,26 @@ const ZemShop = () => {
                         />
                     </div>
                     <button
-                        className="bg-blue-500 text-white text-lg font-bold py-2 px-4 rounded-lg"
+                        className="bg-blue-900 text-white text-sm font-bold py-1 px-4"
+                        style={{
+                            animation: 'shimmer 0.7s infinite'
+                        }}
                         onClick={openItemShop}
                     >
-                        아이템 샵 둘러보기
+                        <span className="text-red-500 font-bold">!!</span> 아이템 샵 둘러보기
                     </button>
+                    <style jsx>{`
+    @keyframes shimmer {
+        30%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.5;
+        }
+    }
+`}</style>
+
+
                 </div>
             </div>
 
@@ -146,7 +174,7 @@ const ZemShop = () => {
                                     className={`${item.id === 1 ? 'w-14 h-14' : 'w-36 h-36'} object-cover`}
                                     width={item.id === 1 ? 80 : 160}
                                     height={item.id === 1 ? 80 : 160}
-                                    style={{ marginTop: item.id === 8 ? '-20px' : '0' }} // Adjust the margin for item 8
+                                    style={{ marginTop: item.id === 8 ? '-20px' : '0' }}
                                 />
                                 {item.originalZem && (
                                     <div className="absolute bottom-0 flex flex-col items-center z-20">
@@ -195,8 +223,54 @@ const ZemShop = () => {
                     </div>
                 </div>
             )}
+
+            <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />
         </div>
     );
+};
+
+// 서버 사이드에서 사용자 정보를 가져오는 함수
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const { req } = context;
+    const token = req.cookies.access_token; // 쿠키에서 토큰 가져오기
+
+    if (!token) {
+        return {
+            props: {
+                initialZem: 0,
+                isLoggedIn: false,
+            },
+        };
+    }
+
+    try {
+        // 백엔드 API 호출하여 사용자 보유 Zem 수량 가져오기
+        const response = await fetch('https://your-backend-api.com/user/zem', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch user ZEM');
+        }
+        const data = await response.json();
+        const initialZem = data.zem;
+
+        return {
+            props: {
+                initialZem,
+                isLoggedIn: true,
+            },
+        };
+    } catch (error) {
+        console.error('Error fetching user ZEM:', error);
+        return {
+            props: {
+                initialZem: 0,
+                isLoggedIn: false,
+            },
+        };
+    }
 };
 
 export default ZemShop;
