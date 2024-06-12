@@ -4,9 +4,9 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from "react";
 import StepIndicator from "../../_components/stepIndicator";
 import NavigationButtons from './navigationbuttons/NavigationButtons';
-import { fetchCurrentUser, getData, postData, registerUserPreferences } from '../../api/api';
+import { getData, postData } from '../../api/api';
 import { FormData } from '@/app/(route)/signup/FormData';
-import useCurrentLocation from '@/app/hooks/getCurrentLoaction';
+import useCurrentLocation from '@/app/utils/hooks/getCurrentLoaction';
 
 interface Step5Props {
     nextStep: () => void;
@@ -18,6 +18,7 @@ interface Step5Props {
 export default function Step5({ nextStep, prevStep, updateFormData, formData }: Step5Props) {
     const [agree, setAgree] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [userId, setUserId] = useState<string>("");
     const {location, error, setCurrentLocation} = useCurrentLocation();
     const router = useRouter();
 
@@ -26,7 +27,13 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
             await setCurrentLocation();
         }
 
+        const setUserIdFirst = async () => {
+            const userData = await getData("/users/current", "honjaya");
+            setUserId(() => (userData.data.id))
+        }
+
         asyncronizedSetter();
+        setUserIdFirst();
     }, []);
 
     const handleSubmit = async (event: React.FormEvent) => {
@@ -44,8 +51,7 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
                 address: formData.address
             }
             try {
-                console.log(localStorage.getItem('access_token'));
-                await postData(`/users/${localStorage.getItem("user_id")}/profiles`, data, "honjaya")
+                await postData(`/users/${userId}/profiles`, data, "honjaya")
                 setIsModalOpen(true);
             } catch (error) {
                 console.error('Failed to register user preferences:', error);
@@ -64,7 +70,7 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
                 if(error) throw (error);
                 const kakaoLocation = await getData(`/local/geo/coord2regioncode.json?x=${location.lon}&y=${location.lat}`, "kakao");
                 console.log(kakaoLocation);
-                updateFormData({ address: kakaoLocation.documents[0].addree_name.split(" ")[1] });
+                updateFormData({ address: kakaoLocation.documents[0].address_name.split(" ")[1] });
             }
             catch(error) {
                 console.log(error)
@@ -78,18 +84,14 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
         })
     }
 
-    const handleGoToSurvey = async () => {
-        // try {
-        //     const userData = await getData(`/users/${localStorage.getItem("user_id")}/ideal`, "honjaya")
-        //     console.log(userData);
-        // } catch (error) {
-        //     console.error('Failed to get user preferences:', error);
-        // }
-
-        console.log(formData);
-        
-        // router.push('/survey');
-        router.push('/landing');
+    const handleGoToSurvey = () => {
+        try {
+            localStorage.setItem("user_id", userId);
+            router.push('/landing');
+        } catch(e) {
+            localStorage.removeItem("user_id");
+            console.log(e);
+        }
     };
 
     return (

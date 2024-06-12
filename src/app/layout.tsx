@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "honjaya",
   description: "honjaya project",
   icons: {
-    icon: "../../public/sleeping.png", // 혼자야 icon으로 나중에 대체하기
+    icon: "../../public/sleeping.png", 
   },
 };
 

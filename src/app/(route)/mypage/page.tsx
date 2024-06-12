@@ -7,16 +7,35 @@ import Image from 'next/image';
 import { FormData } from '../signup/FormData';
 
 
+import { useDispatch, useSelector } from "react-redux";
+import { approve, deny } from "@/state/actions";
+import { RootState } from "@/state/reducers/rootReducer";
+import { verifyUser } from "@/app/utils/verifyUser";
+import { useRouter } from 'next/navigation';
+
+
 type Props = {}
 
 const MyPage = (props: Props) => {
 
+  const dispatch = useDispatch();
+  const isLogined = useSelector((state: RootState) => state.loginCheck.isLogined)
+  const router = useRouter();
+
   const [profileImage, setProfileImage] = useState<string>("")
   const [userInfo, setUserInfo] = useState<FormData>({
-
   });
 
   useEffect(() => {
+    if(!isLogined) {
+      if(verifyUser()) {
+        dispatch(approve());
+      } else {
+        router.push("/")
+      }
+    }
+
+
     const getProfileImage = async () => {
       try {
         const userInfo = await getData(`/users/${localStorage.getItem("user_id")}/profile-images`, "honjaya")
@@ -26,8 +45,7 @@ const MyPage = (props: Props) => {
       }
     }
     getProfileImage();
-  }
-  )
+  },[])
   
   const getUserInfo = async () => {
     try {

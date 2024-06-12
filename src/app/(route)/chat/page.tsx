@@ -1,7 +1,7 @@
 "use client"
 
 import ChatWindow from '@/app/_components/chat/chatWindow';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 
 interface ChatPageProps {
     params: {
@@ -10,6 +10,10 @@ interface ChatPageProps {
 }
 const ChatPage: FC<ChatPageProps> = ({ params }) => {
     const { chatId } = params;
+
+    useEffect(() => {
+        
+    })
 
     return (
         <div className="flex flex-col h-screen">
