@@ -17,6 +17,7 @@ const AuthCallBack = () => {
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const accessToken = urlParams.get('access_token');
+        console.log(accessToken);
         if (accessToken) {
             localStorage.setItem('access_token', accessToken);
             const verifyUser = async () => {
@@ -25,8 +26,10 @@ const AuthCallBack = () => {
                     console.log(userData);
                     setUserId(userData.data.id);
                     if (userData.data.status === "NEW") {
+                        console.log("deny")
                         dispatch(deny());
                     } else {
+                        console.log("approve");
                         dispatch(approve());
                     }
                 } catch (error) {
@@ -36,18 +39,18 @@ const AuthCallBack = () => {
             };
             verifyUser();
         }
-    }, [dispatch, router]);
+    }, []);
 
     useEffect(() => {
-        if (isLogined !== null) {
             if (isLogined) {
+                console.log("her1")
                 localStorage.setItem("user_id", userId);
                 router.push('/');
             } else {
+                console.log("her2")
                 router.push('/signup');
             }
-        }
-    }, [isLogined, userId, router]);
+    }, [isLogined]);
 
     return (
         <Loading />

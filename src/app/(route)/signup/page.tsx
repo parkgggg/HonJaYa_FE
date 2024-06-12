@@ -23,17 +23,15 @@ const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({});
 
   useEffect(() => {
-    if (!isLogined) {
-      if (verifyUser()) {
-        console.log(localStorage.getItem('user_id'));
-        console.log(localStorage.getItem('access_token'));
-        dispatch(approve());
-      } else {
-        console.log("여기다");
+    if (localStorage.getItem('user_id') !== null) {
+
         router.push("/")
-      }
+      // else {
+      //   console.log("여기다");
+      //   router.push("/")
+      // }
     }
-  });
+  },[]);
 
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
