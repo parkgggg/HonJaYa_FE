@@ -23,6 +23,7 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
     const router = useRouter();
 
     useEffect(() => {
+        console.log(localStorage.getItem("access_token"));
         const asyncronizedSetter = async () => {
             await setCurrentLocation();
         }
@@ -30,6 +31,7 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
         const setUserIdFirst = async () => {
             const userData = await getData("/users/current", "honjaya");
             setUserId(() => (userData.data.id))
+            console.log(userData);
         }
 
         asyncronizedSetter();
