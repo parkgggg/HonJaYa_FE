@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Step1 from '../../_components/signupsteps/Step1';
 import Step2 from '../../_components/signupsteps/Step2';
 import Step3 from '../../_components/signupsteps/Step3';
@@ -7,9 +7,33 @@ import Step4 from '../../_components/signupsteps/Step4';
 import Step5 from '../../_components/signupsteps/Step5';
 import { FormData } from '../signup/FormData';
 
+import { useDispatch, useSelector } from "react-redux";
+import { approve, deny } from "@/state/actions";
+import { RootState } from "@/state/reducers/rootReducer";
+import { verifyUser } from "@/app/utils/verifyUser";
+import { useRouter } from 'next/navigation';
+
 const SignupPage: React.FC = () => {
+
+  const dispatch = useDispatch();
+  const isLogined = useSelector((state: RootState) => state.loginCheck.isLogined)
+  const router = useRouter();
+
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({});
+
+  useEffect(() => {
+    if (!isLogined) {
+      if (verifyUser()) {
+        console.log(localStorage.getItem('user_id'));
+        console.log(localStorage.getItem('access_token'));
+        dispatch(approve());
+      } else {
+        console.log("여기다");
+        router.push("/")
+      }
+    }
+  });
 
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
@@ -17,6 +41,8 @@ const SignupPage: React.FC = () => {
   const updateFormData = (newData: Partial<FormData>) => {
     setFormData((prev) => ({ ...prev, ...newData }));
   };
+
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center">
