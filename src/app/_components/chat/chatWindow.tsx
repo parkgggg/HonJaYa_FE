@@ -1,12 +1,13 @@
-//수정
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ChatMessage from './chatMessage';
 import ChatInput from './chatInput';
 import { fetchMessages, sendMessage, deleteMessage } from '../../api/chatApi';
 import { connectWebSocket, sendMessageWebSocket, disconnectWebSocket } from '../../api/websocket';
+import SockJS from 'sockjs-client';
+import { CompatClient, Stomp } from '@stomp/stompjs';
 
 interface ChatWindowProps {
-    chatId: string;
+    roomId: string;
     isGroupChat: boolean;
 }
 
@@ -18,15 +19,16 @@ interface Message {
     timestamp: string;
 }
 
-const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, isGroupChat }) => {
+const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
     const [messages, setMessages] = useState<Message[]>([]);
+    const stompClient = useRef<CompatClient>();
 
     useEffect(() => {
         const loadMessages = async () => {
-            const messages = await fetchMessages(chatId);
+            const messages = await fetchMessages(roomId);
             setMessages(messages);
         };
-        loadMessages();
+        // loadMessages();
 
         const handleNewMessage = (message: Message) => {
             setMessages((prevMessages) => [...prevMessages, message]);
@@ -42,28 +44,42 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, isGroupChat }) => {
                 eventSource.close();
             };
         } else {
-            connectWebSocket(`wss://your-websocket-server.com/chat/${chatId}`, handleNewMessage);
+            //소켓 열고, stomp에 얹기
+            const socket = new SockJS('http://localhost:8080/ws');
+            stompClient.current = Stomp.over(socket);
+
+            //stomp 토픽 연결 및 메시지 콜백 함수
+            const connectCallback = (frame:any) => {
+                stompClient.current?.subscribe('/topic/chat/${chatId}', (message) => {
+                    console.log('Received message: ', message.body);
+                    // setMessages(message.body)
+                });
+            };
+            //위 함수랑 소켓 얹은 stomp 연결
+            stompClient.current.connect({}, connectCallback);
+
+            // connectWebSocket(`wss://your-websocket-server.com/chat/${roomId}`, handleNewMessage);
             return () => {
-                disconnectWebSocket();
+                stompClient.current?.disconnect(()=>{console.log("연결 끝")});
             };
         }
-    }, [chatId, isGroupChat]);
+    }, [roomId, isGroupChat]);
 
     const handleSendMessage = async (message: string) => {
-        const newMessage: Message = { roomId: chatId, messageId: `${Date.now()}`, content: message, isOwnMessage: true, timestamp: new Date().toLocaleTimeString() };
+        const newMessage: Message = { roomId: roomId, messageId: `${Date.now()}`, content: message, isOwnMessage: true, timestamp: new Date().toLocaleTimeString() };
 
         setMessages((prevMessages) => [...prevMessages, newMessage]);
 
         if (isGroupChat) {
-            await sendMessage({ roomId: chatId, content: message });
+            await sendMessage({ roomId: roomId, content: message });
         } else {
-            sendMessageWebSocket(newMessage);
-            await sendMessage({ roomId: chatId, content: message });
+            stompClient.current?.send(`/app/chat.send/${roomId}`, {}, JSON.stringify(message));
+
         }
     };
 
     const handleDeleteMessage = async (messageId: string) => {
-        await deleteMessage(chatId, messageId);
+        await deleteMessage(roomId, messageId);
         setMessages((prevMessages) => prevMessages.filter(msg => msg.messageId !== messageId));
     };
 
