@@ -8,10 +8,12 @@ interface ChatMessageProps {
     message: string;
     isOwnMessage: boolean;
     timestamp: string;
-    onDelete: () => void;
+    sender: string;
+    isLast: boolean;
+    onDelete: () => void; // 삭제(아직 미구현)
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage, timestamp, onDelete }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, sender, isOwnMessage, timestamp, isLast, onDelete }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
 
@@ -44,12 +46,17 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage, timest
                         </>
                     )}
                 </div>
-                <span className="text-xs text-gray-500 mt-1">{timestamp}</span>
+
+                {isLast && (
+                    <>
+                        <span className="text-xs text-gray-500"><b>{sender}</b></span>
+                        <span className="text-xs text-gray-500 mt-1">{new Date(timestamp).toLocaleTimeString()}</span>
+                    </>
+                )}
                 {isLiked && (
                     <FaHeart className="text-red-500 mt-1" />
                 )}
             </div>
-            {isOwnMessage && <Avatar />}
         </div>
     );
 };

@@ -8,16 +8,16 @@ interface ChatPageProps {
         chatId: string;
     };
 }
+
 const ChatPage: FC<ChatPageProps> = ({ params }) => {
     const { chatId } = params;
 
-    useEffect(() => {
-        
-    })
+    // isGroupChat 값을 설정. 예시로 false로 설정
+    const isGroupChat = true; // 일단, test용(그룹채팅)
 
     return (
         <div className="flex flex-col h-screen">
-            <ChatWindow chatId={chatId} isGroupChat={} />
+            <ChatWindow chatId={chatId} isGroupChat={isGroupChat} />
         </div>
     );
 };
