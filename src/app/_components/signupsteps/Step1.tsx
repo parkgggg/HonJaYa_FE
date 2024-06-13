@@ -1,15 +1,19 @@
-"use client"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import StepIndicator from '../../_components/stepIndicator';
 import NavigationButtons from './navigationbuttons/NavigationButtons';
 
 interface Step1Props {
     nextStep: () => void;
     updateFormData: (data: { name: string }) => void;
+    formData: any;
 }
 
-const Step1: React.FC<Step1Props> = ({ nextStep, updateFormData }) => {
-    const [name, setName] = useState<string>("");
+const Step1: React.FC<Step1Props> = ({ nextStep, updateFormData, formData }) => {
+    const [name, setName] = useState(formData.name || "");
+
+    useEffect(() => {
+        setName(formData.name || "");
+    }, [formData.name]);
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
@@ -20,7 +24,6 @@ const Step1: React.FC<Step1Props> = ({ nextStep, updateFormData }) => {
         updateFormData({ name });
         nextStep();
     };
-
 
     return (
         <div className="flex items-center justify-center min-h-screen">

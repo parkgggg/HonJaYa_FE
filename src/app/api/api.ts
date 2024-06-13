@@ -1,6 +1,5 @@
 // src/app/_utils/api.ts
-import { FormData } from '../(route)/signup/page';
-
+import { FormData } from '../(route)/signup/FormData';
 
 // API 기본 URL 설정
 // 백엔드를 거쳐서 카카오 api 사용 => baseUrl 사용 => 로그인 쪽
@@ -44,11 +43,12 @@ export const getData = async (endpoint: any, dest: any) => {
 // POST 요청 메서드
 export const postData = async (endpoint: any, data: any, dest: any) => {
   try {
-    const response = await fetch(`${dest === "honjaya" ? `${baseURL}${endpoint}` : `${kakaoURL}${endpoint}`}`, {
-      method: "POST",
-      headers: setHeaders(dest),
-      body: JSON.stringify(data),
-    });
+      const response = await fetch(`${dest === "honjaya" ? `${baseURL}${endpoint}` : `${kakaoURL}${endpoint}`}`, {
+        method: "POST",
+        headers: setHeaders(dest),
+        body: JSON.stringify(data),
+      });
+
     if (!response.ok) {
       throw new Error(`Failed to post data to ${endpoint}: ${response.statusText}`);
     }
@@ -58,6 +58,45 @@ export const postData = async (endpoint: any, data: any, dest: any) => {
     throw error;
   }
 };
+
+// PUT 요청 메서드
+export const putData = async (endpoint: any, data: any, dest: any) => {
+  try {
+      const response = await fetch(`${dest === "honjaya" ? `${baseURL}${endpoint}` : `${kakaoURL}${endpoint}`}`, {
+        method: "PUT",
+        headers: setHeaders(dest),
+        body: JSON.stringify(data),
+      });
+
+    if (!response.ok) {
+      throw new Error(`Failed to post data to ${endpoint}: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`Failed to post data to ${endpoint}:`, error);
+    throw error;
+  }
+};
+
+// DELETE 요청 메서드
+export const deleteData = async (endpoint: any, dest: any) => {
+  try {
+      const response = await fetch(`${dest === "honjaya" ? `${baseURL}${endpoint}` : `${kakaoURL}${endpoint}`}`, {
+        method: "DELETE",
+        headers: setHeaders(dest),
+      });
+
+    if (!response.ok) {
+      throw new Error(`Failed to delete data to ${endpoint}: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`Failed to delete data to ${endpoint}:`, error);
+    throw error;
+  }
+};
+
+
 
 // FormData를 백엔드에 제출하는 함수
 export const submitFormData = async (formData: FormData) => {
@@ -136,3 +175,31 @@ export const purchaseItem = async (endpoint: string): Promise<void> => {
     throw new Error('구매에 실패했습니다. 다시 시도해주세요.');
   }
 };
+
+// const baseURL = "/api";
+
+// // GET 요청 함수
+// export const getData = async (endpoint: string) => {
+//   try {
+//     const token = localStorage.getItem("access_token");
+//     const response = await fetch(`${baseURL}${endpoint}`, {
+//       method: "GET",
+//       headers: {
+//         "Content-Type": "application/json",
+//         ...(token && { "Authorization": `Bearer ${token}` }), // 토큰이 있을 경우 헤더에 추가
+//       },
+//     });
+
+//     if (!response.ok) {
+//       throw new Error(`Failed to fetch data from ${endpoint}: ${response.statusText}`);
+//     }
+
+//     const data = await response.json();
+//     return data;
+//   } catch (error) {
+//     console.error(`Failed to fetch data from ${endpoint}:`, error);
+//     throw error;
+//   }
+// };
+
+// export default getData;
