@@ -59,6 +59,25 @@ export const postData = async (endpoint: any, data: any, dest: any) => {
   }
 };
 
+// PUT 요청 메서드
+export const putData = async (endpoint: any, data: any, dest: any) => {
+  try {
+      const response = await fetch(`${dest === "honjaya" ? `${baseURL}${endpoint}` : `${kakaoURL}${endpoint}`}`, {
+        method: "PUT",
+        headers: setHeaders(dest),
+        body: JSON.stringify(data),
+      });
+
+    if (!response.ok) {
+      throw new Error(`Failed to post data to ${endpoint}: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`Failed to post data to ${endpoint}:`, error);
+    throw error;
+  }
+};
+
 // DELETE 요청 메서드
 export const deleteData = async (endpoint: any, dest: any) => {
   try {

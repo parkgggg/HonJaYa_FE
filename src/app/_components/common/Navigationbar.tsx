@@ -39,6 +39,9 @@ const Navigationbar = () => {
                         <li className='px-4 py-2 bg-main-color bg-opacity-70 cursor-pointer outline-none hover:bg-opacity-60 hover:text-xl'>
                             <Link href="/shop">Shop</Link>
                         </li>
+                        <li className='px-4 py-2 bg-main-color bg-opacity-70 cursor-pointer outline-none hover:bg-opacity-60 hover:text-xl'>
+                            <Link href="/board">Board</Link>
+                        </li>
                     </ul>
                 </div>
             </div>

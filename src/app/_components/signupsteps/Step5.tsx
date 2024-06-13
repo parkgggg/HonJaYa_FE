@@ -53,7 +53,7 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
                 address: formData.address
             }
             try {
-                await postData(`/users/${userId}/profiles`, data, "honjaya")
+                await postData(`/users/${userId}/profile`, data, "honjaya")
                 setIsModalOpen(true);
             } catch (error) {
                 console.error('Failed to register user preferences:', error);
