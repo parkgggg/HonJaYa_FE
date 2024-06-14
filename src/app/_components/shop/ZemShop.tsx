@@ -5,19 +5,16 @@ import Image from 'next/image';
 import ItemPurchase from '@/app/(route)/modal/@modal/shop/ItemPurchase';
 import LoginModal from '@/app/(route)/modal/@modal/shop/LoginModal';
 import { requestPayment } from '@/app/api/payment';
-import { GetServerSideProps } from 'next';
+import { useRouter } from 'next/navigation';
 
-interface ZemShopProps {
-    initialZem: number;
-    isLoggedIn: boolean;
-}
-
-const ZemShop = ({ initialZem, isLoggedIn }: ZemShopProps) => {
+const ZemShop = () => {
     const [selectedItem, setSelectedItem] = useState<number | null>(null);
     const [isItemShopOpen, setIsItemShopOpen] = useState(false);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [token, setToken] = useState<string | null>(null);
-    const [userZem, setUserZem] = useState<number>(initialZem);
+    const [userZem, setUserZem] = useState<number>(0);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const router = useRouter();
 
     const items = [
         { id: 1, price: 100, diamonds: 1, image: "/zemImages/zem1.png", zem: 10 },
@@ -31,10 +28,32 @@ const ZemShop = ({ initialZem, isLoggedIn }: ZemShopProps) => {
     ];
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
+        const fetchData = async () => {
             const token = localStorage.getItem('access_token');
+            const userIdString = localStorage.getItem('user_id');
             setToken(token);
-        }
+            setIsLoggedIn(!!token);
+
+            if (token && userIdString) {
+                try {
+                    const response = await fetch('https://your-backend-api.com/user/zem', {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch user ZEM');
+                    }
+                    const data = await response.json();
+                    setUserZem(data.zem);
+                } catch (error) {
+                    console.error('Error fetching user ZEM:', error);
+                    setUserZem(0);
+                }
+            }
+        };
+
+        fetchData();
     }, []);
 
     const handleItemClick = (id: number) => {
@@ -64,7 +83,6 @@ const ZemShop = ({ initialZem, isLoggedIn }: ZemShopProps) => {
             itemName: "zem_" + selectedItemData.zem
         };
 
-        // user_id부분
         const userIdString = localStorage.getItem("user_id");
         let userId;
 
@@ -75,18 +93,19 @@ const ZemShop = ({ initialZem, isLoggedIn }: ZemShopProps) => {
         }
 
         try {
-            const data = await requestPayment(payInfoDto, userId);
+            const data = await requestPayment(payInfoDto, userId, token);
             const redirectUrl = data.redirectUrl;
             window.location.href = redirectUrl;
         } catch (error) {
-            console.error('Error payment:', error);
-            alert('Payment failed');
+            console.error('Error during payment preparation:', error);
+            alert('Payment preparation failed');
         }
     };
 
     const openItemShop = () => {
         setIsItemShopOpen(true);
     };
+
     const closeItemShop = () => {
         setIsItemShopOpen(false);
     };
@@ -140,17 +159,15 @@ const ZemShop = ({ initialZem, isLoggedIn }: ZemShopProps) => {
                         <span className="text-red-500 font-bold">!!</span> 아이템 샵 둘러보기
                     </button>
                     <style jsx>{`
-    @keyframes shimmer {
-        30%, 100% {
-            opacity: 1;
-        }
-        50% {
-            opacity: 0.5;
-        }
-    }
-`}</style>
-
-
+                        @keyframes shimmer {
+                            30%, 100% {
+                                opacity: 1;
+                            }
+                            50% {
+                                opacity: 0.5;
+                            }
+                        }
+                    `}</style>
                 </div>
             </div>
 
@@ -237,50 +254,6 @@ const ZemShop = ({ initialZem, isLoggedIn }: ZemShopProps) => {
             <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />
         </div>
     );
-};
-
-// 서버 사이드에서 사용자 정보를 가져오는 함수
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const { req } = context;
-    const token = req.cookies.access_token; // 쿠키에서 토큰 가져오기
-
-    if (!token) {
-        return {
-            props: {
-                initialZem: 0,
-                isLoggedIn: false,
-            },
-        };
-    }
-
-    try {
-        // 백엔드 API 호출하여 사용자 보유 Zem 수량 가져오기
-        const response = await fetch('https://your-backend-api.com/user/zem', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        if (!response.ok) {
-            throw new Error('Failed to fetch user ZEM');
-        }
-        const data = await response.json();
-        const initialZem = data.zem;
-
-        return {
-            props: {
-                initialZem,
-                isLoggedIn: true,
-            },
-        };
-    } catch (error) {
-        console.error('Error fetching user ZEM:', error);
-        return {
-            props: {
-                initialZem: 0,
-                isLoggedIn: false,
-            },
-        };
-    }
 };
 
 export default ZemShop;
