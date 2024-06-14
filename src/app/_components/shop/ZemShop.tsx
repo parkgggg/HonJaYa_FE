@@ -6,6 +6,10 @@ import ItemPurchase from '@/app/(route)/modal/@modal/shop/ItemPurchase';
 import LoginModal from '@/app/(route)/modal/@modal/shop/LoginModal';
 import { requestPayment } from '@/app/api/payment';
 import { useRouter } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/state/reducers/rootReducer';
+import { verifyUser } from '@/app/utils/verifyUser';
+import { approve } from '@/state/actions';
 
 const ZemShop = () => {
     const [selectedItem, setSelectedItem] = useState<number | null>(null);
@@ -13,8 +17,12 @@ const ZemShop = () => {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [token, setToken] = useState<string | null>(null);
     const [userZem, setUserZem] = useState<number>(0);
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+    const dispatch = useDispatch();
+    const isLogined = useSelector((state: RootState) => state.loginCheck.isLogined)
     const router = useRouter();
+
+
 
     const items = [
         { id: 1, price: 100, diamonds: 1, image: "/zemImages/zem1.png", zem: 10 },
@@ -28,29 +36,36 @@ const ZemShop = () => {
     ];
 
     useEffect(() => {
+        if (!isLogined) {
+            if (verifyUser()) {
+                dispatch(approve());
+            } else {
+                router.push("/")
+            }
+        }
+
         const fetchData = async () => {
             const token = localStorage.getItem('access_token');
             const userIdString = localStorage.getItem('user_id');
             setToken(token);
-            setIsLoggedIn(!!token);
 
-            if (token && userIdString) {
-                try {
-                    const response = await fetch('https://your-backend-api.com/user/zem', {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    });
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch user ZEM');
-                    }
-                    const data = await response.json();
-                    setUserZem(data.zem);
-                } catch (error) {
-                    console.error('Error fetching user ZEM:', error);
-                    setUserZem(0);
-                }
-            }
+            // if (token && userIdString) {
+            //     try {
+            //         const response = await fetch('https://your-backend-api.com/user/zem', {
+            //             headers: {
+            //                 Authorization: `Bearer ${token}`,
+            //             },
+            //         });
+            //         if (!response.ok) {
+            //             throw new Error('Failed to fetch user ZEM');
+            //         }
+            //         const data = await response.json();
+            //         setUserZem(data.zem);
+            //     } catch (error) {
+            //         console.error('Error fetching user ZEM:', error);
+            //         setUserZem(0);
+            //     }
+            // }
         };
 
         fetchData();
@@ -61,7 +76,7 @@ const ZemShop = () => {
     };
 
     const handlePaymentClick = async () => {
-        if (!isLoggedIn) {
+        if (!isLogined) {
             setIsLoginModalOpen(true);
             return;
         }
