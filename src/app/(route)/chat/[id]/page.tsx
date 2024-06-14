@@ -13,7 +13,6 @@ const ChatPage: FC<ChatPageProps> = ({ params }) => {
     const isTeam = useSelector((state: RootState) => state.modeCheck.isTeam)
 
     const roomId  = params;
-    
     return (
         <div className="flex flex-col h-screen">
             <ChatWindow roomId={roomId} isGroupChat={isTeam} />

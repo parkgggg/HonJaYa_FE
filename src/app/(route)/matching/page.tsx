@@ -25,7 +25,7 @@ const MatchingPage = (props: Props) => {
                 subscriptionRef.current.unsubscribe();
             }
 
-            subscriptionRef.current = stompClientRef.current.subscribe(`/topic/match/${localStorage.getItem('user_id')}`, (message) => {
+            subscriptionRef.current = stompClientRef.current?.subscribe(`/topic/match/${localStorage.getItem('user_id')}`, (message) => {
                 try {
                     const result = JSON.parse(message.body);
                     setMatchingResult(result);

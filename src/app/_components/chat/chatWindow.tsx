@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ChatMessage from './chatMessage';
 import ChatInput from './chatInput';
-import { fetchMessages, sendMessage, deleteMessage } from '../../api/chatApi';
-import { connectWebSocket, sendMessageWebSocket, disconnectWebSocket } from '../../api/websocket';
 import SockJS from 'sockjs-client';
 import { CompatClient, Stomp } from '@stomp/stompjs';
 
@@ -12,89 +10,165 @@ interface ChatWindowProps {
 }
 
 interface Message {
-    roomId: string;
-    messageId: string;
-    content: string;
+    id: string;
+    msg: string;
+    sender: string;
+    receiver: string;
+    roomNum: number;
     isOwnMessage: boolean;
-    timestamp: string;
+    createAt: string;
 }
+
+// 로그인 시스템 대신 임시 방편
+
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const stompClient = useRef<CompatClient>();
-
+    const subscriptionRef = useRef<any>();
+    const username = localStorage.getItem("user_id");
+    const roomNum = roomId.id
     useEffect(() => {
-        const loadMessages = async () => {
-            const messages = await fetchMessages(roomId);
-            setMessages(messages);
-        };
-        // loadMessages();
 
-        const handleNewMessage = (message: Message) => {
-            setMessages((prevMessages) => [...prevMessages, message]);
+        const handleNewMessage = (message: any) => {
+            const formattedMessage: Message = {
+                id: message.id,
+                msg: message.msg,
+                sender: message.sender,
+                receiver: message.receiver,
+                roomNum: message.roomNum,
+                isOwnMessage: message.sender === username,
+                createAt: message.createAt,
+            };
+            setMessages((prevMessages) => [...prevMessages, formattedMessage]);
         };
 
         if (isGroupChat) {
-            const eventSource = new EventSource(`https://your-server.com/sse/chat/${chatId}`);
+            const usernameElement = document.querySelector("#username");
+
+            if (usernameElement) {
+                usernameElement.innerHTML = username || "unknown user";
+            }
+
+            const eventSource = new EventSource(`http://localhost:8081/chat/roomNum/${roomNum}`);
             eventSource.onmessage = (event) => {
-                const message: Message = JSON.parse(event.data);
-                handleNewMessage(message);
+                try {
+                    const message = JSON.parse(event.data);
+                    handleNewMessage(message);
+                } catch (error) {
+                    console.error('Failed to parse message:', error);
+                }
+            };
+            eventSource.onerror = (error) => {
+                console.error('EventSource error:', error);
             };
             return () => {
                 eventSource.close();
             };
         } else {
-            //소켓 열고, stomp에 얹기
-            const socket = new SockJS('http://localhost:8080/ws');
+            const socket = new SockJS('http://localhost:8080/api/ws');
             stompClient.current = Stomp.over(socket);
 
-            //stomp 토픽 연결 및 메시지 콜백 함수
-            const connectCallback = (frame:any) => {
-                stompClient.current?.subscribe('/topic/chat/${chatId}', (message) => {
-                    console.log('Received message: ', message.body);
-                    // setMessages(message.body)
+            const connectCallback = (frame) => {
+                console.log('Connected: ' + frame);
+
+                if (subscriptionRef.current) {
+                    subscriptionRef.current.unsubscribe();
+                }
+
+                subscriptionRef.current = stompClient.current?.subscribe(`/topic/chat/${roomId.id}`, (data) => {
+                    try {
+                        console.log(data)
+                        console.log("메시지:" + data.body)
+                        const message = JSON.parse(data.body);
+                        handleNewMessage(message);
+                        console.log(`${roomId}번 방에서 새로운 메시지 수신 : `, message);
+                    } catch (error) {
+                        console.error(`${roomId}번 방에서 메시지 수신 오류`, error);
+                    }
                 });
             };
-            //위 함수랑 소켓 얹은 stomp 연결
             stompClient.current.connect({}, connectCallback);
 
-            // connectWebSocket(`wss://your-websocket-server.com/chat/${roomId}`, handleNewMessage);
             return () => {
-                stompClient.current?.disconnect(()=>{console.log("연결 끝")});
+                if (subscriptionRef.current) {
+                    subscriptionRef.current.unsubscribe();
+                }
+                if (stompClient.current) {
+                    stompClient.current.disconnect();
+                }
             };
         }
-    }, [roomId, isGroupChat]);
+    }, [roomId, username]);
 
     const handleSendMessage = async (message: string) => {
-        const newMessage: Message = { roomId: roomId, messageId: `${Date.now()}`, content: message, isOwnMessage: true, timestamp: new Date().toLocaleTimeString() };
 
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
-
-        if (isGroupChat) {
-            await sendMessage({ roomId: roomId, content: message });
+        if(isGroupChat) {
+            const newMessage = {
+                id: `${Date.now()}`,
+                msg: message,
+                sender: username,
+                receiver: "", // 수신자 이름 필요
+                roomNum: roomId,
+                isOwnMessage: true,
+                createAt: new Date().toISOString(),
+            };
+            try {
+                await fetch("http://localhost:8081/chat", { // 때에따라 바꾸자 8080->8081로 현재 변경
+                    method: "POST",
+                    body: JSON.stringify(newMessage),
+                    headers: {
+                        "Content-Type": "application/json; charset=utf-8"
+                    }
+                });
+            } catch (error) {
+                console.error('Failed to send message:', error);
+            }
         } else {
-            stompClient.current?.send(`/app/chat.send/${roomId}`, {}, JSON.stringify(message));
-
+            const newMessage = {
+                type:"CHAT",
+                msg: message,
+                sender: username,
+                roomNum: roomNum,
+                isOwnMessage: true,
+                createAt: new Date().toISOString(),
+            };
+            try {
+                console.log(JSON.stringify(newMessage));
+                stompClient.current?.send(`/app/chat.send/${roomId.id}`, {}, JSON.stringify(newMessage));
+            } catch (error) {
+                console.error('Failed to send message:', error);
+            }
         }
-    };
-
-    const handleDeleteMessage = async (messageId: string) => {
-        await deleteMessage(roomId, messageId);
-        setMessages((prevMessages) => prevMessages.filter(msg => msg.messageId !== messageId));
     };
 
     return (
         <div className="flex flex-col h-full">
-            <div className="flex-grow overflow-y-auto p-4">
-                {messages.map((msg, index) => (
-                    <ChatMessage
-                        key={index}
-                        message={msg.content}
-                        isOwnMessage={msg.isOwnMessage}
-                        timestamp={msg.timestamp}
-                        onDelete={() => handleDeleteMessage(msg.messageId)}
-                    />
-                ))}
+            <div id="chat-box" className="flex-grow overflow-y-auto p-4">
+                {messages.length === 0 ? (
+                    <div className="text-center text-gray-500">No messages yet</div>
+                ) : (
+
+                    // ChatMessage 컴포넌트에 각 메시지의 속성을 props로 전달하여 해당 메시지를 렌더링한다.
+                    messages.map((msg, index) => {
+                        const nextMsg = messages[index + 1]; // 다음 메시지
+                        const isLast =
+                            !nextMsg ||  // 다음 메시지가 없거나
+                            nextMsg.sender !== msg.sender ||  // 다음 메시지의 발신자가 현재 메시지의 발신자와 다르거나
+                            new Date(msg.createAt).getMinutes() !== new Date(nextMsg.createAt).getMinutes(); // 분이 다르면
+                        return (
+                            <ChatMessage
+                                key={index}
+                                message={msg.msg}
+                                sender={msg.sender}
+                                isOwnMessage={msg.isOwnMessage}
+                                timestamp={msg.createAt}
+                                onDelete={() => { }} // 삭제 기능 필요시 추가
+                                isLast={isLast}
+                            />
+                        )
+                    })
+                )}
             </div>
             <ChatInput onSendMessage={handleSendMessage} />
         </div>

@@ -38,10 +38,10 @@ const Navigationbar = () => {
         <div className="flex w-full h-1/10 items-center justify-between text-lg bg-main-color">
             <div className='relative w-1/12 h-full overflow-hidden'>
                 <div className="flex-col animate-slide">
-                    <img src='./logo1.png' className="w-auto" alt="로고1" />
-                    <img src='./logo2.png' className="w-auto" alt="로고2" />
-                    <img src='./logo1.png' className="w-auto" alt="로고1_for_loop" />
-                    <img src='./logo2.png' className="w-auto" alt="로고2_for_loop" />
+                    <img src='/logo1.png' className="w-auto" alt="로고1" />
+                    <img src='/logo2.png' className="w-auto" alt="로고2" />
+                    <img src='/logo1.png' className="w-auto" alt="로고1_for_loop" />
+                    <img src='/logo2.png' className="w-auto" alt="로고2_for_loop" />
                 </div>
             </div>
             <div
@@ -62,6 +62,9 @@ const Navigationbar = () => {
                         </li>
                         <li className='px-4 py-2 bg-main-color bg-opacity-70 cursor-pointer outline-none hover:bg-opacity-60 hover:text-xl'>
                             <Link href="/shop">Shop</Link>
+                        </li>
+                        <li className='px-4 py-2 bg-main-color bg-opacity-70 cursor-pointer outline-none hover:bg-opacity-60 hover:text-xl'>
+                            <Link href="/board">Board</Link>
                         </li>
                     </ul>
                 </div>
