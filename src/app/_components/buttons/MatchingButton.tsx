@@ -1,17 +1,20 @@
 'use client'
 
 import { postData } from "@/app/api/api";
+import { useRouter } from "next/navigation";
 
 const MatchingButton = () => {
+    const router = useRouter();
 
-    const handleClick = async () => {
+    const handleClick = () => {
 
-        try {
-            const response = await postData(`/api/match/${localStorage.getItem("user_id")}`, "", "honjaya");
-            //지금은 요청해도 상대방이 존재하지 않아 204에러뜸, 2개의 유저로 시뮬레이션하는 방법 모색
-        } catch (e) {
-            console.error(e);
-        }
+        // try {
+        // const response = await postData(`/api/match/${localStorage.getItem("user_id")}`, "", "honjaya");
+        //지금은 요청해도 상대방이 존재하지 않아 204에러뜸, 2개의 유저로 시뮬레이션하는 방법 모색
+        // } catch (e) {
+        //     console.error(e);
+        // }
+        router.push("/matching")
     }
 
     return (

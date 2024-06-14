@@ -8,7 +8,7 @@ interface ChatMessageProps {
     message: string;
     isOwnMessage: boolean;
     timestamp: string;
-    sender: string;
+        sender: string;
     isLast: boolean;
     onDelete: () => void; // 삭제(아직 미구현)
 }

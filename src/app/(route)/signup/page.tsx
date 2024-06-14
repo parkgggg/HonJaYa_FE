@@ -24,12 +24,7 @@ const SignupPage: React.FC = () => {
 
   useEffect(() => {
     if (localStorage.getItem('user_id') !== null) {
-
         router.push("/")
-      // else {
-      //   console.log("여기다");
-      //   router.push("/")
-      // }
     }
   },[]);
 
