@@ -44,9 +44,13 @@ const GalleryPage = () => {
       }
 
       try {
+        const header = {
+          "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
+        }
         const response = await fetch(`http://localhost:8080/api/users/${userId}/profile-images`, {
           method: 'POST',
           body: formData,
+          headers: header,
         });
         if (!response.ok) {
           throw new Error('Network response was not ok');
