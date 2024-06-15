@@ -72,7 +72,7 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
                 if(error) throw (error);
                 const kakaoLocation = await getData(`/local/geo/coord2regioncode.json?x=${location.lon}&y=${location.lat}`, "kakao");
                 console.log(kakaoLocation);
-                updateFormData({ address: kakaoLocation.documents[0].address_name.split(" ")[1]});
+                updateFormData({ address: kakaoLocation.documents[0].address_name.split(" ")[1] });
             }
             catch(error) {
                 console.log(error)

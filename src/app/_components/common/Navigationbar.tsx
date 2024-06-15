@@ -35,7 +35,7 @@ const Navigationbar = () => {
 
 
     return (
-        <div className="flex w-full h-1/10 items-center justify-between text-lg bg-main-color">
+        <div className="flex w-full h-1/10 items-center justify-between text-lg bg-main-color font-jua">
             <div className='relative w-1/12 h-full overflow-hidden'>
                 <div className="flex-col animate-slide">
                     <img src='/logo1.png' className="w-auto" alt="로고1" />
