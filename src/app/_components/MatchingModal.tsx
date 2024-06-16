@@ -5,16 +5,14 @@ import SockJS from 'sockjs-client';
 import { CompatClient, Stomp } from '@stomp/stompjs';
 import { postData } from '@/app/api/api';
 import { useDispatch } from 'react-redux';
-import { setMathcingModalClose } from '@/state/actions';
-
-
+import { setMatchingModalClose } from '@/state/actions';
 
 const MatchingModal = () => {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
     const [matchingResult, setMatchingResult] = useState(null);
+    const [userId, setUserId] = useState(localStorage.getItem('user_id'));
     const stompClientRef = useRef<CompatClient>();
     const subscriptionRef = useRef<any>();
-    
 
     useEffect(() => {
         const socket = new SockJS('http://localhost:8080/api/ws/match');
@@ -27,24 +25,20 @@ const MatchingModal = () => {
                 subscriptionRef.current.unsubscribe();
             }
 
-            subscriptionRef.current = stompClientRef.current?.subscribe(`/topic/match/${localStorage.getItem('user_id')}`, (message) => {
+            subscriptionRef.current = stompClientRef.current?.subscribe(`/topic/match/${userId}`, (message) => {
                 try {
                     const result = JSON.parse(message.body);
                     setMatchingResult(result);
-                    console.log(`New match received for User ${localStorage.getItem('user_id')}:`, result);
+                    console.log(`New match received for User ${userId}:`, result);
                 } catch (error) {
-                    console.error(`Error parsing message body for User ${localStorage.getItem('user_id')}:`, error);
+                    console.error(`Error parsing message body for User ${userId}:`, error);
                 }
             });
-        };
 
-        const requestMatch = async () => {
-            const response = await postData(`/match/${localStorage.getItem("user_id")}`, "", "honjaya");
-            console.log(response);
+            requestMatch();
         };
 
         stompClientRef.current.connect({}, connectCallback);
-        requestMatch();
 
         return () => {
             if (subscriptionRef.current) {
@@ -54,29 +48,25 @@ const MatchingModal = () => {
                 stompClientRef.current.disconnect();
             }
         };
-    }, [localStorage.getItem('user_id')]);
+    }, [userId]);
+
+    const requestMatch = async () => {
+        const response = await postData(`/match/${userId}`, "", "honjaya");
+        console.log(response);
+    };
 
     useEffect(() => {
         if (matchingResult) {
-            alert("매청 성사!")
-            dispatch(setMathcingModalClose());
+            alert("매칭 성사!");
+            dispatch(setMatchingModalClose());
         }
-    }, [matchingResult])
-
-
+    }, [matchingResult]);
 
     return (
         <div className='invisible'>
-
+            매칭 중!
         </div>
-        // <div className='absolute bottom-5 right-2 w-20 h-10'>
-        //     {matchingResult && (
-        //         <div>
-        //             <h3>매칭된 사용자: {matchingResult.name}</h3>
-        //         </div>
-        //     )}
-        // </div>
-    )
-}
+    );
+};
 
 export default MatchingModal;

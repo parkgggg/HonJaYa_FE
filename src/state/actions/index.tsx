@@ -16,11 +16,11 @@ export const setSingleMode = () => ({
     type: 'SET_SINGLE_MODE',
 });
 
-export const setMathcingModalOpen = () => ({
+export const setMatchingModalOpen = () => ({
     type: 'SHOW_MODAL',
 });
 
-export const setMathcingModalClose = () => ({
+export const setMatchingModalClose = () => ({
     type: 'CLOSE_MODAL',
 });
 

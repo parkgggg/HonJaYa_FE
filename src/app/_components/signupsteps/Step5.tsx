@@ -65,23 +65,33 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
         }
     };
 
-    const setPresentLocation = async () => {
-        const getLocation = async () => {
+    const setPresentLocation = () => {
+        const getLocation = () => {
             try {
-                await setCurrentLocation();
-                if(error) throw (error);
-                const kakaoLocation = await getData(`/local/geo/coord2regioncode.json?x=${location.lon}&y=${location.lat}`, "kakao");
-                console.log(kakaoLocation);
-                updateFormData({ address: kakaoLocation.documents[0].address_name.split(" ")[1] });
+                setCurrentLocation();
             }
             catch(error) {
                 console.log(error)
             }
         }
+    }
 
+    const handleAgreeButton = () => {
+        setPresentLocation();
+
+        if(location.lat === 0 && location.lon === 0){
+           handleAgreeButton(); 
+        }
+        
         setAgree((prev) => {
             if(prev) return false;
-            getLocation();
+            
+            const kakaoLocation = getData(`/local/geo/coord2regioncode.json?x=${location.lon}&y=${location.lat}`, "kakao");
+            console.log(kakaoLocation);
+            kakaoLocation.then((result) => {
+                console.log(result);
+            updateFormData({ address: result.documents[0].address_name.split(" ")[1] });
+        });
             return true;    
         })
     }
@@ -105,7 +115,7 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
                     <div className="text-center">
                         <button
                             type="button"
-                            onClick={setPresentLocation}
+                            onClick={handleAgreeButton}
                             className={`py-2 px-6 border-4 rounded-lg text-2xl ${agree ? 'border-red-500 bg-red-300 text-white' : 'border-red-300 bg-white text-black'}`}
                         >
                             {agree ? '동의 완료' : '위치 정보 제공에 동의'}

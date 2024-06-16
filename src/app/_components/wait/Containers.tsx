@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Team from "./Team";
 import Partner from "./Partner";
 import { useSelector } from "react-redux";
@@ -35,12 +35,13 @@ interface Props {
 
 const Containers = ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage }: Props) => {
     const isTeam = useSelector((state: RootState) => state.modeCheck.isTeam)
+
+
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const [currentObjects, setCurrentObjects] = useState<any[]>([])
     const [placeholders, setPlaceholders] = useState<string[]>([])
 
     useEffect(() => {
-        console.log(objects)
         const startIndex = currentPage * objectsPerPage;
         const currentObjects = objects.slice(startIndex, startIndex + objectsPerPage);
         setCurrentObjects(currentObjects);
