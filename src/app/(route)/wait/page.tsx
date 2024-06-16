@@ -15,7 +15,7 @@ import { approve, setTeamMode, setSingleMode } from "@/state/actions";
 import { RootState } from "@/state/reducers/rootReducer";
 import { verifyUser } from "@/app/utils/verifyUser";
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getData } from "@/app/api/api";
 
 const images: string[] = ["1", "2", "3", "4", "5", "6", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"];
@@ -29,8 +29,10 @@ const WaitingRoom = () => {
 
     const dispatch = useDispatch();
     const isTeam = useSelector((state: RootState) => state.modeCheck.isTeam)
+    const isMatchingModalOpened = useSelector((state: RootState) => state.matchingStatusModal.isOpened)
     const isLogined = useSelector((state: RootState) => state.loginCheck.isLogined)
     const router = useRouter();
+    const prevState = useRef(isMatchingModalOpened);
 
     useEffect(() => {
 
@@ -66,73 +68,81 @@ const WaitingRoom = () => {
 
     useEffect(() => {
         const getObjects = async () => {
-            try{
+            try {
                 const response = await getData(`/chat/rooms/${localStorage.getItem("user_id")}`, "honjaya");
                 console.log(response);
                 const objects = response;
-                setObjects(() =>(objects))
+                setObjects(() => (objects))
             } catch (e) {
                 console.log(e);
             }
-        }  
+        }
         getObjects();
-    },[])
+    }, [isMatchingModalOpened])
 
-const nextSlide = () => {
-    if ((currentPage + 1) * objectsPerPage < images.length) {
-        setCurrentPage(currentPage + 1);
+    // useEffect(() => {
+    //     if (prevState.current === true && isMatchingModalOpened === false) {
+    //         console.log("Matching success and re-rendering proceed")
+    //     }
+    //     prevState.current = isMatchingModalOpened;
+    // }, [isMatchingModalOpened])
+
+
+    const nextSlide = () => {
+        if ((currentPage + 1) * objectsPerPage < images.length) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const prevSlide = () => {
+        if (currentPage > 0) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const setFilterOpen = () => {
+        const newState = !open;
+        setOpen(newState);
     }
-};
 
-const prevSlide = () => {
-    if (currentPage > 0) {
-        setCurrentPage(currentPage - 1);
-    }
-};
-
-const setFilterOpen = () => {
-    const newState = !open;
-    setOpen(newState);
-}
-
-return (
-    <div className="flex h-screen w-screen flex-col items-center justify-between bg-white">
-        <Navigationbar />
-        <div style={{ height: "90%" }} className="w-full overflow-y-auto">
-            <div className="w-full h-auto min-h-4"></div>
-            <div className="w-full h-1/10 text-3xl font-jua flex items-end justify-around box-border pt-2 px-10">
-                {isTeam ? <div className="flex items-end w-3/10 h-full text-4xl">참여중인 팀</div> : <div className="flex w-3/10 items-end h-full text-4xl">매칭된 상대</div>}
-                <div className="w-3/10 h-full flex justify-center items-center">
-                    <Image src="https://www.svgrepo.com/show/436843/person-fill.svg" width={20} height={20} alt="single" />
-                    <ToggleSwitch/>
-                    <Image src="https://www.svgrepo.com/show/436838/person-3-fill.svg" width={20} height={20} alt="team" />
+    return (
+        <div className="flex h-screen w-screen flex-col items-center justify-between bg-white">
+            <Navigationbar />
+            <div style={{ height: "90%" }} className="w-full overflow-y-auto">
+                <div className="w-full h-auto min-h-4"></div>
+                <div className="w-full h-1/10 text-3xl font-jua flex items-end justify-around box-border pt-2 px-10">
+                    {isTeam ? <div className="flex items-end w-3/10 h-full text-4xl">참여중인 팀</div> : <div className="flex w-3/10 items-end h-full text-4xl">매칭된 상대</div>}
+                    <div className="w-3/10 h-full flex justify-center items-center">
+                        <Image src="https://www.svgrepo.com/show/436843/person-fill.svg" width={20} height={20} alt="single" />
+                        <ToggleSwitch />
+                        <Image src="https://www.svgrepo.com/show/436838/person-3-fill.svg" width={20} height={20} alt="team" />
+                    </div>
+                    <div className="w-3/10 h-full flex justify-end">
+                        <button
+                            onClick={setFilterOpen}
+                            className={`${open ? 'hidden' : ''} bg-filter w-10 h-full rounded-md bg-cover bg-center`}></button>
+                        {open && (
+                            <FilterModal setFilterOpen={setFilterOpen} />
+                        )}
+                    </div>
                 </div>
-                <div className="w-3/10 h-full flex justify-end">
-                    <button
-                        onClick={setFilterOpen}
-                        className={`${open ? 'hidden' : ''} bg-filter w-10 h-full rounded-md bg-cover bg-center`}></button>
-                    {open && (
-                        <FilterModal setFilterOpen={setFilterOpen} />
-                    )}
+                {/* 매칭되어 있는 유저 리스팅 */}
+                <Containers
+                    objects={objects}
+                    prevSlide={prevSlide}
+                    nextSlide={nextSlide}
+                    currentPage={currentPage}
+                    objectsPerPage={objectsPerPage}
+                />
+                <div className="w-full h-2/10">
+                    {isTeam ?
+                        <TeamChatButtons
+                            openTeamCreateModal={openTeamCreateModal}
+                            setOpenTeamCreateModal={() => { setOpenTeamCreateModal((prev) => (!prev)) }} /> : <MatchingButton />}
                 </div>
-            </div>
-            {/* 매칭되어 있는 유저 리스팅 */}
-            <Containers
-                objects={objects}
-                prevSlide={prevSlide}
-                nextSlide={nextSlide}
-                currentPage={currentPage}
-                objectsPerPage={objectsPerPage}
-            />
-            <div className="w-full h-2/10">
-                {isTeam ?
-                    <TeamChatButtons
-                        openTeamCreateModal={openTeamCreateModal}
-                        setOpenTeamCreateModal={() => { setOpenTeamCreateModal((prev) => (!prev)) }} /> : <MatchingButton />}
             </div>
         </div>
-    </div>
-);
+    );
 };
 
 export default WaitingRoom;

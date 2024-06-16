@@ -55,7 +55,6 @@ export const postData = async (endpoint: any, data: any, dest: any) => {
     return await response.json();
   } catch (error) {
     console.error(`Failed to post data to ${endpoint}:`, error);
-    throw error;
   }
 };
 
@@ -74,7 +73,6 @@ export const putData = async (endpoint: any, data: any, dest: any) => {
     return await response.json();
   } catch (error) {
     console.error(`Failed to post data to ${endpoint}:`, error);
-    throw error;
   }
 };
 
@@ -92,7 +90,6 @@ export const deleteData = async (endpoint: any, dest: any) => {
     return await response.json();
   } catch (error) {
     console.error(`Failed to delete data to ${endpoint}:`, error);
-    throw error;
   }
 };
 
