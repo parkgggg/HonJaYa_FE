@@ -41,7 +41,7 @@ const Landing = () => {
           <div className="w-full h-2/5 ">
             <div className='flex rounded-sm items-center justify-end bg-couple-image-1 bg-cover bg-center w-full h-full'>
               <div className="flex justify-center items-center w-1/4 h-3/5 box-border p-10">
-                {isLogined?  <EnterMainButton /> : <KakaoLoginButton />}
+                {isLogined?  <EnterMainButton /> : null}
               </div>
             </div>
           </div>

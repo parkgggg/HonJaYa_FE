@@ -96,6 +96,24 @@ export const deleteData = async (endpoint: any, dest: any) => {
   }
 };
 
+export const deleteImages = async (endpoint: any, data: any, dest: any) => {
+  const response = await fetch(`${dest === "honjaya" ? `${baseURL}${endpoint}` : `${kakaoURL}${endpoint}`}`, {
+    method: "DELETE",
+    headers: setHeaders(dest),
+    body: JSON.stringify(data),
+  });
+  return await response.json();
+};
+
+// POST 요청 메서드
+export const postWithoutBody = async (endpoint: any, dest: any) => {
+  const response = await fetch(`${dest === "honjaya" ? `${baseURL}${endpoint}` : `${kakaoURL}${endpoint}`}`, {
+    method: "POST",
+    headers: setHeaders(dest),
+    credentials: "include"
+  });
+  return await response.json();
+};
 
 
 // FormData를 백엔드에 제출하는 함수

@@ -2,12 +2,16 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { postData } from '@/app/api/api';
+import { postData, postWithoutBody } from '@/app/api/api';
 import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/state/reducers/rootReducer';
+import KakaoLoginButton from '../buttons/KakaoLoginButton';
 
 const Navigationbar = () => {
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [myPageOpen, setMyPageOpen] = useState<boolean>(false);
+    const isLogined = useSelector((state: RootState) => state.loginCheck.isLogined);
     const router = useRouter();
 
     const handleMenuHovering = () => {
@@ -18,24 +22,19 @@ const Navigationbar = () => {
         setMyPageOpen((prevState) => { return !prevState });
     };
 
-    // const handleLogout = async () => {
-    //     try {
-    //         console.log(localStorage.getItem('user_id'));
-    //         const response = await postData("/logout", '','honjaya');
-    //         console.log(response);
-
-    //         localStorage.removeItem('access_token');
-    //         localStorage.removeItem('user_id');
-    //         router.replace('/');
-    //     } catch (err) {
-    //         console.log(err);
-    //     }
-
-    // };
-
+    const handleLogout = async () => {
+        const response = await postWithoutBody("/logout", "honjaya");
+        if (response.status === "error") {
+            alert(response.message);
+            return;
+        }
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("user_id");
+        window.location.reload();
+    }
 
     return (
-        <div className="flex w-full h-1/10 items-center justify-between text-lg bg-main-color">
+        <div className="flex w-full h-1/10 items-center justify-between text-lg bg-main-color font-jua">
             <div className='relative w-1/12 h-full overflow-hidden'>
                 <div className="flex-col animate-slide">
                     <img src='/logo1.png' className="w-auto" alt="로고1" />
@@ -66,6 +65,9 @@ const Navigationbar = () => {
                         <li className='px-4 py-2 bg-main-color bg-opacity-70 cursor-pointer outline-none hover:bg-opacity-60 hover:text-xl'>
                             <Link href="/board">Board</Link>
                         </li>
+                        <li className='px-4 py-2 bg-main-color bg-opacity-70 cursor-pointer outline-none hover:bg-opacity-60 hover:text-xl'>
+                            <Link href="/mypage">My Page</Link>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -88,9 +90,13 @@ const Navigationbar = () => {
                     </ul>
                 </div>
             </div> */}
-            <div className='relative flex font-light text-white items-center justify-center w-1/12 h-full hover:underline'>
-                <Link href="/mypage">My page</Link>
+            {isLogined === true ? (
+                <div className='relative flex font-light text-white items-center justify-center w-1/12 h-full hover:underline'>
+                <button onClick={handleLogout}>Logout</button>
             </div>
+            ) : (
+                <KakaoLoginButton />
+            )}
         </div>
     );
 }
