@@ -1,10 +1,12 @@
 'use client'
 
 import { postData } from "@/app/api/api";
+import { setMathcingModalOpen } from "@/state/actions";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
 
 const MatchingButton = () => {
-    const router = useRouter();
+    const dispatch = useDispatch();
 
     const handleClick = () => {
 
@@ -14,7 +16,7 @@ const MatchingButton = () => {
         // } catch (e) {
         //     console.error(e);
         // }
-        router.push("/matching")
+        dispatch(setMathcingModalOpen())
     }
 
     return (

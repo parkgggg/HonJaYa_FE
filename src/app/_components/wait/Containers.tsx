@@ -40,6 +40,7 @@ const Containers = ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage
     const [placeholders, setPlaceholders] = useState<string[]>([])
 
     useEffect(() => {
+        console.log(objects)
         const startIndex = currentPage * objectsPerPage;
         const currentObjects = objects.slice(startIndex, startIndex + objectsPerPage);
         setCurrentObjects(currentObjects);

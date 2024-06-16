@@ -20,7 +20,7 @@ import { getData } from "@/app/api/api";
 
 const images: string[] = ["1", "2", "3", "4", "5", "6", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"];
 
-const SingleWaitingRoom = () => {
+const WaitingRoom = () => {
     const [objects, setObjects] = useState("");
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [objectsPerPage, setObjectsPerPage] = useState<number>(8);
@@ -135,6 +135,6 @@ return (
 );
 };
 
-export default SingleWaitingRoom;
+export default WaitingRoom;
 
 

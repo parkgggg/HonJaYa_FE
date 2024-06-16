@@ -15,3 +15,12 @@ export const setTeamMode = () => ({
 export const setSingleMode = () => ({
     type: 'SET_SINGLE_MODE',
 });
+
+export const setMathcingModalOpen = () => ({
+    type: 'SHOW_MODAL',
+});
+
+export const setMathcingModalClose = () => ({
+    type: 'CLOSE_MODAL',
+});
+
