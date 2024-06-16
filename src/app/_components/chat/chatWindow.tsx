@@ -35,7 +35,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 id: message.id,
                 msg: message.msg,
                 sender: message.sender,
-                receiver: message.receiver,
+                receiver: message.receiver, 
                 roomNum: message.roomNum,
                 isOwnMessage: message.sender === username,
                 createAt: message.createAt,
@@ -112,7 +112,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 roomNum: roomId,
                 isOwnMessage: true,
                 createAt: new Date().toISOString(),
-            };
+            };  
             try {
                 await fetch("http://localhost:8081/chat", { // 때에따라 바꾸자 8080->8081로 현재 변경
                     method: "POST",

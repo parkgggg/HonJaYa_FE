@@ -6,6 +6,7 @@ import NavigationButtons from './navigationbuttons/NavigationButtons';
 const mbtiTypes = ['INFJ', 'INFP', 'ENFJ', 'ENFP', 'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ', 'INTJ', 'INTP', 'ENTJ', 'ENTP', 'ISTP', 'ISFP', 'ESTP', 'ESFP'];
 const religionTypes = ['기독교', '불교', '천주교', '이슬람', '기타', '무교'];
 const drinkingTypes = ['알쓰', '평균', '술고래'];
+const smokeOrNot = ['흡연', '비흡연'];
 
 interface FormData {
     height?: number;
@@ -26,14 +27,15 @@ const Step4: React.FC<Step4Props> = ({ nextStep, prevStep, updateFormData, formD
     const [showAllMbti, setShowAllMbti] = useState(false);
     const [selectedMbti, setSelectedMbti] = useState<string | undefined>(formData.mbti || undefined);
     const [selectedReligion, setSelectedReligion] = useState<string | undefined>(formData.religion || undefined);
-    const [selectedDrinking, setSelectedDrinking] = useState<string | undefined>(formData.drinking_capacity || undefined);
+    const [selectedDrinking, setSelectedDrinking] = useState<string | undefined>(formData.drinkAmount || undefined);
     const [height, setHeight] = useState<number>(formData.height || 170);
     const [weight, setWeight] = useState<number>(formData.weight || 70);
+    const [smoke, setSmoke] = useState<boolean>(formData.smoke || null);
 
     useEffect(() => {
         setSelectedMbti(formData.mbti || undefined);
         setSelectedReligion(formData.religion || undefined);
-        setSelectedDrinking(formData.drinking_capacity || undefined);
+        setSelectedDrinking(formData.drinkAmount || undefined);
         setHeight(formData.height || 170);
         setWeight(formData.weight || 70);
     }, [formData]);
@@ -122,7 +124,7 @@ const Step4: React.FC<Step4Props> = ({ nextStep, prevStep, updateFormData, formD
                         </div>
                     </div>
                     <div className="text-center">
-                        <label htmlFor="drinking-capacity" className="block text-2xl mb-4">주량</label>
+                        <label htmlFor="drinkingAmount" className="block text-2xl mb-4">주량</label>
                         <div className="grid grid-cols-3 gap-2">
                             {drinkingTypes.map((drinking) => (
                                 <button
@@ -132,6 +134,21 @@ const Step4: React.FC<Step4Props> = ({ nextStep, prevStep, updateFormData, formD
                                     className={`py-1 px-2 border-2 border-red-300 rounded-2xl text-sm ${selectedDrinking === drinking ? 'bg-red-300 text-white' : 'bg-white text-black'}`}
                                 >
                                     {drinking}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="text-center">
+                        <label htmlFor="smoke" className="block text-2xl mb-4">흡연</label>
+                        <div className="grid grid-cols-2 gap-2">
+                            {smokeOrNot.map((smokeBool) => (
+                                <button
+                                    key={smokeBool}
+                                    type="button"
+                                    onClick={() => {setSmoke(()=>{return smokeBool === "흡연"? true : false})}}
+                                    className={`py-1 px-2 border-2 border-red-300 rounded-2xl text-sm ${smoke === (smokeBool === "흡연"? true : false) ? 'bg-red-300 text-white' : 'bg-white text-black'}`}
+                                >
+                                    {smokeBool}
                                 </button>
                             ))}
                         </div>

@@ -4,15 +4,17 @@ import { useState, useEffect, useRef } from 'react';
 import SockJS from 'sockjs-client';
 import { CompatClient, Stomp } from '@stomp/stompjs';
 import { postData } from '@/app/api/api';
-import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { setMathcingModalClose } from '@/state/actions';
 
-type Props = {}
 
-const MatchingPage = (props: Props) => {
+
+const MatchingModal = () => {
+    const dispatch = useDispatch()
     const [matchingResult, setMatchingResult] = useState(null);
     const stompClientRef = useRef<CompatClient>();
     const subscriptionRef = useRef<any>();
-    const router = useRouter();
+    
 
     useEffect(() => {
         const socket = new SockJS('http://localhost:8080/api/ws/match');
@@ -30,14 +32,19 @@ const MatchingPage = (props: Props) => {
                     const result = JSON.parse(message.body);
                     setMatchingResult(result);
                     console.log(`New match received for User ${localStorage.getItem('user_id')}:`, result);
-                    alert(`사용자 ${localStorage.getItem('user_id')}님, 새로운 매칭이 이루어졌습니다: ${result.name}`);
                 } catch (error) {
                     console.error(`Error parsing message body for User ${localStorage.getItem('user_id')}:`, error);
                 }
             });
         };
 
+        const requestMatch = async () => {
+            const response = await postData(`/match/${localStorage.getItem("user_id")}`, "", "honjaya");
+            console.log(response);
+        };
+
         stompClientRef.current.connect({}, connectCallback);
+        requestMatch();
 
         return () => {
             if (subscriptionRef.current) {
@@ -50,27 +57,26 @@ const MatchingPage = (props: Props) => {
     }, [localStorage.getItem('user_id')]);
 
     useEffect(() => {
-        if(matchingResult) {
-            router.push("/wait");        
+        if (matchingResult) {
+            alert("매청 성사!")
+            dispatch(setMathcingModalClose());
         }
-    },[matchingResult])
+    }, [matchingResult])
 
-    const requestMatch = async () => {
-        const response = await postData(`/match/${localStorage.getItem("user_id")}`, "", "honjaya");
-        console.log(response);
-    };
 
-  return (
-    <div>
-    <h2>사용자 {localStorage.getItem('user_id')}에 대한 매칭 알림</h2>
-    <button onClick={requestMatch}>사용자 {localStorage.getItem('user_id')} 매칭 요청</button>
-    {matchingResult && (
-        <div>
-            <h3>매칭된 사용자: {matchingResult.name}</h3>
+
+    return (
+        <div className='invisible'>
 
         </div>
-    )}
-</div>  )
+        // <div className='absolute bottom-5 right-2 w-20 h-10'>
+        //     {matchingResult && (
+        //         <div>
+        //             <h3>매칭된 사용자: {matchingResult.name}</h3>
+        //         </div>
+        //     )}
+        // </div>
+    )
 }
 
-export default MatchingPage
+export default MatchingModal;
