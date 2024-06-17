@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { purchaseItem } from '@/app/api/api'; // API 파일 경로에 맞게 수정하세요
+import { purchaseItem } from '@/app/api/payment'; 
 
 interface Item {
     name: string;

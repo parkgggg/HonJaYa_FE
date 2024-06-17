@@ -6,7 +6,7 @@ import { CompatClient, Stomp } from '@stomp/stompjs';
 
 interface ChatWindowProps {
     roomId: string;
-    isGroupChat: boolean;
+    isTeam: boolean;
 }
 
 interface Message {
@@ -14,43 +14,46 @@ interface Message {
     msg: string;
     sender: string;
     receiver: string;
-    roomNum: number;
+    roomId: string; // roomNum을 roomId로 변경
     isOwnMessage: boolean;
     createAt: string;
 }
 
-// 로그인 시스템 대신 임시 방편
-
-
-const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
+const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isTeam }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const stompClient = useRef<CompatClient>();
     const subscriptionRef = useRef<any>();
     const username = localStorage.getItem("user_id");
-    const roomNum = roomId.id
-    useEffect(() => {
 
+    useEffect(() => {
+        console.log('roomId:', roomId); // roomId 확인 로그 추가
         const handleNewMessage = (message: any) => {
             const formattedMessage: Message = {
                 id: message.id,
                 msg: message.msg,
                 sender: message.sender,
+<<<<<<< HEAD
                 receiver: message.receiver, 
                 roomNum: message.roomNum,
+=======
+                receiver: message.receiver,
+                roomId: message.roomId,
+>>>>>>> 6cd0508 (zemshop zem결제 및 화면 렌더링 완료 + 채팅방 생성 및 렌더링 후 통신 완료)
                 isOwnMessage: message.sender === username,
                 createAt: message.createAt,
             };
             setMessages((prevMessages) => [...prevMessages, formattedMessage]);
         };
 
-        if (isGroupChat) {
+        if (isTeam) {
             const usernameElement = document.querySelector("#username");
 
             if (usernameElement) {
                 usernameElement.innerHTML = username || "unknown user";
             }
 
-            const eventSource = new EventSource(`http://localhost:8081/chat/roomNum/${roomNum}`);
+            // roomId를 사용하여 EventSource 초기화
+            const eventSource = new EventSource(`http://localhost:8081/chat/roomId/${roomId}`);
             eventSource.onmessage = (event) => {
                 try {
                     const message = JSON.parse(event.data);
@@ -76,10 +79,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                     subscriptionRef.current.unsubscribe();
                 }
 
-                subscriptionRef.current = stompClient.current?.subscribe(`/topic/chat/${roomId.id}`, (data) => {
+                // roomId를 사용하여 STOMP 구독
+                subscriptionRef.current = stompClient.current?.subscribe(`/topic/chat/${roomId}`, (data) => {
                     try {
-                        console.log(data)
-                        console.log("메시지:" + data.body)
+                        console.log(data);
+                        console.log("메시지:" + data.body);
                         const message = JSON.parse(data.body);
                         handleNewMessage(message);
                         console.log(`${roomId}번 방에서 새로운 메시지 수신 : `, message);
@@ -99,10 +103,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 }
             };
         }
-    }, [roomId, username]);
+    }, [roomId, username, isTeam]);
 
     const handleSendMessage = async (message: string) => {
+        if (!roomId) {
+            console.error('roomId is undefined');
+            return;
+        }
 
+<<<<<<< HEAD
         if(isGroupChat) {
             const newMessage = {
                 id: `${Date.now()}`,
@@ -115,30 +124,41 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
             };  
             try {
                 await fetch("http://localhost:8081/chat", { // 때에따라 바꾸자 8080->8081로 현재 변경
+=======
+        const newMessage = {
+            id: `${Date.now()}`,
+            msg: message,
+            sender: username,
+            receiver: "", // 수신자 이름 필요
+            roomId: roomId,
+            isOwnMessage: true,
+            createAt: new Date().toISOString(),
+        };
+
+        try {
+            if (isTeam) {
+                await fetch("http://localhost:8081/chat", { 
+>>>>>>> 6cd0508 (zemshop zem결제 및 화면 렌더링 완료 + 채팅방 생성 및 렌더링 후 통신 완료)
                     method: "POST",
                     body: JSON.stringify(newMessage),
                     headers: {
                         "Content-Type": "application/json; charset=utf-8"
                     }
                 });
-            } catch (error) {
-                console.error('Failed to send message:', error);
+            } else {
+                const messageToSend = {
+                    type: "CHAT",
+                    msg: message,
+                    sender: username,
+                    roomId: roomId,
+                    isOwnMessage: true,
+                    createAt: new Date().toISOString(),
+                };
+                console.log(JSON.stringify(messageToSend));
+                stompClient.current?.send(`/app/chat.send/${roomId}`, {}, JSON.stringify(messageToSend));
             }
-        } else {
-            const newMessage = {
-                type:"CHAT",
-                msg: message,
-                sender: username,
-                roomNum: roomNum,
-                isOwnMessage: true,
-                createAt: new Date().toISOString(),
-            };
-            try {
-                console.log(JSON.stringify(newMessage));
-                stompClient.current?.send(`/app/chat.send/${roomId.id}`, {}, JSON.stringify(newMessage));
-            } catch (error) {
-                console.error('Failed to send message:', error);
-            }
+        } catch (error) {
+            console.error('Failed to send message:', error);
         }
     };
 
@@ -148,14 +168,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 {messages.length === 0 ? (
                     <div className="text-center text-gray-500">No messages yet</div>
                 ) : (
-
-                    // ChatMessage 컴포넌트에 각 메시지의 속성을 props로 전달하여 해당 메시지를 렌더링한다.
                     messages.map((msg, index) => {
-                        const nextMsg = messages[index + 1]; // 다음 메시지
-                        const isLast =
-                            !nextMsg ||  // 다음 메시지가 없거나
-                            nextMsg.sender !== msg.sender ||  // 다음 메시지의 발신자가 현재 메시지의 발신자와 다르거나
-                            new Date(msg.createAt).getMinutes() !== new Date(nextMsg.createAt).getMinutes(); // 분이 다르면
+                        const nextMsg = messages[index + 1];
+                        const isLast = !nextMsg || nextMsg.sender !== msg.sender || new Date(msg.createAt).getMinutes() !== new Date(nextMsg.createAt).getMinutes();
                         return (
                             <ChatMessage
                                 key={index}
