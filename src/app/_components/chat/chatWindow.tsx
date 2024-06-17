@@ -3,6 +3,7 @@ import ChatMessage from './chatMessage';
 import ChatInput from './chatInput';
 import SockJS from 'sockjs-client';
 import { CompatClient, Stomp } from '@stomp/stompjs';
+import { getData } from '@/app/api/api';
 
 interface ChatWindowProps {
     roomId: string;
@@ -13,6 +14,7 @@ interface Message {
     id: string;
     msg: string;
     sender: string;
+    senderProfile: string;
     receiver: string;
     roomNum: number;
     isOwnMessage: boolean;
@@ -24,24 +26,43 @@ interface Message {
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
     const [messages, setMessages] = useState<Message[]>([]);
+    const [profileImage, setProfileImage] = useState<string>("")
     const stompClient = useRef<CompatClient>();
     const subscriptionRef = useRef<any>();
     const username = localStorage.getItem("user_id");
     const roomNum = roomId.id
     useEffect(() => {
 
+        const getProfileImage = async () => {
+            try {
+                const response = await getData(
+                    `/users/${localStorage.getItem("user_id")}`,
+                    "honjaya"
+                );
+                console.log(response.data.profileImage);
+                setProfileImage(response.data.profileImage);
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
         const handleNewMessage = (message: any) => {
             const formattedMessage: Message = {
                 id: message.id,
                 msg: message.msg,
                 sender: message.sender,
-                receiver: message.receiver, 
+                senderProfile: message.senderProfile,
+                receiver: message.receiver,
                 roomNum: message.roomNum,
                 isOwnMessage: message.sender === username,
                 createAt: message.createAt,
             };
+            console.log(formattedMessage);
             setMessages((prevMessages) => [...prevMessages, formattedMessage]);
         };
+
+        getProfileImage();
+
 
         if (isGroupChat) {
             const usernameElement = document.querySelector("#username");
@@ -103,7 +124,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
 
     const handleSendMessage = async (message: string) => {
 
-        if(isGroupChat) {
+        if (isGroupChat) {
             const newMessage = {
                 id: `${Date.now()}`,
                 msg: message,
@@ -112,7 +133,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 roomNum: roomId,
                 isOwnMessage: true,
                 createAt: new Date().toISOString(),
-            };  
+            };
             try {
                 await fetch("http://localhost:8081/chat", { // 때에따라 바꾸자 8080->8081로 현재 변경
                     method: "POST",
@@ -126,9 +147,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
             }
         } else {
             const newMessage = {
-                type:"CHAT",
+                type: "CHAT",
                 msg: message,
                 sender: username,
+                senderProfile: profileImage,
                 roomNum: roomNum,
                 isOwnMessage: true,
                 createAt: new Date().toISOString(),
@@ -161,6 +183,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                                 key={index}
                                 message={msg.msg}
                                 sender={msg.sender}
+                                senderProfile={msg.senderProfile}
                                 isOwnMessage={msg.isOwnMessage}
                                 timestamp={msg.createAt}
                                 onDelete={() => { }} // 삭제 기능 필요시 추가

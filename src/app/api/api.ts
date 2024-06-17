@@ -68,11 +68,11 @@ export const putData = async (endpoint: any, data: any, dest: any) => {
       });
 
     if (!response.ok) {
-      throw new Error(`Failed to post data to ${endpoint}: ${response.statusText}`);
+      throw new Error(`Failed to put data to ${endpoint}: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
-    console.error(`Failed to post data to ${endpoint}:`, error);
+    console.error(`Failed to put data to ${endpoint}:`, error);
   }
 };
 

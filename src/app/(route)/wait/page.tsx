@@ -18,8 +18,6 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { getData } from "@/app/api/api";
 
-const images: string[] = ["1", "2", "3", "4", "5", "6", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"];
-
 const WaitingRoom = () => {
     const [objects, setObjects] = useState("");
     const [currentPage, setCurrentPage] = useState<number>(0);
