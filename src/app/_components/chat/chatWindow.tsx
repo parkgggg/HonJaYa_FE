@@ -32,13 +32,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isTeam }) => {
                 id: message.id,
                 msg: message.msg,
                 sender: message.sender,
-<<<<<<< HEAD
-                receiver: message.receiver, 
-                roomNum: message.roomNum,
-=======
                 receiver: message.receiver,
                 roomId: message.roomId,
->>>>>>> 6cd0508 (zemshop zem결제 및 화면 렌더링 완료 + 채팅방 생성 및 렌더링 후 통신 완료)
                 isOwnMessage: message.sender === username,
                 createAt: message.createAt,
             };
@@ -111,20 +106,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isTeam }) => {
             return;
         }
 
-<<<<<<< HEAD
-        if(isGroupChat) {
-            const newMessage = {
-                id: `${Date.now()}`,
-                msg: message,
-                sender: username,
-                receiver: "", // 수신자 이름 필요
-                roomNum: roomId,
-                isOwnMessage: true,
-                createAt: new Date().toISOString(),
-            };  
-            try {
-                await fetch("http://localhost:8081/chat", { // 때에따라 바꾸자 8080->8081로 현재 변경
-=======
         const newMessage = {
             id: `${Date.now()}`,
             msg: message,
@@ -138,7 +119,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isTeam }) => {
         try {
             if (isTeam) {
                 await fetch("http://localhost:8081/chat", { 
->>>>>>> 6cd0508 (zemshop zem결제 및 화면 렌더링 완료 + 채팅방 생성 및 렌더링 후 통신 완료)
                     method: "POST",
                     body: JSON.stringify(newMessage),
                     headers: {

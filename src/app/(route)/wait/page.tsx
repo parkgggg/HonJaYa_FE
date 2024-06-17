@@ -26,7 +26,7 @@ const SingleWaitingRoom = () => {
     const isTeam = useSelector((state: RootState) => state.modeCheck.isTeam);
     const isLogined = useSelector((state: RootState) => state.loginCheck.isLogined);
     const router = useRouter();
-    const prevState = useRef(isMatchingModalOpened);
+    // const prevState = useRef(isMatchingModalOpened);
 
     useEffect(() => {
         if (!isLogined) {
