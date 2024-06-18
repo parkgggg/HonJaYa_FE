@@ -15,6 +15,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { getData } from "@/app/api/api";
 
+import { createChatRoom } from "@/app/api/chatApi";
+
 const SingleWaitingRoom = () => {
     const [objects, setObjects] = useState<any[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(0);
@@ -83,7 +85,13 @@ const SingleWaitingRoom = () => {
 
     const createChatRoom = (chatRoom: { chatName: string }) => {
         console.log('Creating chat room:', chatRoom);
-        // 여기서 chatRoom을 생성하는 로직을 추가합니다.
+        // 새로운 채팅방 객체 생성
+        const newChatRoom = {
+            ...chatRoom,
+            id: `chat-${Date.now()}` // 고유 ID 생성
+        };
+        // objects 배열에 새 채팅방 추가
+        setObjects(prevObjects => [...prevObjects, newChatRoom]);
     };
 
     console.log('Current Page:', currentPage);

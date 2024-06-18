@@ -1,6 +1,7 @@
 'use client'
 import {createChatRoom} from "@/app/api/chatApi"
 import React, { useState } from "react";
+import Image from "next/image";
 
 type Props = {
     setOpenGroupChatCreateModal: () => void;
@@ -25,9 +26,22 @@ const GroupChatCreateModal = ({ setOpenGroupChatCreateModal, fetchChatRooms }: P
     };
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-6 rounded shadow-lg z-60">
-                <h2 className="text-2xl mb-4">채팅방 생성</h2>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 ">
+            <div className="bg-white p-6 shadow-lg z-60 border-main-color border-4 rounded-lg ">
+            <button
+                    type="button"
+                    onClick={setOpenGroupChatCreateModal}
+                    className="absolute flex items-center justify-center"
+                >
+                    <Image 
+                        src={'https://www.svgrepo.com/show/499053/cancel.svg'} 
+                        width={24} 
+                        height={24} 
+                        alt="cancel" 
+                    />
+                </button>
+                <h2 className="text-center text-2xl mb-4 font-jua">채팅방 생성</h2>
+                
                 <form onSubmit={handleSubmit}>
                     <input
                         type="text"
@@ -39,16 +53,9 @@ const GroupChatCreateModal = ({ setOpenGroupChatCreateModal, fetchChatRooms }: P
                     />
                     <button
                         type="submit"
-                        className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                        className="w-full p-2 bg-red-300 text-white rounded hover:bg-red-400"
                     >
                         생성
-                    </button>
-                    <button
-                        type="button"
-                        onClick={setOpenGroupChatCreateModal}
-                        className="w-full p-2 mt-2 bg-gray-500 text-white rounded hover:bg-gray-700"
-                    >
-                        닫기
                     </button>
                 </form>
             </div>

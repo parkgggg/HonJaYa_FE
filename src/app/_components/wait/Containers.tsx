@@ -1,5 +1,5 @@
+// 채팅방 목록가져오기를 여기서 한다.
 'use client'
-
 import { useEffect, useRef, useState } from "react";
 import Team from "./Team";
 import Partner from "./Partner";
@@ -38,6 +38,7 @@ interface Props {
 type ChatRoom = {
     chatName: string;
     roomId: string; // 고유번호 id 추가
+    id: string;
 }
 
 const Containers = ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage }: Props) => {
@@ -73,6 +74,8 @@ const Containers = ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage
 
 
     useEffect(() => {
+        console.log('currentPage:', currentPage); // currentPage가 제대로 전달되고 있는지 확인
+        console.log('Objects:', objects);
         const startIndex = currentPage * objectsPerPage;
         const currentObjects = objects.slice(startIndex, startIndex + objectsPerPage);
         setCurrentObjects(currentObjects);
@@ -108,12 +111,14 @@ const Containers = ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage
                 {placeholders && placeholders.map((_, index) => (
                     <div
                         key={`placeholder-${index}`}
-                        className="w-1/5 h-2/5 mx-5 py-4 bg-gray-200 box-border shadow-lg rounded-lg cursor-pointer"
+                        className="text-center w-1/5 h-2/5 mx-5 py-4 bg-gray-200 box-border shadow-lg rounded-lg cursor-pointer"
                         onClick={() => handleChatRoomClick(chatRooms[index]?.id)}
                     >
-                        채팅방 이름 : {chatRooms[index]?.chatName || "Placeholder"}
+                        {/* 채팅방 이름 */}
+                        <p className="font-jua">{chatRooms[index]?.chatName || "Placeholder"}</p>
+                        
                         <br />
-                        채팅방 고유번호 : {chatRooms[index]?.roomId || "Placeholder"}
+                        {/* 채팅방 고유번호 : {chatRooms[index]?.roomId || "Placeholder"} */}
                     </div>
                 ))}
             </div>
