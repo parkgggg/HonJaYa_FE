@@ -141,8 +141,8 @@ const ZemShop = () => {
                     className="flex flex-col items-start justify-center py-12 px-12 bg-cover bg-center w-full"
                     style={{ backgroundImage: "url('/zem-banner1.jpg')", backgroundPosition: "center top 1%" }}
                 >
-                    <h2 className="text-sm font-semibold text-white mb-2 text-left">행운을 빕니다.</h2>
-                    <h2 className="text-4xl text-white text-left">Zem을 충전하여 매칭해보세요!!</h2>
+                    <h2 className="text-sm font-semibold text-white mb-2 text-left font-jua">행운을 빕니다.</h2>
+                    <h2 className="text-4xl text-white text-left font-jua">Zem을 충전하여 매칭해보세요!!</h2>
                 </div>
                 <div className="absolute top-0 right-0 h-full flex flex-col items-center justify-center bg-white p-4 w-1/4">
                     <Image
@@ -152,13 +152,13 @@ const ZemShop = () => {
                         objectFit="cover"
                     />
                     <div className="absolute bottom-2 text-center bg-black bg-opacity-50 text-white px-2 rounded">
-                        <h2 className="font-bold">[월간] ZEM 20% 보너스</h2>
+                        <h2 className="font-bold font-jua">[월간] ZEM 20% 보너스</h2>
                     </div>
                 </div>
             </div>
 
             <div className="flex items-center justify-between bg-red-300 py-2 px-12 rounded-lg mb-4 max-w-5xl mx-auto relative">
-                <h2 className="text-4xl font-semibold">보유 ZEM :</h2>
+                <h2 className="text-4xl font-semibold font-jua">보유 ZEM :</h2>
                 <div className="flex items-center space-x-2">
                     <span className="text-xl font-semibold">{userZem}</span>
                     <div className="text-pink-500" style={{ marginLeft: '-12px' }}>
