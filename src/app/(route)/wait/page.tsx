@@ -15,9 +15,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { getData } from "@/app/api/api";
 
-import { createChatRoom } from "@/app/api/chatApi";
-
-const SingleWaitingRoom = () => {
+const WaitingRoom = () => {
     const [objects, setObjects] = useState<any[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [objectsPerPage, setObjectsPerPage] = useState<number>(8);
@@ -139,4 +137,4 @@ const SingleWaitingRoom = () => {
     );
 };
 
-export default SingleWaitingRoom;
+export default WaitingRoom;

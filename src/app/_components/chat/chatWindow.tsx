@@ -3,6 +3,7 @@ import ChatMessage from './chatMessage';
 import ChatInput from './chatInput';
 import SockJS from 'sockjs-client';
 import { CompatClient, Stomp } from '@stomp/stompjs';
+import { getData } from '@/app/api/api';
 
 interface ChatWindowProps {
     roomId: string;
@@ -13,6 +14,7 @@ interface Message {
     id: string;
     msg: string;
     sender: string;
+    senderProfile: string;
     receiver: string;
     roomId: string; // roomNum을 roomId로 변경
     isOwnMessage: boolean;
@@ -21,24 +23,42 @@ interface Message {
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isTeam }) => {
     const [messages, setMessages] = useState<Message[]>([]);
+    const [profileImage, setProfileImage] = useState<string>("")
     const stompClient = useRef<CompatClient>();
     const subscriptionRef = useRef<any>();
     const username = localStorage.getItem("user_id");
 
-    useEffect(() => {
-        console.log('roomId:', roomId); // roomId 확인 로그 추가
-        const handleNewMessage = (message: any) => {
-            const formattedMessage: Message = {
-                id: message.id,
-                msg: message.msg,
-                sender: message.sender,
-                receiver: message.receiver,
-                roomId: message.roomId,
-                isOwnMessage: message.sender === username,
-                createAt: message.createAt,
-            };
-            setMessages((prevMessages) => [...prevMessages, formattedMessage]);
+    const getProfileImage = async () => {
+        try {
+            const response = await getData(
+                `/users/${localStorage.getItem("user_id")}`,
+                "honjaya"
+            );
+            console.log(response.data.profileImage);
+            setProfileImage(response.data.profileImage);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const handleNewMessage = (message: any) => {
+        const formattedMessage: Message = {
+            id: message.id,
+            msg: message.msg,
+            sender: message.sender,
+            senderProfile: message.senderProfile,
+            receiver: message.receiver,
+            roomId: message.roomNum,
+            isOwnMessage: message.sender === username,
+            createAt: message.createAt,
         };
+        console.log(formattedMessage);
+        setMessages((prevMessages) => [...prevMessages, formattedMessage]);
+    };
+
+    getProfileImage();
+
+    useEffect(() => {
 
         if (isTeam) {
             const usernameElement = document.querySelector("#username");
@@ -74,7 +94,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isTeam }) => {
                     subscriptionRef.current.unsubscribe();
                 }
 
-                // roomId를 사용하여 STOMP 구독
                 subscriptionRef.current = stompClient.current?.subscribe(`/topic/chat/${roomId}`, (data) => {
                     try {
                         console.log(data);
@@ -98,7 +117,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isTeam }) => {
                 }
             };
         }
-    }, [roomId, username, isTeam]);
+    }, [roomId, username]);
+
 
     const handleSendMessage = async (message: string) => {
         if (!roomId) {
@@ -106,39 +126,43 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isTeam }) => {
             return;
         }
 
-        const newMessage = {
-            id: `${Date.now()}`,
-            msg: message,
-            sender: username,
-            receiver: "", // 수신자 이름 필요
-            roomId: roomId,
-            isOwnMessage: true,
-            createAt: new Date().toISOString(),
-        };
-
-        try {
-            if (isTeam) {
-                await fetch("http://localhost:8081/chat", { 
+        if (isTeam) {
+            const newMessage = {
+                id: `${Date.now()}`,
+                msg: message,
+                sender: username,
+                receiver: "", // 수신자 이름 필요
+                roomId: roomId,
+                isOwnMessage: true,
+                createAt: new Date().toISOString(),
+            };
+            try {
+                await fetch("http://localhost:8081/chat", { // 때에따라 바꾸자 8080->8081로 현재 변경
                     method: "POST",
                     body: JSON.stringify(newMessage),
                     headers: {
                         "Content-Type": "application/json; charset=utf-8"
                     }
                 });
-            } else {
-                const messageToSend = {
-                    type: "CHAT",
-                    msg: message,
-                    sender: username,
-                    roomId: roomId,
-                    isOwnMessage: true,
-                    createAt: new Date().toISOString(),
-                };
-                console.log(JSON.stringify(messageToSend));
-                stompClient.current?.send(`/app/chat.send/${roomId}`, {}, JSON.stringify(messageToSend));
+            } catch (error) {
+                console.error('Failed to send message:', error);
             }
-        } catch (error) {
-            console.error('Failed to send message:', error);
+        } else {
+            const newMessage = {
+                type: "CHAT",
+                msg: message,
+                sender: username,
+                senderProfile: profileImage,
+                roomNum: roomId,
+                isOwnMessage: true,
+                createAt: new Date().toISOString(),
+            };
+            try {
+                console.log(JSON.stringify(newMessage));
+                stompClient.current?.send(`/app/chat.send/${roomId.id}`, {}, JSON.stringify(newMessage));
+            } catch (error) {
+                console.error('Failed to send message:', error);
+            }
         }
     };
 
@@ -156,6 +180,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isTeam }) => {
                                 key={index}
                                 message={msg.msg}
                                 sender={msg.sender}
+                                senderProfile={msg.senderProfile}
                                 isOwnMessage={msg.isOwnMessage}
                                 timestamp={msg.createAt}
                                 onDelete={() => { }} // 삭제 기능 필요시 추가

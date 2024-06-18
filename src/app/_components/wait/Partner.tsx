@@ -14,7 +14,9 @@ const Partner = ({ object }: any) => {
   const [remainMinute, setRemainMinute] = useState<number>()
 
   useEffect(() => {
-    const remain_time_by_second = (86400000 - (new Date() - new Date(object.createdAt))) / 1000
+    const now = new Date().getTime();
+    const createdAt = new Date(object.createdAt).getTime();
+    const remain_time_by_second = (86400000 - (now - createdAt)) / 1000
     setRemainHour(Math.floor(remain_time_by_second / 3600)); // 시간 계산
     setRemainMinute(Math.floor((remain_time_by_second % 3600) / 60)); // 분 계산
 

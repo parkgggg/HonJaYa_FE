@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Avatar from './avatar';
 import HeartButton from './HeartButton';
 import { FaHeart } from 'react-icons/fa';
@@ -8,12 +8,13 @@ interface ChatMessageProps {
     message: string;
     isOwnMessage: boolean;
     timestamp: string;
-        sender: string;
+    sender: string;
+    senderProfile: string;
     isLast: boolean;
     onDelete: () => void; // 삭제(아직 미구현)
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, sender, isOwnMessage, timestamp, isLast, onDelete }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, sender, senderProfile, isOwnMessage, timestamp, isLast, onDelete }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
 
@@ -35,7 +36,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, sender, isOwnMessage
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            {!isOwnMessage && <Avatar />}
+            {!isOwnMessage && <Avatar senderProfile={senderProfile}/>}
             <div className={`flex flex-col ${isOwnMessage ? 'items-end' : 'items-start'}`}>
                 <div className={`relative p-2 m-2 ${isOwnMessage ? 'rounded-bl-xl rounded-tl-xl rounded-br-xl' : 'rounded-tr-xl rounded-br-xl rounded-bl-xl'} ${isOwnMessage ? 'bg-green-400 text-black' : 'bg-gray-200'}`} style={{ whiteSpace: 'pre-wrap' }}>
                     {message}

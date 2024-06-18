@@ -28,7 +28,7 @@ export type teamInfo = {
 
 // Props 타입 객체
 interface Props {
-    objects: any[];
+    objects: any;
     prevSlide: () => void;
     nextSlide: () => void;
     currentPage: number;
