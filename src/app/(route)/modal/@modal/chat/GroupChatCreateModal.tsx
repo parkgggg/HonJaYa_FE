@@ -1,12 +1,11 @@
 'use client'
-import {createChatRoom} from "@/app/api/chatApi"
+import { createChatRoom } from "@/app/api/chatApi"
 import React, { useState } from "react";
 import Image from "next/image";
 
 type Props = {
     setOpenGroupChatCreateModal: () => void;
     fetchChatRooms: () => void;
-    
 }
 
 const GroupChatCreateModal = ({ setOpenGroupChatCreateModal, fetchChatRooms }: Props) => {
@@ -27,11 +26,11 @@ const GroupChatCreateModal = ({ setOpenGroupChatCreateModal, fetchChatRooms }: P
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 ">
-            <div className="bg-white p-6 shadow-lg z-60 border-main-color border-4 rounded-lg ">
-            <button
+            <div className="bg-white p-6 shadow-lg z-60 border-main-color border-4 rounded-lg relative">
+                <button
                     type="button"
                     onClick={setOpenGroupChatCreateModal}
-                    className="absolute flex items-center justify-center"
+                    className="absolute top-2 right-2 flex items-center justify-center"
                 >
                     <Image 
                         src={'https://www.svgrepo.com/show/499053/cancel.svg'} 
@@ -48,7 +47,7 @@ const GroupChatCreateModal = ({ setOpenGroupChatCreateModal, fetchChatRooms }: P
                         placeholder="채팅방 제목"
                         value={chatRoomTitle}
                         onChange={(e) => setChatRoomTitle(e.target.value)}
-                        className="w-full p-2 mb-4 border rounded"
+                        className="w-full p-2 mb-4 border-b focus:border-red-300 focus:outline-none"
                         required
                     />
                     <button
