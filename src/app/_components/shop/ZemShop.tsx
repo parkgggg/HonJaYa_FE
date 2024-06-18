@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import ItemPurchase from '@/app/(route)/modal/@modal/shop/ItemPurchase';
 import LoginModal from '@/app/(route)/modal/@modal/shop/LoginModal';
-import { requestPayment } from '@/app/api/payment';
+import { requestPayment,getUserZem } from '@/app/api/payment';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/state/reducers/rootReducer';
@@ -40,7 +40,7 @@ const ZemShop = () => {
             if (verifyUser()) {
                 dispatch(approve());
             } else {
-                router.push("/")
+                router.push("/");
             }
         }
 
@@ -49,27 +49,31 @@ const ZemShop = () => {
             const userIdString = localStorage.getItem('user_id');
             setToken(token);
 
-            // if (token && userIdString) {
-            //     try {
-            //         const response = await fetch('https://your-backend-api.com/user/zem', {
-            //             headers: {
-            //                 Authorization: `Bearer ${token}`,
-            //             },
-            //         });
-            //         if (!response.ok) {
-            //             throw new Error('Failed to fetch user ZEM');
-            //         }
-            //         const data = await response.json();
-            //         setUserZem(data.zem);
-            //     } catch (error) {
-            //         console.error('Error fetching user ZEM:', error);
-            //         setUserZem(0);
-            //     }
-            // }
+            if (token && userIdString) {
+                try {
+                    const response = await fetch(`http://localhost:8080/api/getCoin/${userIdString}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch user ZEM');
+                    }
+
+                    const data = await response.json();
+                    setUserZem(data);
+                } catch (error) {
+                    console.error('Error fetching user ZEM:', error);
+                    setUserZem(0);
+                }
+            }
         };
 
         fetchData();
-    }, []);
+    }, [isLogined, dispatch, router]);
 
     const handleItemClick = (id: number) => {
         setSelectedItem(id);
@@ -98,6 +102,7 @@ const ZemShop = () => {
             itemName: "zem_" + selectedItemData.zem
         };
 
+        // localStorage에서 가져오는 값은 문자열 형태로 이를 숫자로 반환해야 userId로 사용할 수 있다.
         const userIdString = localStorage.getItem("user_id");
         let userId;
 
@@ -153,10 +158,10 @@ const ZemShop = () => {
             </div>
 
             <div className="flex items-center justify-between bg-red-300 py-2 px-12 rounded-lg mb-4 max-w-5xl mx-auto relative">
-                <h2 className="text-4xl font-semibold">보유 ZEM</h2>
+                <h2 className="text-4xl font-semibold">보유 ZEM :</h2>
                 <div className="flex items-center space-x-2">
-                    <span className="text-xl font-semibold">: {userZem}</span>
-                    <div className="text-pink-500">
+                    <span className="text-xl font-semibold">{userZem}</span>
+                    <div className="text-pink-500" style={{ marginLeft: '-12px' }}>
                         <Image
                             src="/zemImages/ownedZem.png"
                             alt="보유 ZEM"

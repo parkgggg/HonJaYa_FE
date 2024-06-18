@@ -176,20 +176,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-// 사용자 보유 zem
-export const purchaseItem = async (endpoint: string): Promise<void> => {
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({}) // 필요한 경우 추가 데이터를 포함할 수 있습니다.
-  });
 
-  if (!response.ok) {
-    throw new Error('구매에 실패했습니다. 다시 시도해주세요.');
-  }
-};
 
 // const baseURL = "/api";
 
