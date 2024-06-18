@@ -111,7 +111,7 @@ const Containers = ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage
                 {placeholders && placeholders.map((_, index) => (
                     <div
                         key={`placeholder-${index}`}
-                        className="text-center w-1/5 h-2/5 mx-5 py-4 bg-gray-200 box-border shadow-lg rounded-lg cursor-pointer"
+                        className="text-center w-1/5 h-2/5 mx-5 py-4 bg-gray-200 box-border shadow-lg rounded-lg cursor-pointer hover:border-main-color hover:border-2"
                         onClick={() => handleChatRoomClick(chatRooms[index]?.id)}
                     >
                         {/* 채팅방 이름 */}
