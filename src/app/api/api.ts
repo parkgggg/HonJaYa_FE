@@ -4,9 +4,9 @@ import { FormData } from "../(route)/signup/FormData";
 // API 기본 URL 설정
 // 백엔드를 거쳐서 카카오 api 사용 => baseUrl 사용 => 로그인 쪽
 // 클라이언트단에서 직접 카카오 api 사용 => kakaUrl 맵 api ()
-const baseURL = "https://k2b3bc621690aa.user-app.krampoline.com/api";
+const baseURL = "http://localhost:8080/api";
 const kakaoURL = "https://dapi.kakao.com/v2";
-const groupChatURL = "https://k2b3bc621690aa.user-app.krampoline.com/sse";
+const groupChatURL = "http://localhost:8081";
 
 // 요청 전에 토큰을 헤더에 추가하는 함수
 const setHeaders = (dest: any) => {

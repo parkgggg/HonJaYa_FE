@@ -15,7 +15,7 @@ const MatchingModal = () => {
     const subscriptionRef = useRef<any>();
 
     useEffect(() => {
-        const socket = new SockJS('https://k2b3bc621690aa.user-app.krampoline.com/api/ws/match');
+        const socket = new SockJS('http://localhost:8080/api/ws/match');
         stompClientRef.current = Stomp.over(socket);
 
         const connectCallback = (frame:any) => {
