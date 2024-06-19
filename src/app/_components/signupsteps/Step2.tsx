@@ -29,7 +29,7 @@ const Step2: React.FC<Step2Props> = ({ nextStep, prevStep, updateFormData, formD
     return (
         <div className="flex items-center justify-center min-h-screen">
             <div className="w-full max-w-xl p-12 bg-white shadow-md rounded-lg border-4 border-red-300">
-                <StepIndicator currentStep={2} />
+                <StepIndicator currentStep={1} />
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <label htmlFor="birthday" className="block text-4xl text-center mb-40">생일은 언제인가요?</label>
                     <input

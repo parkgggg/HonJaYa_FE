@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { partnerInfo } from './Containers'
 import Link from 'next/link';
 import Image from 'next/image';
-
-type Props = {
-  object: partnerInfo;
-}
 
 const Partner = ({ object }: any) => {
   const [partnerProfile, setPartnerProfile] = useState<string>("")

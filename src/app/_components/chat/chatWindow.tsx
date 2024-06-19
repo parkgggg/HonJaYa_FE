@@ -6,7 +6,7 @@ import { CompatClient, Stomp } from '@stomp/stompjs';
 import { getData } from '@/app/api/api';
 
 interface ChatWindowProps {
-    roomId: string;
+    roomId: any;
     isGroupChat: boolean;
 }
 
@@ -27,12 +27,12 @@ interface Message {
 const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [profileImage, setProfileImage] = useState<string>("")
+    const [username, setUsername] = useState<string>("")
     const stompClient = useRef<CompatClient>();
     const subscriptionRef = useRef<any>();
-    const username = localStorage.getItem("user_id");
     const roomNum = roomId.id
-    useEffect(() => {
 
+    useEffect(() => {
         const getProfileImage = async () => {
             try {
                 const response = await getData(
@@ -41,6 +41,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 );
                 console.log(response.data.profileImage);
                 setProfileImage(response.data.profileImage);
+                setUsername(response.data.name)
             } catch (e) {
                 console.error(e);
             }
@@ -62,7 +63,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
         };
 
         getProfileImage();
-
 
         if (isGroupChat) {
             const usernameElement = document.querySelector("#username");
@@ -87,10 +87,23 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 eventSource.close();
             };
         } else {
+            const getMessageHistory = async () => {
+                try {
+                    const messages = await getData(`/chat/messages/${roomId.id}`, "honjaya");
+                    messages.forEach((message: any) => {
+                        handleNewMessage(message);
+                    })
+                    console.log(JSON.stringify(messages));
+                } catch (error) {
+                    console.error(error);
+                }
+                
+            }   
+            getMessageHistory();
             const socket = new SockJS('http://localhost:8080/api/ws');
             stompClient.current = Stomp.over(socket);
 
-            const connectCallback = (frame) => {
+            const connectCallback = (frame:any) => {
                 console.log('Connected: ' + frame);
 
                 if (subscriptionRef.current) {
@@ -120,7 +133,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 }
             };
         }
-    }, [roomId, username]);
+    }, [roomNum, username]);
 
     const handleSendMessage = async (message: string) => {
 

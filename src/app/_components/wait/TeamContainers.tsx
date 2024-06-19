@@ -1,28 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Team from "./Team";
-import Partner from "./Partner";
-import { useSelector } from "react-redux";
-import { RootState } from "@/state/reducers/rootReducer";
-
-// 타입들 따로 constants나 types 폴더 만들어서 가져와 쓰는 걸로 바꾸자
-type personalInfo = {
-    username: string;
-    profileImage: string;
-}
-
-export type partnerInfo = {
-    personalInfo: personalInfo;
-    remainTime: number;
-    roomNum: number;
-}
-
-export type teamInfo = {
-    members: personalInfo[];
-    title: string;
-    description: string;
-}
 
 // Props 타입 객체
 interface Props {
@@ -33,9 +12,7 @@ interface Props {
     objectsPerPage: number;
 }
 
-const Containers = ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage }: Props) => {
-    const isTeam = useSelector((state: RootState) => state.modeCheck.isTeam)
-
+const TeamContainers = ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage }: Props) => {
 
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const [currentObjects, setCurrentObjects] = useState<any[]>([])
@@ -62,7 +39,7 @@ const Containers = ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage
             }
             <div className="w-9/10 h-full flex flex-wrap items-center justify-center">
                 {currentObjects && currentObjects.map((object, index) => (
-                    isTeam ? <Team object={object} key={index} /> : <Partner object={object} key={index} />
+                    <Team object={object} key={index}/>
                 ))}
                 {placeholders && placeholders.map((_, index) => (
                     <div key={`placeholder-${index}`} className="w-1/5 h-2/5 mx-5 py-4 bg-gray-200 box-border shadow-lg rounded-lg"></div>
@@ -76,4 +53,4 @@ const Containers = ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage
     )
 }
 
-export default Containers;
+export default TeamContainers;

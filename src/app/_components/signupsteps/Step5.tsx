@@ -110,7 +110,7 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
     return (
         <div className="flex items-center justify-center min-h-screen">
             <div className="w-full max-w-xl p-12 bg-white shadow-md rounded-lg border-4 border-red-300">
-                <StepIndicator currentStep={5} />
+                <StepIndicator currentStep={4} />
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <label className="block text-4xl text-center mb-40">위치 정보 제공</label>
                     <div className="text-center">
