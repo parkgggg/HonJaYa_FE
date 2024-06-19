@@ -27,7 +27,6 @@ const setHeaders = (dest: any) => {
 };
 
 // GET 요청 메서드
-<<<<<<< HEAD
 export const getData = async (endpoint: any, dest: any) => {
   try {
     const response = await fetch(
@@ -55,24 +54,6 @@ export const getData = async (endpoint: any, dest: any) => {
     throw error;
   }
 };
-=======
-// export const getData = async (endpoint: any, dest: any) => {
-//   try { 
-//     const response = await fetch(`${dest === "honjaya" ? `${baseURL}${endpoint}` : `${kakaoURL}${endpoint}`}`, {
-//       method: "GET",
-//       headers: setHeaders(dest),
-//     });
-//     console.log(response);
-//     if (!response.ok) {
-//       throw new Error(`Failed to fetch data from ${kakaoURL}${endpoint}: ${response.statusText}`);
-//     }
-//     return await response.json();
-//   } catch (error) {
-//     console.error(`Failed to fetch data from ${endpoint}:`, error);
-//     throw error;
-//   }
-// };
->>>>>>> origin/dev
 
 // POST 요청 메서드
 export const postData = async (endpoint: any, data: any, dest: any) => {
@@ -255,7 +236,6 @@ export default async function handler(
   }
 }
 
-<<<<<<< HEAD
 // 사용자 보유 zem
 export const purchaseItem = async (endpoint: string): Promise<void> => {
   const response = await fetch(endpoint, {
@@ -270,9 +250,6 @@ export const purchaseItem = async (endpoint: string): Promise<void> => {
     throw new Error("구매에 실패했습니다. 다시 시도해주세요.");
   }
 };
-=======
-
->>>>>>> origin/dev
 
 // const baseURL = "/api";
 
