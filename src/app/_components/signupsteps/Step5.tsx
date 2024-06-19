@@ -19,7 +19,7 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
     const [agree, setAgree] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [userId, setUserId] = useState<string>("");
-    const {location, error, setCurrentLocation} = useCurrentLocation();
+    const { location, error, setCurrentLocation } = useCurrentLocation();
     const router = useRouter();
 
     useEffect(() => {
@@ -44,7 +44,7 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
             const data = {
                 birthday: formData.birthday,
                 gender: formData.gender,
-                height: formData.height,    
+                height: formData.height,
                 weight: formData.weight,
                 mbti: formData.mbti,
                 religion: formData.religion,
@@ -65,24 +65,35 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
         }
     };
 
-    const setPresentLocation = async () => {
-        const getLocation = async () => {
+    const setPresentLocation = () => {
+        const getLocation = () => {
             try {
-                await setCurrentLocation();
-                if(error) throw (error);
-                const kakaoLocation = await getData(`/local/geo/coord2regioncode.json?x=${location.lon}&y=${location.lat}`, "kakao");
-                console.log(kakaoLocation);
-                updateFormData({ address: kakaoLocation.documents[0].address_namea.split(" ")[1] });
+                setCurrentLocation();
             }
-            catch(error) {
+            catch (error) {
                 console.log(error)
             }
         }
+        getLocation();
+    }
+
+    const handleAgreeButton = () => {
+        setPresentLocation();
+
+        if (location.lat === 0 && location.lon === 0) {
+            handleAgreeButton();
+        }
 
         setAgree((prev) => {
-            if(prev) return false;
-            getLocation();
-            return true;    
+            if (prev) return false;
+
+            const kakaoLocation = getData(`/local/geo/coord2regioncode.json?x=${location.lon}&y=${location.lat}`, "kakao");
+            console.log(kakaoLocation);
+            kakaoLocation.then((result) => {
+                console.log(result);
+                updateFormData({ address: result.documents[0].address_name.split(" ")[1] });
+            });
+            return true;
         })
     }
 
@@ -90,7 +101,7 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
         try {
             localStorage.setItem("user_id", userId);
             router.push('/landing');
-        } catch(e) {
+        } catch (e) {
             localStorage.removeItem("user_id");
             console.log(e);
         }
@@ -99,13 +110,13 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
     return (
         <div className="flex items-center justify-center min-h-screen">
             <div className="w-full max-w-xl p-12 bg-white shadow-md rounded-lg border-4 border-red-300">
-                <StepIndicator currentStep={5} />
+                <StepIndicator currentStep={4} />
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <label className="block text-4xl text-center mb-40">위치 정보 제공</label>
                     <div className="text-center">
                         <button
                             type="button"
-                            onClick={setPresentLocation}
+                            onClick={handleAgreeButton}
                             className={`py-2 px-6 border-4 rounded-lg text-2xl ${agree ? 'border-red-500 bg-red-300 text-white' : 'border-red-300 bg-white text-black'}`}
                         >
                             {agree ? '동의 완료' : '위치 정보 제공에 동의'}
@@ -116,8 +127,8 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
             </div>
             {isModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-                        <h2 className="text-2xl mb-4">회원 정보 입력이 완료되었습니다.</h2>
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full flex flex-col items-center">
+                        <h2 className="text-2xl text-center mb-4">회원 정보 입력이 완료되었습니다.</h2>
                         <button
                             onClick={handleGoToSurvey}
                             className="text-xl font-bold py-1 px-20 border-red-300 rounded-md shadow-sm text-white bg-gradient-to-br from-red-300 via-red-200 to-white hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400"
@@ -126,6 +137,7 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
                         </button>
                     </div>
                 </div>
+
             )}
         </div>
     );

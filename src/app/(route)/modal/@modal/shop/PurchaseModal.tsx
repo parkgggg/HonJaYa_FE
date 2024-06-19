@@ -1,12 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { purchaseItem } from '@/app/api/api'; // API 파일 경로에 맞게 수정하세요
+import { purchaseItem } from '@/app/api/payment'; 
+import { postData } from '@/app/api/api';
 
 interface Item {
+    id: number;
     name: string;
     price: number;
     endpoint: string;
+    image: string;
 }
 
 interface PurchaseModalProps {
@@ -27,7 +30,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ item, onClose, userZem })
         }
         setLoading(true);
         try {
-            await purchaseItem(item.endpoint);
+            await postData(item.endpoint, item.id, "honjaya")
             alert('구매가 완료되었습니다!');
             onClose();
         } catch (error) {

@@ -1,14 +1,21 @@
+interface ModalState {
+  isOpened: boolean;
+}
 
-const initialState = {
-  isModalVisible: false,
+type ModalAction = {type: 'SHOW_MODAL'} | {type: 'CLOSE_MODAL'};
+
+
+
+const initialState: ModalState = {
+  isOpened: false,
 };
 
 const matchingStatusModal = (state = initialState, action : {type: string}) => {
   switch (action.type) {
     case 'SHOW_MODAL':
-      return { ...state, isModalVisible: true };
-    case 'HIDE_MODAL':
-      return { ...state, isModalVisible: false };
+      return { ...state, isOpened: true };
+    case 'CLOSE_MODAL':
+      return { ...state, isOpened: false };
     default:
       return state;
   }

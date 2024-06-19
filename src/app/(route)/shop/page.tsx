@@ -1,29 +1,26 @@
-'use client'
+
+'use client';
 
 import ShopNavbar from '@/app/_components/shop/ShopNavbar';
 import ZemShop from '@/app/_components/shop/ZemShop';
-import { useDispatch, useSelector } from "react-redux";
-import { approve, deny } from "@/state/actions";
-import { RootState } from "@/state/reducers/rootReducer";
-import { verifyUser } from "@/app/utils/verifyUser";
-import { useRouter } from 'next/navigation';
+import { getData } from '@/app/api/api';
 import { useEffect } from 'react';
 
+
 const ShopPage = () => {
-  const dispatch = useDispatch();
-  const isLogined = useSelector((state: RootState) => state.loginCheck.isLogined)
-  const router = useRouter();
-
-
   useEffect(() => {
-    if (!isLogined) {
-      if (verifyUser()) {
-        dispatch(approve());
-      } else {
-        router.push("/")
-      }
+    const getUserData  = async () => {
+      const data = await getData(`/users/${localStorage.getItem('user_id')}/profile`, "honjaya")
+      console.log(data);
     }
-  });
+    try {
+      if(localStorage.getItem('user_id') && localStorage.getItem('access_token')) {
+        getUserData();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  })
 
   return (
     <>

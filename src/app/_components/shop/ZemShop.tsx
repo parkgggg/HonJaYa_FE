@@ -4,20 +4,25 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import ItemPurchase from '@/app/(route)/modal/@modal/shop/ItemPurchase';
 import LoginModal from '@/app/(route)/modal/@modal/shop/LoginModal';
-import { requestPayment } from '@/app/api/payment';
-import { GetServerSideProps } from 'next';
+import { requestPayment,getUserZem } from '@/app/api/payment';
+import { useRouter } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/state/reducers/rootReducer';
+import { verifyUser } from '@/app/utils/verifyUser';
+import { approve } from '@/state/actions';
 
-interface ZemShopProps {
-    initialZem: number;
-    isLoggedIn: boolean;
-}
-
-const ZemShop = ({ initialZem, isLoggedIn }: ZemShopProps) => {
+const ZemShop = () => {
     const [selectedItem, setSelectedItem] = useState<number | null>(null);
     const [isItemShopOpen, setIsItemShopOpen] = useState(false);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [token, setToken] = useState<string | null>(null);
-    const [userZem, setUserZem] = useState<number>(initialZem);
+    const [userZem, setUserZem] = useState<number>(0);
+
+    const dispatch = useDispatch();
+    const isLogined = useSelector((state: RootState) => state.loginCheck.isLogined)
+    const router = useRouter();
+
+
 
     const items = [
         { id: 1, price: 100, diamonds: 1, image: "/zemImages/zem1.png", zem: 10 },
@@ -31,18 +36,51 @@ const ZemShop = ({ initialZem, isLoggedIn }: ZemShopProps) => {
     ];
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('access_token');
-            setToken(token);
+        if (!isLogined) {
+            if (verifyUser()) {
+                dispatch(approve());
+            } else {
+                router.push("/");
+            }
         }
-    }, []);
+
+        const fetchData = async () => {
+            const token = localStorage.getItem('access_token');
+            const userIdString = localStorage.getItem('user_id');
+            setToken(token);
+
+            if (token && userIdString) {
+                try {
+                    const response = await fetch(`http://localhost:8080/api/getCoin/${userIdString}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch user ZEM');
+                    }
+
+                    const data = await response.json();
+                    setUserZem(data);
+                } catch (error) {
+                    console.error('Error fetching user ZEM:', error);
+                    setUserZem(0);
+                }
+            }
+        };
+
+        fetchData();
+    }, [isLogined, dispatch, router]);
 
     const handleItemClick = (id: number) => {
         setSelectedItem(id);
     };
 
     const handlePaymentClick = async () => {
-        if (!isLoggedIn) {
+        if (!isLogined) {
             setIsLoginModalOpen(true);
             return;
         }
@@ -64,7 +102,7 @@ const ZemShop = ({ initialZem, isLoggedIn }: ZemShopProps) => {
             itemName: "zem_" + selectedItemData.zem
         };
 
-        // user_id부분
+        // localStorage에서 가져오는 값은 문자열 형태로 이를 숫자로 반환해야 userId로 사용할 수 있다.
         const userIdString = localStorage.getItem("user_id");
         let userId;
 
@@ -75,18 +113,19 @@ const ZemShop = ({ initialZem, isLoggedIn }: ZemShopProps) => {
         }
 
         try {
-            const data = await requestPayment(payInfoDto, userId);
+            const data = await requestPayment(payInfoDto, userId, token);
             const redirectUrl = data.redirectUrl;
             window.location.href = redirectUrl;
         } catch (error) {
-            console.error('Error payment:', error);
-            alert('Payment failed');
+            console.error('Error during payment preparation:', error);
+            alert('Payment preparation failed');
         }
     };
 
     const openItemShop = () => {
         setIsItemShopOpen(true);
     };
+
     const closeItemShop = () => {
         setIsItemShopOpen(false);
     };
@@ -102,8 +141,8 @@ const ZemShop = ({ initialZem, isLoggedIn }: ZemShopProps) => {
                     className="flex flex-col items-start justify-center py-12 px-12 bg-cover bg-center w-full"
                     style={{ backgroundImage: "url('/zem-banner1.jpg')", backgroundPosition: "center top 1%" }}
                 >
-                    <h2 className="text-sm font-semibold text-white mb-2 text-left">행운을 빕니다.</h2>
-                    <h2 className="text-4xl text-white text-left">Zem을 충전하여 매칭해보세요!!</h2>
+                    <h2 className="text-sm font-semibold text-white mb-2 text-left font-jua">행운을 빕니다.</h2>
+                    <h2 className="text-4xl text-white text-left font-jua">Zem을 충전하여 매칭해보세요!!</h2>
                 </div>
                 <div className="absolute top-0 right-0 h-full flex flex-col items-center justify-center bg-white p-4 w-1/4">
                     <Image
@@ -113,16 +152,16 @@ const ZemShop = ({ initialZem, isLoggedIn }: ZemShopProps) => {
                         objectFit="cover"
                     />
                     <div className="absolute bottom-2 text-center bg-black bg-opacity-50 text-white px-2 rounded">
-                        <h2 className="font-bold">[월간] ZEM 20% 보너스</h2>
+                        <h2 className="font-bold font-jua">[월간] ZEM 20% 보너스</h2>
                     </div>
                 </div>
             </div>
 
             <div className="flex items-center justify-between bg-red-300 py-2 px-12 rounded-lg mb-4 max-w-5xl mx-auto relative">
-                <h2 className="text-4xl font-semibold">보유 ZEM</h2>
+                <h2 className="text-4xl font-semibold font-jua">보유 ZEM :</h2>
                 <div className="flex items-center space-x-2">
-                    <span className="text-xl font-semibold">: {userZem}</span>
-                    <div className="text-pink-500">
+                    <span className="text-xl font-semibold">{userZem}</span>
+                    <div className="text-pink-500" style={{ marginLeft: '-12px' }}>
                         <Image
                             src="/zemImages/ownedZem.png"
                             alt="보유 ZEM"
@@ -140,17 +179,15 @@ const ZemShop = ({ initialZem, isLoggedIn }: ZemShopProps) => {
                         <span className="text-red-500 font-bold">!!</span> 아이템 샵 둘러보기
                     </button>
                     <style jsx>{`
-    @keyframes shimmer {
-        30%, 100% {
-            opacity: 1;
-        }
-        50% {
-            opacity: 0.5;
-        }
-    }
-`}</style>
-
-
+                        @keyframes shimmer {
+                            30%, 100% {
+                                opacity: 1;
+                            }
+                            50% {
+                                opacity: 0.5;
+                            }
+                        }
+                    `}</style>
                 </div>
             </div>
 
@@ -237,50 +274,6 @@ const ZemShop = ({ initialZem, isLoggedIn }: ZemShopProps) => {
             <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />
         </div>
     );
-};
-
-// 서버 사이드에서 사용자 정보를 가져오는 함수
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const { req } = context;
-    const token = req.cookies.access_token; // 쿠키에서 토큰 가져오기
-
-    if (!token) {
-        return {
-            props: {
-                initialZem: 0,
-                isLoggedIn: false,
-            },
-        };
-    }
-
-    try {
-        // 백엔드 API 호출하여 사용자 보유 Zem 수량 가져오기
-        const response = await fetch('https://your-backend-api.com/user/zem', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        if (!response.ok) {
-            throw new Error('Failed to fetch user ZEM');
-        }
-        const data = await response.json();
-        const initialZem = data.zem;
-
-        return {
-            props: {
-                initialZem,
-                isLoggedIn: true,
-            },
-        };
-    } catch (error) {
-        console.error('Error fetching user ZEM:', error);
-        return {
-            props: {
-                initialZem: 0,
-                isLoggedIn: false,
-            },
-        };
-    }
 };
 
 export default ZemShop;
