@@ -27,7 +27,6 @@ interface Message {
 const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [profileImage, setProfileImage] = useState<string>("")
-    const [username, setUsername] = useState<string>("")
     const stompClient = useRef<CompatClient>();
     const subscriptionRef = useRef<any>();
     const roomNum = roomId.id
@@ -41,7 +40,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 );
                 console.log(response.data.profileImage);
                 setProfileImage(response.data.profileImage);
-                setUsername(response.data.name)
             } catch (e) {
                 console.error(e);
             }
@@ -55,7 +53,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 senderProfile: message.senderProfile,
                 receiver: message.receiver,
                 roomNum: message.roomNum,
-                isOwnMessage: message.sender === username,
+                isOwnMessage: message.sender === localStorage.getItem("username"),
                 createAt: message.createAt,
             };
             console.log(formattedMessage);
@@ -68,10 +66,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
             const usernameElement = document.querySelector("#username");
 
             if (usernameElement) {
-                usernameElement.innerHTML = username || "unknown user";
+                usernameElement.innerHTML = localStorage.getItem("username") || "unknown user";
             }
 
-            const eventSource = new EventSource(`https://k2b3bc621690aa.user-app.krampoline.com/sse/chat/roomNum/${roomNum}`);
+            const eventSource = new EventSource(`https://k2b3bc621690aa.user-app.krampoline.com/sse/chat/roomNum/${roomId}`);
             eventSource.onmessage = (event) => {
                 try {
                     const message = JSON.parse(event.data);
@@ -89,7 +87,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
         } else {
             const getMessageHistory = async () => {
                 try {
-                    const messages = await getData(`/chat/messages/${roomId.id}`, "honjaya");
+                    const messages = await getData(`/chat/messages/${roomId}`, "honjaya");
                     messages.forEach((message: any) => {
                         handleNewMessage(message);
                     })
@@ -103,14 +101,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
             const socket = new SockJS('https://k2b3bc621690aa.user-app.krampoline.com/api/ws');
             stompClient.current = Stomp.over(socket);
 
-            const connectCallback = (frame:any) => {
+            const connectCallback = (frame : any) => {
                 console.log('Connected: ' + frame);
 
                 if (subscriptionRef.current) {
                     subscriptionRef.current.unsubscribe();
                 }
 
-                subscriptionRef.current = stompClient.current?.subscribe(`/topic/chat/${roomId.id}`, (data) => {
+                subscriptionRef.current = stompClient.current?.subscribe(`/topic/chat/${roomId}`, (data) => {
                     try {
                         console.log(data)
                         console.log("메시지:" + data.body)
@@ -133,7 +131,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 }
             };
         }
-    }, [roomNum, username]);
+    }, [roomId]);
 
     const handleSendMessage = async (message: string) => {
 
@@ -141,7 +139,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
             const newMessage = {
                 id: `${Date.now()}`,
                 msg: message,
-                sender: username,
+                sender: localStorage.getItem("username"),
                 receiver: "", // 수신자 이름 필요
                 roomNum: roomId,
                 isOwnMessage: true,
@@ -162,7 +160,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
             const newMessage = {
                 type: "CHAT",
                 msg: message,
-                sender: username,
+                sender: localStorage.getItem("username"),
                 senderProfile: profileImage,
                 roomNum: roomNum,
                 isOwnMessage: true,
@@ -170,7 +168,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
             };
             try {
                 console.log(JSON.stringify(newMessage));
-                stompClient.current?.send(`/app/chat.send/${roomId.id}`, {}, JSON.stringify(newMessage));
+                stompClient.current?.send(`/app/chat.send/${roomId}`, {}, JSON.stringify(newMessage));
             } catch (error) {
                 console.error('Failed to send message:', error);
             }
