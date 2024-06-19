@@ -20,7 +20,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                     >
                         취소
                     </button>
-                    <Link href="http://localhost:8080/api/oauth2/authorization/kakao">
+                    <Link href="https://k2b3bc621690aa.user-app.krampoline.com/api/oauth2/authorization/kakao">
                         <button className="bg-blue-500 text-white text-lg font-bold py-2 px-4 rounded-lg">
                             로그인하러 가기
                         </button>
