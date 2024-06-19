@@ -146,7 +146,7 @@ const WaitingRoom = () => {
                     <div className="w-3/10 h-full flex justify-end">
                         <button
                             onClick={setFilterOpen}
-                            className={`${open ? 'hidden' : ''} bg-filter w-10 h-full rounded-md bg-cover bg-center`}></button>
+                            className={`${open ? 'hidden' : ''} bg-filter w-12 h-full rounded-md bg-cover bg-center`}></button>
                         {open && (
                             <FilterModal setFilterOpen={setFilterOpen} />
                         )}

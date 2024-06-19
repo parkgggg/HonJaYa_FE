@@ -33,22 +33,22 @@ const PartnerContainers = ({ objects, prevSlide, nextSlide, currentPage, objects
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            {isHovered &&
+            {/* {isHovered &&
                 <button onClick={prevSlide} disabled={currentPage === 0} className="w-10 h-1/10 py-2 bg-main-color text-white rounded disabled:bg-gray-300 box-border bg-left-arrow bg-center bg-cover">
                 </button>
-            }
+            } */}
             <div className="w-4/10 h-full flex flex-wrap items-center justify-center">
-                {currentObjects && currentObjects.map((object, index) => (
+                {currentObjects && currentObjects.reverse().map((object, index) => (
                     <Partner object={object} key={index}/>
                 ))}
                 {placeholders && placeholders.map((_, index) => (
                     <div key={`placeholder-${index}`} className="w-4/5 h-4/5 mx-5 py-4 bg-gray-200 box-border shadow-lg rounded-lg"></div>
                 ))}
             </div>
-            {isHovered &&
+            {/* {isHovered &&
                 <button onClick={nextSlide} disabled={(currentPage + 1) * objectsPerPage >= objects.length} className="w-10 h-1/10 py-2 bg-main-color text-white rounded disabled:bg-gray-300 box-border bg-right-arrow bg-center bg-cover">
                 </button>
-            }
+            } */}
         </div>
     )
 }
