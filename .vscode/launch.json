@@ -8,7 +8,7 @@
             "name": "Next.js",
             "type": "chrome",
             "request": "launch",
-            "url": "http://localhost:3000",
+            "url": "https://k2b3bc621690aa.user-app.krampoline.com",
             "webRoot": "${workspaceFolder}",
             "sourceMaps": true,
             "trace": true,

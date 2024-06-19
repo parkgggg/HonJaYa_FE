@@ -69,7 +69,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 usernameElement.innerHTML = localStorage.getItem("username") || "unknown user";
             }
 
-            const eventSource = new EventSource(`http://localhost:8081/chat/roomNum/${roomId}`);
+            const eventSource = new EventSource(`https://k2b3bc621690aa.user-app.krampoline.com/sse/chat/roomNum/${roomId}`);
             eventSource.onmessage = (event) => {
                 try {
                     const message = JSON.parse(event.data);
@@ -98,7 +98,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 
             }   
             getMessageHistory();
-            const socket = new SockJS('http://localhost:8080/api/ws');
+            const socket = new SockJS('https://k2b3bc621690aa.user-app.krampoline.com/api/ws');
             stompClient.current = Stomp.over(socket);
 
             const connectCallback = (frame : any) => {
@@ -146,7 +146,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 createAt: new Date().toISOString(),
             };
             try {
-                await fetch("http://localhost:8081/chat", { // 때에따라 바꾸자 8080->8081로 현재 변경
+                await fetch("https://k2b3bc621690aa.user-app.krampoline.com/sse/chat", { // 때에따라 바꾸자 8080->8081로 현재 변경
                     method: "POST",
                     body: JSON.stringify(newMessage),
                     headers: {
