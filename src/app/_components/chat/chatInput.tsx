@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import EmojiPicker from './emojipicker';
 import ScheduleModal from '@/app/(route)/modal/@modal/chat/ScheduleModal';
-
+import { useRouter } from 'next/navigation'
 interface ChatInputProps {
     onSendMessage: (message: string) => void;
 }
@@ -10,6 +10,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showScheduleModal, setShowScheduleModal] = useState(false);
+    const router = useRouter()
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -30,6 +31,11 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
         const formattedMessage = `일정이 공유되었어요.\n----------\n${calendarIcon} ${date} ${time}\n제목: ${title}\n----------`;
         onSendMessage(formattedMessage);
         setShowScheduleModal(false);
+    };
+
+    // 채팅방 나가기
+    const handleExit = () => {
+        router.push('/wait');
     };
 
 
@@ -57,6 +63,13 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
                     className="mr-2 text-2xl"
                 >
                     📅
+                </button>
+                <button
+                    type="button"
+                    onClick={handleExit}
+                    className="mr-2 px-2 bg-red-300 text-white rounded-lg"
+                >
+                    나가기
                 </button>
                 <input
                     type="text"
