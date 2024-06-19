@@ -131,11 +131,10 @@ const MyPage = () => {
         <div className="flex flex-col items-center mb-6">
           {profileImage && (
             <div className="relative w-48 h-48 rounded-full overflow-hidden">
-              <Image
+              <img
                 src={profileImage}
                 alt="Profile Image"
-                layout="fill"
-                objectFit="cover"
+                className="w-full h-full object-cover"
               />
             </div>
           )}
