@@ -23,9 +23,9 @@ const Partner = ({ object }: any) => {
   }, [object])
 
   return (
-    <div className="w-4/5 h-4/5 flex-col justify-center shadow-lg rounded-lg hover:border-main-color hover:border-4">
+    <div className="w-4/5 h-4/5 flex-col justify-center shadow-lg rounded-lg">
       <Link className="w-full h-full" href={`/chat/${object.id}`}>
-        <div className="relative w-full h-full ">
+        <div className="relative w-full h-full hover:border-main-color hover:border-4 rounded-lg">
           <Image
             className='shadow-lg rounded-md'
             src={partnerProfile}
@@ -35,8 +35,8 @@ const Partner = ({ object }: any) => {
           />
         </div>
       </Link>
-      <div className='w-full h-full text-center flex justify-end'>
-        <div className='text-2xl z-50 w-full h-2/10 flex-col flex items-center justify-center'>
+      <div className='w-full h-2/10 text-center flex justify-end'>
+        <div className='text-2xl z-50 w-full h-full border-box flex-col flex items-center justify-center'>
           {remainHour} : {remainMinute}
         </div>
       </div>

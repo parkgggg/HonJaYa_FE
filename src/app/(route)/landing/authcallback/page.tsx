@@ -10,6 +10,7 @@ import { getData } from "@/app/api/api";
 
 const AuthCallBack = () => {
     const [userId, setUserId] = useState<string>("");
+    const [username, setUserName] = useState<string>("");
     const dispatch = useDispatch();
     const isLogined = useSelector((state: RootState) => state.loginCheck.isLogined);
     const router = useRouter();
@@ -25,6 +26,7 @@ const AuthCallBack = () => {
                     const userData = await getData("/users/current", "honjaya");
                     console.log(userData);
                     setUserId(userData.data.id);
+                    setUserName(userData.data.username)
                     if (userData.data.status === "NEW") {
                         console.log("deny")
                         dispatch(deny());
@@ -43,11 +45,10 @@ const AuthCallBack = () => {
 
     useEffect(() => {
             if (isLogined) {
-                console.log("her1")
                 localStorage.setItem("user_id", userId);
+                localStorage.setItem("username", username);
                 router.push('/');
             } else {
-                console.log("her2")
                 router.push('/signup');
             }
     }, [isLogined]);
