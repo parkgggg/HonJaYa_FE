@@ -6,8 +6,8 @@ import { CompatClient, Stomp } from '@stomp/stompjs';
 import { getData } from '@/app/api/api';
 
 interface ChatWindowProps {
-    roomId: string;
-    isTeam: boolean;
+    roomId: any;
+    isGroupChat: boolean;
 }
 
 interface Message {
@@ -16,59 +16,62 @@ interface Message {
     sender: string;
     senderProfile: string;
     receiver: string;
-    roomId: string; // roomNum을 roomId로 변경
+    roomNum: number;
     isOwnMessage: boolean;
     createAt: string;
 }
 
-const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isTeam }) => {
+// 로그인 시스템 대신 임시 방편
+
+
+const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [profileImage, setProfileImage] = useState<string>("")
+    const [username, setUsername] = useState<string>("")
     const stompClient = useRef<CompatClient>();
     const subscriptionRef = useRef<any>();
-    const username = localStorage.getItem("user_id");
-
-    const getProfileImage = async () => {
-        try {
-            const response = await getData(
-                `/users/${localStorage.getItem("user_id")}`,
-                "honjaya"
-            );
-            console.log(response.data.profileImage);
-            setProfileImage(response.data.profileImage);
-        } catch (e) {
-            console.error(e);
-        }
-    };
-
-    const handleNewMessage = (message: any) => {
-        const formattedMessage: Message = {
-            id: message.id,
-            msg: message.msg,
-            sender: message.sender,
-            senderProfile: message.senderProfile,
-            receiver: message.receiver,
-            roomId: message.roomNum,
-            isOwnMessage: message.sender === username,
-            createAt: message.createAt,
-        };
-        console.log(formattedMessage);
-        setMessages((prevMessages) => [...prevMessages, formattedMessage]);
-    };
-
-    getProfileImage();
+    const roomNum = roomId.id
 
     useEffect(() => {
+        const getProfileImage = async () => {
+            try {
+                const response = await getData(
+                    `/users/${localStorage.getItem("user_id")}`,
+                    "honjaya"
+                );
+                console.log(response.data.profileImage);
+                setProfileImage(response.data.profileImage);
+                setUsername(response.data.name)
+            } catch (e) {
+                console.error(e);
+            }
+        };
 
-        if (isTeam) {
+        const handleNewMessage = (message: any) => {
+            const formattedMessage: Message = {
+                id: message.id,
+                msg: message.msg,
+                sender: message.sender,
+                senderProfile: message.senderProfile,
+                receiver: message.receiver,
+                roomNum: message.roomNum,
+                isOwnMessage: message.sender === username,
+                createAt: message.createAt,
+            };
+            console.log(formattedMessage);
+            setMessages((prevMessages) => [...prevMessages, formattedMessage]);
+        };
+
+        getProfileImage();
+
+        if (isGroupChat) {
             const usernameElement = document.querySelector("#username");
 
             if (usernameElement) {
                 usernameElement.innerHTML = username || "unknown user";
             }
 
-            // roomId를 사용하여 EventSource 초기화
-            const eventSource = new EventSource(`http://localhost:8081/chat/roomId/${roomId}`);
+            const eventSource = new EventSource(`http://localhost:8081/chat/roomNum/${roomNum}`);
             eventSource.onmessage = (event) => {
                 try {
                     const message = JSON.parse(event.data);
@@ -84,20 +87,33 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isTeam }) => {
                 eventSource.close();
             };
         } else {
+            const getMessageHistory = async () => {
+                try {
+                    const messages = await getData(`/chat/messages/${roomId.id}`, "honjaya");
+                    messages.forEach((message: any) => {
+                        handleNewMessage(message);
+                    })
+                    console.log(JSON.stringify(messages));
+                } catch (error) {
+                    console.error(error);
+                }
+                
+            }   
+            getMessageHistory();
             const socket = new SockJS('http://localhost:8080/api/ws');
             stompClient.current = Stomp.over(socket);
 
-            const connectCallback = (frame) => {
+            const connectCallback = (frame:any) => {
                 console.log('Connected: ' + frame);
 
                 if (subscriptionRef.current) {
                     subscriptionRef.current.unsubscribe();
                 }
 
-                subscriptionRef.current = stompClient.current?.subscribe(`/topic/chat/${roomId}`, (data) => {
+                subscriptionRef.current = stompClient.current?.subscribe(`/topic/chat/${roomId.id}`, (data) => {
                     try {
-                        console.log(data);
-                        console.log("메시지:" + data.body);
+                        console.log(data)
+                        console.log("메시지:" + data.body)
                         const message = JSON.parse(data.body);
                         handleNewMessage(message);
                         console.log(`${roomId}번 방에서 새로운 메시지 수신 : `, message);
@@ -117,22 +133,17 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isTeam }) => {
                 }
             };
         }
-    }, [roomId, username]);
-
+    }, [roomNum, username]);
 
     const handleSendMessage = async (message: string) => {
-        if (!roomId) {
-            console.error('roomId is undefined');
-            return;
-        }
 
-        if (isTeam) {
+        if (isGroupChat) {
             const newMessage = {
                 id: `${Date.now()}`,
                 msg: message,
                 sender: username,
                 receiver: "", // 수신자 이름 필요
-                roomId: roomId,
+                roomNum: roomId,
                 isOwnMessage: true,
                 createAt: new Date().toISOString(),
             };
@@ -153,7 +164,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isTeam }) => {
                 msg: message,
                 sender: username,
                 senderProfile: profileImage,
-                roomNum: roomId,
+                roomNum: roomNum,
                 isOwnMessage: true,
                 createAt: new Date().toISOString(),
             };
@@ -172,9 +183,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isTeam }) => {
                 {messages.length === 0 ? (
                     <div className="text-center text-gray-500">No messages yet</div>
                 ) : (
+
+                    // ChatMessage 컴포넌트에 각 메시지의 속성을 props로 전달하여 해당 메시지를 렌더링한다.
                     messages.map((msg, index) => {
-                        const nextMsg = messages[index + 1];
-                        const isLast = !nextMsg || nextMsg.sender !== msg.sender || new Date(msg.createAt).getMinutes() !== new Date(nextMsg.createAt).getMinutes();
+                        const nextMsg = messages[index + 1]; // 다음 메시지
+                        const isLast =
+                            !nextMsg ||  // 다음 메시지가 없거나
+                            nextMsg.sender !== msg.sender ||  // 다음 메시지의 발신자가 현재 메시지의 발신자와 다르거나
+                            new Date(msg.createAt).getMinutes() !== new Date(nextMsg.createAt).getMinutes(); // 분이 다르면
                         return (
                             <ChatMessage
                                 key={index}

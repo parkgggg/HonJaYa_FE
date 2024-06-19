@@ -18,7 +18,7 @@ const MatchingModal = () => {
         const socket = new SockJS('http://localhost:8080/api/ws/match');
         stompClientRef.current = Stomp.over(socket);
 
-        const connectCallback = (frame) => {
+        const connectCallback = (frame:any) => {
             console.log('Connected: ' + frame);
 
             if (subscriptionRef.current) {

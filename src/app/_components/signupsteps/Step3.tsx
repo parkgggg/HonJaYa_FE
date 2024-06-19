@@ -29,7 +29,7 @@ const Step3: React.FC<Step3Props> = ({ nextStep, prevStep, updateFormData, formD
     return (
         <div className="flex items-center justify-center min-h-screen">
             <div className="w-full max-w-xl p-12 bg-white shadow-md rounded-lg border-4 border-red-300">
-                <StepIndicator currentStep={3} />
+                <StepIndicator currentStep={2} />
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <label className="block text-4xl text-center mb-40">성별은 무엇인가요?</label>
                     <div className="flex justify-center space-x-4">

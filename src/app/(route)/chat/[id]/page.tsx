@@ -49,7 +49,7 @@ const ChatPage: FC = () => {
 
     return (
         <div className="flex flex-col h-screen">
-            <ChatWindow roomId={roomId as string} isTeam={isTeam} /> {/* roomId를 string으로 강제 변환 */}
+            <ChatWindow roomId={roomId as string} isGroupChat={isTeam} /> {/* roomId를 string으로 강제 변환 */}
         </div>
     );
 };

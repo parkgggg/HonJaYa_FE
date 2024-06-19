@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { partnerInfo } from './Containers'
 import Link from 'next/link';
 import Image from 'next/image';
-
-type Props = {
-  object: partnerInfo;
-}
 
 const Partner = ({ object }: any) => {
   const [partnerProfile, setPartnerProfile] = useState<string>("")
@@ -28,23 +23,23 @@ const Partner = ({ object }: any) => {
   }, [object])
 
   return (
-    <div className="w-1/5 h-2/5 mx-5 py-1 box-border ">
+    <div className="w-4/5 h-4/5 flex-col justify-center shadow-lg rounded-lg hover:border-main-color hover:border-4">
       <Link className="w-full h-full" href={`/chat/${object.id}`}>
         <div className="relative w-full h-full ">
           <Image
-            className='shadow-lg rounded-md border-main-color border-4'
+            className='shadow-lg rounded-md'
             src={partnerProfile}
             layout="fill"
             objectFit="cover"
             alt='partner_profile'
           />
-          <div className='absolute w-full h-full text-end flex flex-row justify-end'>
-            <div className='text-sm z-50 w-1/2 h-2/10'>{remainHour} : {remainMinute}</div>
-          </div>
         </div>
-
       </Link>
-
+      <div className='w-full h-full text-center flex justify-end'>
+        <div className='text-2xl z-50 w-full h-2/10 flex-col flex items-center justify-center'>
+          {remainHour} : {remainMinute}
+        </div>
+      </div>
     </div>
   )
 }

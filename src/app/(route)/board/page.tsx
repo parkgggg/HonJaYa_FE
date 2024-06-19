@@ -4,6 +4,7 @@ import Navigationbar from "@/app/_components/common/Navigationbar";
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getData } from "@/app/api/api";
+import { Suspense } from 'react';
 
 interface Post {
   id: number;
@@ -23,7 +24,7 @@ interface Page<T> {
   last: boolean;
 }
 
-const BoardPage: React.FC = () => {
+const BoardInner: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [posts, setPosts] = useState<Post[]>([]);
@@ -157,6 +158,15 @@ const BoardPage: React.FC = () => {
         </div>
       </div>
     </div>
+  );
+}
+
+const BoardPage: React.FC = () => {
+ 
+  return (
+   <Suspense>
+    <BoardInner/>
+   </Suspense>
   );
 };
 
