@@ -8,6 +8,10 @@ export const deny = () => ({
     type: 'DENY_USER',
 });
 
+export const init = () => ({
+    type: 'INIT',
+});
+
 export const setTeamMode = () => ({
     type: 'SET_TEAM_MODE',
 });
@@ -22,5 +26,14 @@ export const setMatchingModalOpen = () => ({
 
 export const setMatchingModalClose = () => ({
     type: 'CLOSE_MODAL',
+});
+
+export const joinGroup = () => ({
+    type: 'JOIN_GROUP',
+});
+
+
+export const exitGroup = () => ({
+    type: 'EXIT_GROUP',
 });
 

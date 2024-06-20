@@ -10,7 +10,7 @@ const initialState: ModalState = {
   isOpened: false,
 };
 
-const matchingStatusModal = (state = initialState, action : {type: string}) => {
+const matchingStatusModal = (state = initialState, action : ModalAction) => {
   switch (action.type) {
     case 'SHOW_MODAL':
       return { ...state, isOpened: true };

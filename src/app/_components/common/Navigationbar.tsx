@@ -4,14 +4,16 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { postData, postWithoutBody } from '@/app/api/api';
 import { useRouter } from 'next/navigation';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/state/reducers/rootReducer';
 import KakaoLoginButton from '../buttons/KakaoLoginButton';
+import { init } from '@/state/actions';
 
 const Navigationbar = () => {
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [myPageOpen, setMyPageOpen] = useState<boolean>(false);
     const isLogined = useSelector((state: RootState) => state.loginCheck.isLogined);
+    const dispatch = useDispatch();
     const router = useRouter();
 
     const handleMenuHovering = () => {
@@ -24,12 +26,18 @@ const Navigationbar = () => {
 
     const handleLogout = async () => {
         const response = await postWithoutBody("/logout", "honjaya");
+        console.log(response);
         if (response.status === "error") {
             alert(response.message);
             return;
         }
+        dispatch(init())
         localStorage.removeItem("access_token");
         localStorage.removeItem("user_id");
+        localStorage.removeItem("userGender");
+        localStorage.removeItem("username");
+        window.location.href = "https://kauth.kakao.com/oauth/logout?client_id=bfaa02784d2e33bdd6b0083988df03c7&logout_redirect_uri=http://localhost:3000/landing";
+
         window.location.reload();
     }
 
@@ -90,7 +98,7 @@ const Navigationbar = () => {
                     </ul>
                 </div>
             </div> */}
-            {isLogined === true ? (
+            {isLogined === "Y" ? (
                 <div className='relative flex font-light text-white items-center justify-center w-1/12 h-full hover:underline'>
                 <button onClick={handleLogout}>Logout</button>
             </div>

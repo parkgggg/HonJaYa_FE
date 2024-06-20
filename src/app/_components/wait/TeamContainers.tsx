@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Team from "./Team";
+import { getData } from "@/app/api/api";
 
 // Props 타입 객체
 interface Props {
@@ -17,8 +18,11 @@ const TeamContainers = ({ objects, prevSlide, nextSlide, currentPage, objectsPer
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const [currentObjects, setCurrentObjects] = useState<any[]>([])
     const [placeholders, setPlaceholders] = useState<string[]>([])
+    const [groupChatServerId, setGroupChatServerId] = useState<string>("");
+    const [isLeader, setIsLeader] = useState<boolean>(false)
 
     useEffect(() => {
+
         const startIndex = currentPage * objectsPerPage;
         const currentObjects = objects.slice(startIndex, startIndex + objectsPerPage);
         setCurrentObjects(currentObjects);
@@ -26,6 +30,31 @@ const TeamContainers = ({ objects, prevSlide, nextSlide, currentPage, objectsPer
         const placeholders = Array(emptySlots).fill("");
         setPlaceholders(placeholders);
     }, [currentPage, objects, objectsPerPage])
+
+
+    useEffect(() => {
+        const getGroupChatServerUser = async () => {
+          try {
+            const response = await getData(`/user/${localStorage.getItem('user_id')}`, "groupChat")
+            console.log(response);
+            setGroupChatServerId(response.id)
+            setIsLeader(response.leader);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+        getGroupChatServerUser();
+      }, []);
+        // //본 서비스에서 유저 이름, 유저 성별 가져오기 -> 몽고 디비에 저장 용도
+        // const getUserData = async () => {
+        //   try {
+        //     const userData = await getData(`/users/${localStorage.getItem('user_id')}/profile`, 'honjaya')
+        //     setUserGender(userData.data.gender);
+        //   } catch (error) {
+        //     console.log(error);
+        //   }
+        // }
+        // getUserData();
 
     return (
         <div
@@ -39,7 +68,7 @@ const TeamContainers = ({ objects, prevSlide, nextSlide, currentPage, objectsPer
             }
             <div className="w-9/10 h-full flex flex-wrap items-center justify-center">
                 {currentObjects && currentObjects.map((object, index) => (
-                    <Team object={object} key={index}/>
+                    object.gender === localStorage.getItem("userGender")? <Team object={object} key={index}/> : <></>
                 ))}
                 {placeholders && placeholders.map((_, index) => (
                     <div key={`placeholder-${index}`} className="w-1/5 h-2/5 mx-5 py-4 bg-gray-200 box-border shadow-lg rounded-lg"></div>

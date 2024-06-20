@@ -22,6 +22,8 @@ const Team = ({ object }: Props) => {
     setMetaData();
   }, [object])
 
+  
+
   return (
     <div className="w-1/5 h-2/5 mx-5 py-1 flex flex-col justify-around bg-gray-200 box-border shadow-lg rounded-md hover:border-main-color hover:border-2" >
       <Link className="w-full h-full" href={`/chat/${object.id}`}>

@@ -45,7 +45,7 @@ const MyPage = () => {
   const [editedUserInfo, setEditedUserInfo] = useState<FormData>({});
 
   useEffect(() => {
-    if (!isLogined) {
+    if(!(isLogined === "Y")) {
       if (verifyUser()) {
         dispatch(approve());
       } else {

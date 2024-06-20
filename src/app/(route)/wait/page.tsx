@@ -27,15 +27,19 @@ const WaitingRoom = () => {
     const [open, setOpen] = useState<boolean>(false)
     const [openTeamCreateModal, setOpenTeamCreateModal] = useState<boolean>(false)
     const [openTeamJoinModal, setOpenTeamJoinModal] = useState<boolean>(false)
+    const [openGroupChatCreateModal, setOpenGroupChatCreateModal] = useState<boolean>(false)
+    const [openTeamEditModal, setOpenTeamEditModal] = useState<boolean>(false)
 
     const dispatch = useDispatch();
     const isTeam = useSelector((state: RootState) => state.modeCheck.isTeam)
     const isMatchingModalOpened = useSelector((state: RootState) => state.matchingStatusModal.isOpened)
     const isLogined = useSelector((state: RootState) => state.loginCheck.isLogined)
+    const onGroup = useSelector((state: RootState) => state.onGroup.onGroup)
+
     const router = useRouter();
 
     useEffect(() => {
-        if (!isLogined) {
+        if (!(isLogined === "Y")) {
             if (verifyUser()) {
                 dispatch(approve());
             } else {
@@ -82,7 +86,11 @@ const WaitingRoom = () => {
                 const response = await getData(`/group/list`, "groupChat");
                 console.log(response);
                 const objects = response;
-                setGroupObjects(() => (objects))
+                setGroupObjects(() => (objects.filter((object: any) => {
+                    if (object.gender === localStorage.getItem("userGender")) {
+                        return true;
+                    }
+                })))
             } catch (e) {
                 console.log(e);
             }
@@ -115,7 +123,7 @@ const WaitingRoom = () => {
     // }, [isMatchingModalOpened])
 
     const nextSlide = () => {
-        if ((currentPage + 1) * objectsPerPage < (isTeam? groupObjects.length : partnerObjects.length)) {
+        if ((currentPage + 1) * objectsPerPage < (isTeam ? groupObjects.length : partnerObjects.length)) {
             setCurrentPage(currentPage + 1);
         }
     };
@@ -144,41 +152,54 @@ const WaitingRoom = () => {
                         <Image src="https://www.svgrepo.com/show/436838/person-3-fill.svg" width={20} height={20} alt="team" />
                     </div>
                     <div className="w-3/10 h-full flex justify-end">
-                        <button
-                            onClick={setFilterOpen}
-                            className={`${open ? 'hidden' : ''} bg-filter w-12 h-full rounded-md bg-cover bg-center`}></button>
-                        {open && (
-                            <FilterModal setFilterOpen={setFilterOpen} />
-                        )}
+                        {
+                            !isTeam ? (
+                                <>
+                                    <button
+                                        onClick={setFilterOpen}
+                                        className={`${open ? 'hidden' : ''} bg-filter w-12 h-full rounded-md bg-cover bg-center`}>
+                                    </button>
+                                    {open && (
+                                        <FilterModal setFilterOpen={setFilterOpen} />
+                                    )}
+                                </>
+                            ) : (
+                                onGroup ? <div>팀있음</div> : <div>팀없음</div>
+                            )
+                        }
                     </div>
                 </div>
                 {/* 매칭되어 있는 유저 리스팅 */}
                 {
-                    isTeam ?
+                    isTeam ? onGroup ?
                         <TeamContainers
                             objects={groupObjects}
                             prevSlide={prevSlide}
                             nextSlide={nextSlide}
                             currentPage={currentPage}
                             objectsPerPage={objectsPerPage}
-                        /> : <PartnerContainers
-                            objects={partnerObjects}
-                            prevSlide={prevSlide}
-                            nextSlide={nextSlide}
-                            currentPage={currentPage}
-                            objectsPerPage={objectsPerPage} 
-                            />
+                        /> : <div className="w-full h-3/10"></div> : 
+                        <PartnerContainers
+                        objects={partnerObjects}
+                        prevSlide={prevSlide}
+                        nextSlide={nextSlide}
+                        currentPage={currentPage}
+                        objectsPerPage={objectsPerPage}
+                    />
                 }
 
                 <div className="w-full h-2/10">
                     {isTeam ?
-                        <TeamChatButtons
+                        <TeamChatButtons                        
                             openTeamCreateModal={openTeamCreateModal}
-                            setOpenTeamCreateModal={() => { setOpenTeamCreateModal((prev) => (!prev)) }} 
+                            setOpenTeamCreateModal={() => { setOpenTeamCreateModal((prev) => (!prev)) }}
                             openTeamJoinModal={openTeamJoinModal}
-                            setOpenTeamJoinModal={() => { setOpenTeamJoinModal((prev) => (!prev)) }} 
-
-                            /> : <MatchingButton />}
+                            setOpenTeamJoinModal={() => { setOpenTeamJoinModal((prev) => (!prev)) }}
+                            openGroupChatCreateModal={openGroupChatCreateModal}
+                            setOpenGroupChatCreateModal={() => { setOpenGroupChatCreateModal((prev) => (!prev)) }}
+                            openTeamEditModal={openTeamEditModal}
+                            setOpenTeamEditModal={() => { setOpenTeamEditModal((prev) => (!prev)) }}
+                        /> : <MatchingButton />}
                 </div>
             </div>
         </div>

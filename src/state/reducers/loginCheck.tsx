@@ -1,19 +1,21 @@
 interface LoginState {
-    isLogined: boolean;
+    isLogined: string;
 }
 
-type loginAction = {type: 'APPROVE_USER'} | {type: 'DENY_USER'};
+type loginAction = {type: 'APPROVE_USER'} | {type: 'DENY_USER'} | {type: 'INIT'};
 
 const initialState: LoginState = {
-    isLogined: false,
+    isLogined: "INIT",
 }
 
 const loginCheck = (state: LoginState = initialState, action: loginAction ): LoginState  => {
     switch (action.type) {
         case 'APPROVE_USER':
-            return {...state, isLogined: true};
+            return {...state, isLogined: "Y"};
         case 'DENY_USER':
-            return {...state, isLogined: false};
+            return {...state, isLogined: "N"};
+        case "INIT":
+            return {...state, isLogined: "INIT"};
         default:
             return state;
     } 

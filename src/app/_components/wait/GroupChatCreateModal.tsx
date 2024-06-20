@@ -9,10 +9,10 @@ import { RootState } from "@/state/reducers/rootReducer";
 import { joinGroup } from "@/state/actions";
 
 type Props = {
-  setOpenTeamCreateModal: () => void;
+  setOpenGroupChatCreateModal: () => void;
 }
 
-const TeamCreateModal = ({ setOpenTeamCreateModal }: Props) => {
+const GroupChatCreateModal = ({ setOpenGroupChatCreateModal }: Props) => {
   const [title, setTitle] = useState<string>("")
   const [numOfMembers, setNumoOfMembers] = useState<number>(1);
   const [description, setDescription] = useState<string>("");
@@ -34,7 +34,7 @@ const TeamCreateModal = ({ setOpenTeamCreateModal }: Props) => {
   }, []);
 
   const exitModal = () => {
-    setOpenTeamCreateModal();
+    setOpenGroupChatCreateModal();
   }
 
   const handleClick = async () => {
@@ -50,7 +50,7 @@ const TeamCreateModal = ({ setOpenTeamCreateModal }: Props) => {
     console.log(groupData)
     try {
       await postData("/group", groupData, "groupChat");
-      setOpenTeamCreateModal();
+      setOpenGroupChatCreateModal();
       dispatch(joinGroup())
     } catch (error) {
       console.log(error);
@@ -108,4 +108,4 @@ const TeamCreateModal = ({ setOpenTeamCreateModal }: Props) => {
   )
 }
 
-export default TeamCreateModal
+export default GroupChatCreateModal

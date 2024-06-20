@@ -19,11 +19,11 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
     const [agree, setAgree] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [userId, setUserId] = useState<string>("");
+    const [userName, setUserName] = useState<string>("");
     const { location, error, setCurrentLocation } = useCurrentLocation();
     const router = useRouter();
 
     useEffect(() => {
-        console.log(localStorage.getItem("access_token"));
         const asyncronizedSetter = async () => {
             await setCurrentLocation();
         }
@@ -31,8 +31,9 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
         const setUserIdFirst = async () => {
             const userData = await getData("/users/current", "honjaya");
             setUserId(() => (userData.data.id))
-            console.log(userData);
+            setUserName(() => (userData.data.name))
         }
+        if (formData.gender) localStorage.setItem("userGender", formData.gender);
 
         asyncronizedSetter();
         setUserIdFirst();
@@ -52,8 +53,14 @@ export default function Step5({ nextStep, prevStep, updateFormData, formData }: 
                 smoke: formData.smoke,
                 address: formData.address
             }
+            const mongoData = {
+                    memberId: userId,
+                    name: userName,
+                    gender: localStorage.getItem("userGender") === "남성"? "MALE" : "FEMALE",
+            }
             try {
                 await postData(`/users/${userId}/profile`, data, "honjaya")
+                await postData(`/user`, mongoData, "groupChat")
                 setIsModalOpen(true);
             } catch (error) {
                 console.error('Failed to register user preferences:', error);

@@ -9,14 +9,16 @@ import { RootState } from "@/state/reducers/rootReducer";
 import { joinGroup } from "@/state/actions";
 
 type Props = {
-  setOpenTeamCreateModal: () => void;
+    setOpenTeamEditModal: () => void;
 }
 
-const TeamCreateModal = ({ setOpenTeamCreateModal }: Props) => {
+const TeamEditModal = ({ setOpenTeamEditModal }: Props) => {
   const [title, setTitle] = useState<string>("")
   const [numOfMembers, setNumoOfMembers] = useState<number>(1);
   const [description, setDescription] = useState<string>("");
-  const [groupChatServerId, setGroupChatServerId] = useState<string>("");
+  const [leaderId, setLeaderId] = useState<string>("");
+  const [applicants, setApplicants] = useState<string>("");
+  const [isLeader, setIsLeader] = useState<string>("");
   const onGroup = useSelector((state:RootState) => state.onGroup.onGroup)
   const dispatch = useDispatch()
 
@@ -25,7 +27,9 @@ const TeamCreateModal = ({ setOpenTeamCreateModal }: Props) => {
       try {
         const response = await getData(`/user/${localStorage.getItem('user_id')}`, "groupChat")
         console.log(response);
-        setGroupChatServerId(response.id)
+        setIsLeader(response.leader);
+        setApplicants(response.applicants)
+        setLeaderId(response.id)
       } catch (error) {
         console.log(error);
       }
@@ -34,7 +38,7 @@ const TeamCreateModal = ({ setOpenTeamCreateModal }: Props) => {
   }, []);
 
   const exitModal = () => {
-    setOpenTeamCreateModal();
+    setOpenTeamEditModal();
   }
 
   const handleClick = async () => {
@@ -50,7 +54,7 @@ const TeamCreateModal = ({ setOpenTeamCreateModal }: Props) => {
     console.log(groupData)
     try {
       await postData("/group", groupData, "groupChat");
-      setOpenTeamCreateModal();
+      setOpenTeamEditModal();
       dispatch(joinGroup())
     } catch (error) {
       console.log(error);
@@ -108,4 +112,4 @@ const TeamCreateModal = ({ setOpenTeamCreateModal }: Props) => {
   )
 }
 
-export default TeamCreateModal
+export default TeamEditModal

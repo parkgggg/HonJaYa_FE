@@ -11,6 +11,7 @@ import { getData } from "@/app/api/api";
 const AuthCallBack = () => {
     const [userId, setUserId] = useState<string>("");
     const [username, setUserName] = useState<string>("");
+    const [userGender, setUserGender] = useState<string>("");
     const dispatch = useDispatch();
     const isLogined = useSelector((state: RootState) => state.loginCheck.isLogined);
     const router = useRouter();
@@ -26,7 +27,7 @@ const AuthCallBack = () => {
                     const userData = await getData("/users/current", "honjaya");
                     console.log(userData);
                     setUserId(userData.data.id);
-                    setUserName(userData.data.username)
+                    setUserName(userData.data.name)
                     if (userData.data.status === "NEW") {
                         console.log("deny")
                         dispatch(deny());
@@ -44,11 +45,20 @@ const AuthCallBack = () => {
     }, []);
 
     useEffect(() => {
-            if (isLogined) {
+        const getGender = async () => {
+            try {
+                const userData = await getData(`/users/${userId}/profile`, "honjaya");
+                localStorage.setItem("userGender", userData.data.gender);
+            } catch (error) {
+                console.log(error)
+            }
+        }
+            if (isLogined === "Y") {
                 localStorage.setItem("user_id", userId);
                 localStorage.setItem("username", username);
+                getGender();
                 router.push('/');
-            } else {
+            } else if (isLogined === "N"){
                 router.push('/signup');
             }
     }, [isLogined]);

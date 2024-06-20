@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 // import { FontClassNames } from "./Styles/Font";
 // import "./Styles/GlobalStyles.css";
@@ -33,7 +34,7 @@ export default function RootLayout({
       <body>
         <ReduxProvider>
           <ClientSideLayout>
-            {children}
+              {children}
           </ClientSideLayout>
         </ReduxProvider>
       </body>

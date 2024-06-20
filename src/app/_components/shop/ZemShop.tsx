@@ -36,7 +36,7 @@ const ZemShop = () => {
     ];
 
     useEffect(() => {
-        if (!isLogined) {
+        if(!(isLogined === "Y")) {
             if (verifyUser()) {
                 dispatch(approve());
             } else {
@@ -80,7 +80,7 @@ const ZemShop = () => {
     };
 
     const handlePaymentClick = async () => {
-        if (!isLogined) {
+        if(!(isLogined === "Y")) {
             setIsLoginModalOpen(true);
             return;
         }
