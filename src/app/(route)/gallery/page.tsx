@@ -50,7 +50,7 @@ const GalleryPage = () => {
         const header = {
           "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
         }
-        const response = await fetch(`http://localhost:8080/api/users/${userId}/profile-images`, {
+        const response = await fetch(`https://k2b3bc621690aa.user-app.krampoline.com/api/users/${userId}/profile-images`, {
           method: 'POST',
           body: formData,
           headers: header,
@@ -172,12 +172,10 @@ const GalleryPage = () => {
               className={`relative w-48 h-48 rounded-lg cursor-pointer ${selectedImages.has(image.id) ? 'border-4 border-blue-500' : ''}`}
               onClick={() => isEditing && toggleImageSelection(image.id)}
             >
-              <Image
+              <img
                 src={image.imageUrl}
                 alt={`Profile Image ${image.id}`}
-                layout="fill"
-                objectFit="cover"
-                className="rounded-lg"
+                className="absolute inset-0 w-full h-full object-cover rounded-lg"
               />
               {image.primary && (
                 <div className="absolute top-2 left-2 bg-main-color text-white px-2 py-1 rounded z-10">

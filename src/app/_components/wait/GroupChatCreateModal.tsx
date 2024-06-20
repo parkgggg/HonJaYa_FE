@@ -11,7 +11,7 @@ import { joinGroup } from "@/state/actions";
 type Props = {
   setOpenGroupChatCreateModal: () => void;
 }
-
+///전체 수정 필요
 const GroupChatCreateModal = ({ setOpenGroupChatCreateModal }: Props) => {
   const [title, setTitle] = useState<string>("")
   const [numOfMembers, setNumoOfMembers] = useState<number>(1);

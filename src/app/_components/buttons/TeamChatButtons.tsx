@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/state/reducers/rootReducer";
 import GroupChatCreateModal from "../wait/GroupChatCreateModal";
 import TeamEditModal from "../wait/TeamEditModal";
+import { useEffect, useState } from "react";
+import { getData } from "@/app/api/api";
 
 type Props = {
     openTeamCreateModal: boolean;
@@ -19,13 +21,35 @@ type Props = {
     setOpenTeamEditModal: () => void;
 }
 
-const TeamChatButtons = ({ 
-    openTeamCreateModal, setOpenTeamCreateModal, 
-    openTeamJoinModal, setOpenTeamJoinModal, 
+const TeamChatButtons = ({
+    openTeamCreateModal, setOpenTeamCreateModal,
+    openTeamJoinModal, setOpenTeamJoinModal,
     openGroupChatCreateModal, setOpenGroupChatCreateModal,
     openTeamEditModal, setOpenTeamEditModal
 }: Props) => {
-    const onGroup = useSelector((state: RootState) => state.onGroup.onGroup)
+    // const onGroup = useSelector((state: RootState) => state.onGroup.onGroup)
+    const [isLeader, setIsLeader] = useState<boolean>();
+    const [onGroup, setOnGroup] = useState<boolean>();
+
+    useEffect(() => {
+        const getGroupChatServerUser = async () => {
+            try {
+                const response = await getData(`/user/${localStorage.getItem('user_id')}`, "groupChat")
+                console.log(response);
+                setIsLeader(response.leader);
+                // if (response.isParty) {
+                //     dispatch(joinGroup())
+                // } else {
+                //     dispatch(exitGroup())
+                // }
+                setOnGroup(response.party);
+                console.log(response.party)
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        getGroupChatServerUser();
+    }, [openTeamCreateModal]);
 
     return (
         // <div className="w-full h-full flex justify-center items-center">
@@ -38,21 +62,29 @@ const TeamChatButtons = ({
         // </div>
         <div className="w-full h-full flex justify-center items-center">
             <div className="w-1/2 h-1/2 flex">
-                {onGroup ?
+                {onGroup ? isLeader ?
                     <div className="w-full h-full flex justify-around items-center">
-                    <button
-                        className=" w-4/10 h-full font-jua text-2xl text-white shadow-sm bg-gradient-to-r from-main-color to-orange-300 rounded-md hover:ring-4 hover:ring-red-100 active:bg-gradient-to-bl"
-                        onClick={setOpenTeamEditModal}
-                    >
-                        나의 팀
-                    </button>
-                    <button
-                        className=" w-4/10 h-full font-jua text-2xl text-white shadow-sm bg-gradient-to-r from-main-color to-orange-300 rounded-md hover:ring-4 hover:ring-red-100 active:bg-gradient-to-bl"
-                        onClick={setOpenTeamJoinModal}
-                    >
-                        채팅 방 생성
-                    </button>
-                </div>
+                        <button
+                            className=" w-4/10 h-full font-jua text-2xl text-white shadow-sm bg-gradient-to-r from-main-color to-orange-300 rounded-md hover:ring-4 hover:ring-red-100 active:bg-gradient-to-bl"
+                            onClick={setOpenTeamEditModal}
+                        >
+                            나의 팀
+                        </button>
+                        <button
+                            className=" w-4/10 h-full font-jua text-2xl text-white shadow-sm bg-gradient-to-r from-main-color to-orange-300 rounded-md hover:ring-4 hover:ring-red-100 active:bg-gradient-to-bl"
+                            onClick={setOpenTeamJoinModal}
+                        >
+                            채팅 방 생성
+                        </button>
+                    </div> :
+                    <div className="w-full h-full flex justify-around items-center">
+                        <button
+                            className=" w-4/10 h-full font-jua text-2xl text-white shadow-sm bg-gradient-to-r from-main-color to-orange-300 rounded-md hover:ring-4 hover:ring-red-100 active:bg-gradient-to-bl"
+                            onClick={setOpenTeamEditModal}
+                        >
+                            나의 팀
+                        </button>
+                    </div>
                     :
                     <div className="w-full h-full flex justify-around items-center">
                         <button
@@ -70,7 +102,7 @@ const TeamChatButtons = ({
                     </div>
                 }
 
-            </div>            
+            </div>
             {openTeamEditModal && <TeamEditModal setOpenTeamEditModal={setOpenTeamEditModal} />}
             {openGroupChatCreateModal && <GroupChatCreateModal setOpenGroupChatCreateModal={setOpenGroupChatCreateModal} />}
             {openTeamCreateModal && <TeamCreateModal setOpenTeamCreateModal={setOpenTeamCreateModal} />}

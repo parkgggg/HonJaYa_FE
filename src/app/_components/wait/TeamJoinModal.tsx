@@ -49,8 +49,8 @@ const TeamJoinModal = ({ setOpenTeamJoinModal }: Props) => {
 
   // }, [])
 
-
   useEffect(() => {
+
     const getMongoDBdata = async () => {
       try {
         const userData = await getData(`/user/${localStorage.getItem('user_id')}`, "groupChat");
@@ -59,6 +59,7 @@ const TeamJoinModal = ({ setOpenTeamJoinModal }: Props) => {
         console.log(error);
       }
     }
+
     const getGroupObjects = async () => {
       try {
         const response = await getData(`/group/list`, "groupChat");
@@ -73,12 +74,10 @@ const TeamJoinModal = ({ setOpenTeamJoinModal }: Props) => {
         console.log(e);
       }
     }
+
     getMongoDBdata();
     getGroupObjects();
   }, [])
-
-
-
 
   // useEffect(() => {
   //   if (!existUser && (currentUser[0] !== "") && (currentUser[1] !== "")) {
@@ -118,14 +117,13 @@ const TeamJoinModal = ({ setOpenTeamJoinModal }: Props) => {
             }
             console.log(Data)
             await putData('/user/apply', Data, "groupChat");
-            
+
         } catch (e) {
           console.log(e)
         }
       }
       apply();
     }
-
   }
 
   return (

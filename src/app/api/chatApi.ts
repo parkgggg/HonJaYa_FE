@@ -3,7 +3,7 @@
 //단체 채팅방 목록 조회
 export const fetchChatRooms = async () => {
     try {
-        const response = await fetch(`http://localhost:8081/chat_room`);
+        const response = await fetch(`https://k2b3bc621690aa.user-app.krampoline.com/sse/chat_room`);
         if (!response.ok) {
             throw new Error('Error fetching chat rooms');
         }
@@ -17,7 +17,7 @@ export const fetchChatRooms = async () => {
 
 // 채팅방 생성 
 export const createChatRoom = (chatRoom: {chatName: string }) => {
-            fetch(`http://localhost:8081/chat_room`, {
+            fetch(`https://k2b3bc621690aa.user-app.krampoline.com/sse/chat_room`, {
             method: "POST",
             body: JSON.stringify(chatRoom),
             headers: {

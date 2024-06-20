@@ -19,7 +19,8 @@ const TeamContainers = ({ objects, prevSlide, nextSlide, currentPage, objectsPer
     const [currentObjects, setCurrentObjects] = useState<any[]>([])
     const [placeholders, setPlaceholders] = useState<string[]>([])
     const [groupChatServerId, setGroupChatServerId] = useState<string>("");
-    const [isLeader, setIsLeader] = useState<boolean>(false)
+    const [isLeader, setIsLeader] = useState<boolean>(false);
+    const [onGroup, setOnGroup] = useState<boolean>(false);
 
     useEffect(() => {
 
@@ -39,6 +40,7 @@ const TeamContainers = ({ objects, prevSlide, nextSlide, currentPage, objectsPer
             console.log(response);
             setGroupChatServerId(response.id)
             setIsLeader(response.leader);
+            setOnGroup(response.party);
           } catch (error) {
             console.log(error);
           }

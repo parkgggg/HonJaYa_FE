@@ -51,7 +51,7 @@ const ZemShop = () => {
 
             if (token && userIdString) {
                 try {
-                    const response = await fetch(`http://localhost:8080/api/getCoin/${userIdString}`, {
+                    const response = await fetch(`https://k2b3bc621690aa.user-app.krampoline.com/api/getCoin/${userIdString}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
