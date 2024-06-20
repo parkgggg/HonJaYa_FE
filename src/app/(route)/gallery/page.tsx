@@ -50,7 +50,7 @@ const GalleryPage = () => {
         const header = {
           "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
         }
-        const response = await fetch(`https://k2b3bc621690aa.user-app.krampoline.com/api/users/${userId}/profile-images`, {
+        const response = await fetch(`http://localhost:8080/api/users/${userId}/profile-images`, {
           method: 'POST',
           body: formData,
           headers: header,

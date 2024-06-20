@@ -98,7 +98,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 
             }   
             getMessageHistory();
-            const socket = new SockJS('https://k2b3bc621690aa.user-app.krampoline.com/api/ws');
+            const socket = new SockJS('http://localhost:8080/api/ws');
             stompClient.current = Stomp.over(socket);
 
             const connectCallback = (frame : any) => {
@@ -146,7 +146,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 createAt: new Date().toISOString(),
             };
             try {
-                await fetch(`http://localhost:8081/chat`, { // 때에따라 바꾸자 8080->8081로 현재 변경
+                await fetch("http://localhost:8081/chat", { // 때에따라 바꾸자 8080->8081로 현재 변경
                     method: "POST",
                     body: JSON.stringify(newMessage),
                     headers: {
