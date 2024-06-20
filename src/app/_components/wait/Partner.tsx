@@ -26,13 +26,11 @@ const Partner = ({ object }: any) => {
     <div className="w-4/5 h-4/5 flex-col justify-center shadow-lg rounded-lg">
       <Link className="w-full h-full" href={`/chat/${object.id}`}>
         <div className="relative w-full h-full hover:border-main-color hover:border-4 rounded-lg">
-          <Image
-            className='shadow-lg rounded-md'
-            src={partnerProfile}
-            layout="fill"
-            objectFit="cover"
-            alt='partner_profile'
-          />
+        <img
+          className="absolute inset-0 w-full h-full object-cover shadow-lg rounded-md"
+          src={partnerProfile}
+          alt="partner_profile"
+        />
         </div>
       </Link>
       <div className='w-full h-2/10 text-center flex justify-end'>

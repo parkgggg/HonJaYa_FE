@@ -132,7 +132,7 @@ const TeamCreateModal = ({ setOpenTeamCreateModal }: Props) => {
             type="button"
             className="w-1/10 h-1/10 bg-gray"
             onClick={exitModal}>
-            <Image src={'https://www.svgrepo.com/show/499053/cancel.svg'}
+            <img src={'https://www.svgrepo.com/show/499053/cancel.svg'}
               width={35}
               height={35}
               alt="cancel"

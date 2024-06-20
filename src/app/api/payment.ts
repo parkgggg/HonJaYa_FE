@@ -1,6 +1,6 @@
 // 카카오 페이 구매 요청
 export const requestPayment = async (payInfoDto: any, userId: number, token: string | null) => {
-    const response = await fetch(`http://localhost:8080/api/payment/ready?userId=${userId}`, {
+    const response = await fetch(`https://k2b3bc621690aa.user-app.krampoline.com/api/payment/ready?userId=${userId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -18,7 +18,7 @@ export const requestPayment = async (payInfoDto: any, userId: number, token: str
 
 // 현재 보유하고 있는 zem수량
 export const getUserZem = async (userId: number, token: string | null): Promise<number> => {
-    const response = await fetch(`http://localhost:8080/api/getCoin/${userId}`, {
+    const response = await fetch(`https://k2b3bc621690aa.user-app.krampoline.com/api/getCoin/${userId}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

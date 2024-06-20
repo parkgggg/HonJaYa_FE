@@ -139,9 +139,9 @@ const WaitingRoom = () => {
                 <div className="w-full h-1/10 text-3xl font-jua flex items-end justify-around box-border pt-2 px-10">
                     {isTeam ? <div className="flex items-end w-3/10 h-full text-4xl">참여중인 팀</div> : <div className="flex w-3/10 items-end h-full text-4xl">매칭된 상대</div>}
                     <div className="w-3/10 h-full flex justify-center items-center">
-                        <Image src="https://www.svgrepo.com/show/436843/person-fill.svg" width={20} height={20} alt="single" />
+                        <img src="https://www.svgrepo.com/show/436843/person-fill.svg" width={20} height={20} alt="single" />
                         <ToggleSwitch />
-                        <Image src="https://www.svgrepo.com/show/436838/person-3-fill.svg" width={20} height={20} alt="team" />
+                        <img src="https://www.svgrepo.com/show/436838/person-3-fill.svg" width={20} height={20} alt="team" />
                     </div>
                     <div className="w-3/10 h-full flex justify-end">
                         <button

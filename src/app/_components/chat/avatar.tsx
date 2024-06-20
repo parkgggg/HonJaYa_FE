@@ -13,13 +13,11 @@ const Avatar: React.FC<Avatar> = ({senderProfile}) => {
 
     return (
         <div className="relative w-12 h-12">
-        <Image
-            className='rounded-full'
-            src={senderProfile}
-            layout="fill"
-            objectFit="cover"
-            alt='partner_profile'
-          />
+            <img
+                className="absolute inset-0 w-full h-full object-cover rounded-full"
+                src={senderProfile}
+                alt="partner_profile"
+            />
         </div>
     )
 }

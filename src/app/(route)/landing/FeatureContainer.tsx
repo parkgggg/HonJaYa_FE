@@ -63,7 +63,7 @@ const FeatureContainer = ({ index, imageFirst, imageUrl, contents }: Props) => {
                 <div className='w-full h-8/10 flex justify-around my-4 items-center'>
                     <div ref={imageRef} className=' border-main-color border-4 rounded-lg'>
                         {showImage && (
-                            <Image src={imageUrl}
+                            <img src={imageUrl}
                                 width={500}
                                 height={500}
                                 alt={`${index}`} 
@@ -89,7 +89,7 @@ const FeatureContainer = ({ index, imageFirst, imageUrl, contents }: Props) => {
                     </div>
                     <div ref={imageRef} className=' border-main-color border-4 rounded-lg'>
                         {showImage && (
-                            <Image src={imageUrl}
+                            <img src={imageUrl}
                                 width={500}
                                 height={500}
                                 alt={`${index}`} 
