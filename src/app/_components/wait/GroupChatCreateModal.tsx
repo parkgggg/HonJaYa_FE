@@ -1,12 +1,9 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import CustomNumberInput from "../customNum";
 import Image from "next/image";
 import { getData, postData } from "@/app/api/api";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/state/reducers/rootReducer";
-import { joinGroup } from "@/state/actions";
+import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 
 type Props = {
@@ -15,38 +12,13 @@ type Props = {
 ///전체 수정 필요
 const GroupChatCreateModal = ({ setOpenGroupChatCreateModal }: Props) => {
   const [groupName, setGroupName] = useState<string>("")
-  const [numOfMembers, setNumoOfMembers] = useState<number>(1);
   const [description, setDescription] = useState<string>("");
-  // const [groupChatServerId, setGroupChatServerId] = useState<string>("");
-  // const [groupChatServerName, setGroupChatServerName] = useState<string>("");
-  // const [isLeader, setIsLeader] = useState<boolean>(false);
-  // const [isParty, setIsParty] = useState<boolean>(false);
   const [createSuccess, setCreateSuccess] = useState<boolean>(false);
 
 
   const [groupChatServerUser, setGroupChatServerUser] = useState<{}>()
-    // id: string,
-    // name: string,
-    // gender: string,
-    // leader: boolean,
-    // isParty: boolean,
-    // memberId: number,
-  // }>({id: "", name:"", gender: "", leader: false, isParty: false, memberId: 0})
-
 
   const [groupInfo, setGroupInfo] = useState<{}>()
-  //   id: string,
-  //   title: string,
-  //   content: string,
-  //   gender: string,
-  //   status: string,
-  //   roomId: string,
-  //   members: string[],
-  // }>({id: "", title:"", content: "", gender: "", status: "", roomId: "", members:[]})
-
-
-  // const [groupChatServer, setGroupChatServerId] = useState<string>("");
-  // const onGroup = useSelector((state:RootState) => state.onGroup.onGroup)
   const dispatch = useDispatch()
   const router = useRouter();
 
@@ -55,14 +27,6 @@ const GroupChatCreateModal = ({ setOpenGroupChatCreateModal }: Props) => {
       try {
         const response = await getData(`/user/${localStorage.getItem('user_id')}`, "groupChat")
         console.log(response);
-        // setGroupChatServerUser({
-        //   id: response.id, 
-        //   name: response.name, 
-        //   gender: response.gender,
-        //   leader: response.leader, 
-        //   isParty: response.party,
-        //   memberId: response.memberId
-        // })
         setGroupChatServerUser(response)
       } catch (error) {
         console.log(error);
@@ -72,15 +36,6 @@ const GroupChatCreateModal = ({ setOpenGroupChatCreateModal }: Props) => {
       try {
         const response = await getData(`/group/user/${localStorage.getItem('mongoId')}`, "groupChat")
         console.log(response);
-        // setGroupInfo({
-        //   id: response.id,
-        //   title: response.title,
-        //   content: response.content,
-        //   gender: response.gender,
-        //   status: response.status,
-        //   roomId: response.roomId,
-        //   members: response.members,
-        // })
         setGroupInfo(response)
       } catch (error) {
         console.log(error);
@@ -117,15 +72,6 @@ const GroupChatCreateModal = ({ setOpenGroupChatCreateModal }: Props) => {
           gender: localStorage.getItem('userGender') === "남성"? "MALE" : "FEMALE",
       },
       user: groupChatServerUser,
-      // {
-      //     id: groupChatServerUser.id,
-      //     memberId: groupChatServerUser.id,
-      //     name: groupChatServerUser.name,
-      //     gender: groupChatServerUser.gender,
-      //     leader: groupChatServerUser.leader,
-      //     isParty: groupChatServerUser.isParty,
-      //     applicants: [],
-      // }, 
       group: groupInfo,
   };
 
@@ -133,10 +79,6 @@ const GroupChatCreateModal = ({ setOpenGroupChatCreateModal }: Props) => {
     try {
       await postData("/chat_room", chatRoomAndUser, "groupChat");
       setCreateSuccess(true);
-      // router.push(`/chat/${response.id}`)
-      // setOpenGroupChatCreateModal();
-      
-      // dispatch(joinGroup())
     } catch (error) {
       console.log(error);
     }
@@ -166,19 +108,6 @@ const GroupChatCreateModal = ({ setOpenGroupChatCreateModal }: Props) => {
             onChange={(e) => setGroupName(e.target.value)}
             className=" w-1/2 h-1/10 border-main-color border-b-2 text-center outline-none  "
           ></input>
-          {/* <div className="w-1/2 h-2/10 flex justify-center items-center">
-            <input
-              type="number"
-              id="numofmembers"
-              name="numofmembers"
-              min={1}
-              max={3}
-              value={numOfMembers}
-              onChange={(e: any) => setNumoOfMembers(Number(e.target.value))}
-              className="outline-none w-full h-full text-center"
-            >
-            </input><span>명</span>
-          </div> */}
           <textarea
             placeholder="Description"
             required

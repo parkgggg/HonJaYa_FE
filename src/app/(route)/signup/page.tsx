@@ -1,22 +1,17 @@
 "use client";
 import { useEffect, useState } from 'react';
-// import Step1 from '../../_components/signupsteps/Step1';
+import Step1 from '../../_components/signupsteps/Step1';
 import Step2 from '../../_components/signupsteps/Step2';
 import Step3 from '../../_components/signupsteps/Step3';
 import Step4 from '../../_components/signupsteps/Step4';
-import Step5 from '../../_components/signupsteps/Step5';
 import { FormData } from '../signup/FormData';
 
 import { useDispatch, useSelector } from "react-redux";
-import { approve, deny } from "@/state/actions";
 import { RootState } from "@/state/reducers/rootReducer";
-import { verifyUser } from "@/app/utils/verifyUser";
 import { useRouter } from 'next/navigation';
 
 const SignupPage: React.FC = () => {
 
-  const dispatch = useDispatch();
-  const isLogined = useSelector((state: RootState) => state.loginCheck.isLogined)
   const router = useRouter();
 
   const [step, setStep] = useState(1);
@@ -39,11 +34,10 @@ const SignupPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center">
-      {/* {step === 1 && <Step1 nextStep={nextStep} updateFormData={updateFormData} formData={formData} />} */}
-      {step === 1 && <Step2 nextStep={nextStep} prevStep={prevStep} updateFormData={updateFormData} formData={formData} />}
-      {step === 2 && <Step3 nextStep={nextStep} prevStep={prevStep} updateFormData={updateFormData} formData={formData} />}
-      {step === 3 && <Step4 nextStep={nextStep} prevStep={prevStep} updateFormData={updateFormData} formData={formData} />}
-      {step === 4 && <Step5 nextStep={nextStep} prevStep={prevStep} updateFormData={updateFormData} formData={formData} />}
+      {step === 1 && <Step1 nextStep={nextStep} prevStep={prevStep} updateFormData={updateFormData} formData={formData} />}
+      {step === 2 && <Step2 nextStep={nextStep} prevStep={prevStep} updateFormData={updateFormData} formData={formData} />}
+      {step === 3 && <Step3 nextStep={nextStep} prevStep={prevStep} updateFormData={updateFormData} formData={formData} />}
+      {step === 4 && <Step4 nextStep={nextStep} prevStep={prevStep} updateFormData={updateFormData} formData={formData} />}
     </div>
   );
 }

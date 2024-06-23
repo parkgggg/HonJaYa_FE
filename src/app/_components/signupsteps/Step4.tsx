@@ -1,163 +1,370 @@
-import { useState, useEffect } from 'react';
-import CustomNumberInput from '../../_components/customNum';
-import StepIndicator from '../../_components/stepIndicator';
+"use client";
+
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from "react";
+import StepIndicator from "../stepIndicator";
 import NavigationButtons from './navigationbuttons/NavigationButtons';
-
-const mbtiTypes = ['INFJ', 'INFP', 'ENFJ', 'ENFP', 'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ', 'INTJ', 'INTP', 'ENTJ', 'ENTP', 'ISTP', 'ISFP', 'ESTP', 'ESFP'];
-const religionTypes = ['기독교', '불교', '천주교', '이슬람', '기타', '무교'];
-const drinkingTypes = ['알쓰', '평균', '술고래'];
-const smokeOrNot = ['흡연', '비흡연'];
-
-interface FormData {
-    height?: number;
-    weight?: number;
-    mbti?: string;
-    religion?: string;
-    drinkAmount?: string;
-}
+import { getData, postData } from '../../api/api';
+import { FormData } from '@/app/(route)/signup/FormData';
+import useCurrentLocation from '@/app/utils/hooks/getCurrentLoaction';
+import { useGeolocated } from "react-geolocated";
+import { GoDesktopDownload } from 'react-icons/go';
 
 interface Step4Props {
     nextStep: () => void;
     prevStep: () => void;
     updateFormData: (data: Partial<FormData>) => void;
-    formData: any;
+    formData: Partial<FormData>; // FormData 인터페이스에 맞게 설정 필요
 }
 
-const Step4: React.FC<Step4Props> = ({ nextStep, prevStep, updateFormData, formData }) => {
-    const [showAllMbti, setShowAllMbti] = useState(false);
-    const [selectedMbti, setSelectedMbti] = useState<string | undefined>(formData.mbti || undefined);
-    const [selectedReligion, setSelectedReligion] = useState<string | undefined>(formData.religion || undefined);
-    const [selectedDrinking, setSelectedDrinking] = useState<string | undefined>(formData.drinkAmount || undefined);
-    const [height, setHeight] = useState<number>(formData.height || 170);
-    const [weight, setWeight] = useState<number>(formData.weight || 70);
-    const [smoke, setSmoke] = useState<boolean>(formData.smoke || null);
+export default function Step4({ nextStep, prevStep, updateFormData, formData }: Step4Props) {
+    const [agree, setAgree] = useState<boolean>(false);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [userId, setUserId] = useState<string>("");
+    const [userName, setUserName] = useState<string>("");
+    const [here, setHere] = useState<string>("");
+    const [onLoading, setOnLoading] = useState<boolean>(false);
+
+    const { location, error, setCurrentLocation } = useCurrentLocation();
+    const router = useRouter();
+    // const { coords, isGeolocationAvailable, isGeolocationEnabled } =
+    //     useGeolocated({
+    //         positionOptions: {
+    //             enableHighAccuracy: false,
+    //             timeout: 1000,
+    //             maximumAge: 60000 // Use cached positions if they are recent
+    //         },
+    //         userDecisionTimeout: 3000,
+    //     });
+
 
     useEffect(() => {
-        setSelectedMbti(formData.mbti || undefined);
-        setSelectedReligion(formData.religion || undefined);
-        setSelectedDrinking(formData.drinkAmount || undefined);
-        setHeight(formData.height || 170);
-        setWeight(formData.weight || 70);
-    }, [formData]);
+        const asyncronizedSetter = async () => {
+            await setCurrentLocation();
+        }
+
+        const setUserIdFirst = async () => {
+            const userData = await getData("/users/current", "honjaya");
+            setUserId(() => (userData.data.id))
+            setUserName(() => (userData.data.name))
+        }
+        if (formData.gender) localStorage.setItem("userGender", formData.gender);
+
+        asyncronizedSetter();
+        setUserIdFirst();
+    }, []);
+
+    useEffect(() => {
+
+    }, [onLoading]);
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        const data: FormData = {
-            height,
-            weight,
-            mbti: selectedMbti,
-            religion: selectedReligion,
-            drinkAmount: selectedDrinking,
-        };
-        updateFormData(data);
-        nextStep();
+        if (agree) {
+            const data = {
+                birthday: formData.birthday,
+                gender: formData.gender,
+                height: formData.height,
+                weight: formData.weight,
+                mbti: formData.mbti,
+                religion: formData.religion,
+                drinkAmount: formData.drinkAmount,
+                smoke: formData.smoke,
+                address: formData.address
+            }
+            const mongoData = {
+                memberId: userId,
+                name: userName,
+                gender: localStorage.getItem("userGender") === "남성" ? "MALE" : "FEMALE",
+            }
+            try {
+                await postData(`/users/${userId}/profile`, data, "honjaya")
+                await postData(`/user`, mongoData, "groupChat")
+                setIsModalOpen(true);
+            } catch (error) {
+                // console.error('Failed to register user preferences:', error);
+                alert('취향 정보를 등록하는 데 실패했습니다.');
+            }
+        } else {
+            // console.log(formData)
+            alert("위치 정보 제공에 동의해주세요.");
+        }
+    };
+
+    // const setPresentLocation = () => {
+    //     const getLocation = () => {
+    //         try {
+    //             setCurrentLocation();
+    //         }
+    //         catch (error) {
+    //             console.log(error)
+    //         }
+    //     }
+    //     getLocation();
+    // }
+
+    const getLocation = () => {
+        setOnLoading(true);
+            const kakaoLocation = getData(`/local/geo/coord2regioncode.json?x=${location.lon}&y=${location.lat}`, "kakao");
+            // console.log(kakaoLocation);
+            kakaoLocation.then((result) => {
+                const here = result.documents[0].address_name.split(" ")[1]
+                // console.log(result);
+                updateFormData({ address: here });
+                setHere(here);
+            }).catch(error => console.log(error));
+        setOnLoading(false);
+    }
+
+    const handleAgreeButton = () => {
+        // setPresentLocation();
+        setAgree((prev) => {
+            if (prev) return false;
+            if (location.lat !== 0 && location.lon !== 0) {
+                return true;
+            } else {
+                alert("현재 위치를 먼저 불러와주세요!")
+                return false;
+            }
+        })
+
+        // if (location.lat === 0 && location.lon === 0) {
+        //     handleAgreeButton();
+        // }
+
+        // setAgree((prev) => {
+        //     if (prev) return false;
+
+        //     const kakaoLocation = getData(`/local/geo/coord2regioncode.json?x=${location.lon}&y=${location.lat}`, "kakao");
+        //     console.log(kakaoLocation);
+        //     kakaoLocation.then((result) => {
+        //         console.log(result);
+        //         updateFormData({ address: result.documents[0].address_name.split(" ")[1] });
+        //     });
+        //     return true;
+        // })
+    }
+
+    const handleGoToSurvey = () => {
+        try {
+            localStorage.setItem("user_id", userId);
+            router.push('/landing');
+        } catch (e) {
+            localStorage.removeItem("user_id");
+            console.log(e);
+        }
     };
 
     return (
         <div className="flex items-center justify-center min-h-screen">
             <div className="w-full max-w-xl p-12 bg-white shadow-md rounded-lg border-4 border-red-300">
-                <StepIndicator currentStep={3} />
+                <StepIndicator currentStep={4} />
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    <label htmlFor="additional-info" className="block text-4xl text-center mb-10">추가 정보</label>
-                    <div className="text-center">
-                        <label htmlFor="physical-specs" className="block text-2xl mb-2">신체 스펙</label>
-                        <div className="flex justify-center items-center space-x-8">
-                            <div className="flex flex-col items-center">
-                                <CustomNumberInput
-                                    id="height"
-                                    name="height"
-                                    initialValue={175}
-                                    unit="cm"
-                                    value={height}
-                                    onChange={(e) => setHeight(Number(e.target.value))}
+                    <div className="block text-4xl text-center mb-10">위치 정보 제공</div>
+                    <div className="text-center h-full flex flex-col justify-center items-center">
+                        {
+                            here? <div className={`flex justify-center mb-10 h-3/10 w-4/10 py-2 px-6  rounded-lg text-2xl `}>
+                                I'm in {here}
+                            </div> : <button
+                            type="button"
+                            onClick={getLocation}
+                            className={`flex justify-center mb-10 h-3/10 w-3/10 py-2 px-6 rounded-lg text-2xl hover:border-main-color hover:border-4 outline-none`}
+                        >
+                            {onLoading ?
+                                <img
+                                src='https://www.svgrepo.com/show/232270/loading.svg'
+                                alt='gps_icon'
+                                className='w-full h-full'
+                            />
+
+                                : <img
+                                    src='https://www.svgrepo.com/show/524610/gps.svg'
+                                    alt='gps_icon'
+                                    className='w-full h-full'
                                 />
-                            </div>
-                            <div className="flex flex-col items-center">
-                                <CustomNumberInput
-                                    id="weight"
-                                    name="weight"
-                                    initialValue={80}
-                                    unit="kg"
-                                    value={weight}
-                                    onChange={(e) => setWeight(Number(e.target.value))}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="text-center">
-                        <label htmlFor="mbti" className="mt-10 mb-4 block text-2xl">MBTI</label>
-                        <div className="grid grid-cols-4 gap-2">
-                            {mbtiTypes.slice(0, showAllMbti ? mbtiTypes.length : 4).map((type) => (
-                                <button
-                                    key={type}
-                                    type="button"
-                                    onClick={() => setSelectedMbti(type)}
-                                    className={`py-1 px-2 border-2 border-red-300 rounded-2xl text-sm ${selectedMbti === type ? 'bg-red-300 text-white' : 'bg-white text-black'}`}
-                                >
-                                    {type}
-                                </button>
-                            ))}
-                        </div>
-                        <div className="flex justify-center mt-2">
-                            <button
-                                type="button"
-                                onClick={() => setShowAllMbti(!showAllMbti)}
-                                className="text-sm text-gray-500 focus:outline-none"
-                            >
-                                {showAllMbti ? '닫기[x]' : '...'}
-                            </button>
-                        </div>
-                    </div>
-                    <div className="text-center">
-                        <label htmlFor="religion" className="block text-2xl mb-4">종교</label>
-                        <div className="grid grid-cols-3 gap-2">
-                            {religionTypes.map((religion) => (
-                                <button
-                                    key={religion}
-                                    type="button"
-                                    onClick={() => setSelectedReligion(religion)}
-                                    className={`py-1 px-2 border-2 border-red-300 rounded-2xl text-sm ${selectedReligion === religion ? 'bg-red-300 text-white' : 'bg-white text-black'}`}
-                                >
-                                    {religion}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="text-center">
-                        <label htmlFor="drinkingAmount" className="block text-2xl mb-4">주량</label>
-                        <div className="grid grid-cols-3 gap-2">
-                            {drinkingTypes.map((drinking) => (
-                                <button
-                                    key={drinking}
-                                    type="button"
-                                    onClick={() => setSelectedDrinking(drinking)}
-                                    className={`py-1 px-2 border-2 border-red-300 rounded-2xl text-sm ${selectedDrinking === drinking ? 'bg-red-300 text-white' : 'bg-white text-black'}`}
-                                >
-                                    {drinking}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="text-center">
-                        <label htmlFor="smoke" className="block text-2xl mb-4">흡연</label>
-                        <div className="grid grid-cols-2 gap-2">
-                            {smokeOrNot.map((smokeBool) => (
-                                <button
-                                    key={smokeBool}
-                                    type="button"
-                                    onClick={() => {setSmoke(()=>{return smokeBool === "흡연"? true : false})}}
-                                    className={`py-1 px-2 border-2 border-red-300 rounded-2xl text-sm ${smoke === (smokeBool === "흡연"? true : false) ? 'bg-red-300 text-white' : 'bg-white text-black'}`}
-                                >
-                                    {smokeBool}
-                                </button>
-                            ))}
-                        </div>
+
+                            }
+
+                        </button>
+                        }
+                        <button
+                            type="button"
+                            onClick={handleAgreeButton}
+                            className={`w-6/10 py-2 px-6 border-4 rounded-lg text-2xl ${agree ? 'border-red-500 bg-red-300 text-white' : 'border-red-300 bg-white text-black'}`}
+                        >
+                            {agree ? '동의 완료' : '위치 정보 제공에 동의'}
+                        </button>
                     </div>
                     <NavigationButtons onNext={handleSubmit} onPrevious={prevStep} />
                 </form>
             </div>
+            {isModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full flex flex-col items-center">
+                        <h2 className="text-2xl text-center mb-4">회원 정보 입력이 완료되었습니다.</h2>
+                        <button
+                            onClick={handleGoToSurvey}
+                            className="text-xl font-bold py-1 px-20 border-red-300 rounded-md shadow-sm text-white bg-gradient-to-br from-red-300 via-red-200 to-white hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400"
+                        >
+                            홈으로
+                        </button>
+                    </div>
+                </div>
+
+            )}
         </div>
     );
 }
 
-export default Step4;
+
+// "use client";
+
+// import { useRouter } from 'next/navigation';
+// import { useState, useEffect } from "react";
+// import StepIndicator from "../../_components/stepIndicator";
+// import NavigationButtons from './navigationbuttons/NavigationButtons';
+// import { getData, postData } from '../../api/api';
+// import { FormData } from '@/app/(route)/signup/FormData';
+// import useCurrentLocation from '@/app/utils/hooks/getCurrentLoaction';
+
+// interface Step4Props {
+//     nextStep: () => void;
+//     prevStep: () => void;
+//     updateFormData: (data: Partial<FormData>) => void;
+//     formData: Partial<FormData>; // FormData 인터페이스에 맞게 설정 필요
+// }
+
+// export default function Step4({ nextStep, prevStep, updateFormData, formData }: Step4Props) {
+//     const [agree, setAgree] = useState<boolean>(false);
+//     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+//     const [userId, setUserId] = useState<string>("");
+//     const [userName, setUserName] = useState<string>("");
+//     const { location, error, setCurrentLocation } = useCurrentLocation();
+//     const router = useRouter();
+
+//     useEffect(() => {
+//         const asyncronizedSetter = async () => {
+//             await setCurrentLocation();
+//         }
+
+//         const setUserIdFirst = async () => {
+//             const userData = await getData("/users/current", "honjaya");
+//             setUserId(() => (userData.data.id))
+//             setUserName(() => (userData.data.name))
+//         }
+//         if (formData.gender) localStorage.setItem("userGender", formData.gender);
+
+//         asyncronizedSetter();
+//         setUserIdFirst();
+//     }, []);
+
+//     const handleSubmit = async (event: React.FormEvent) => {
+//         event.preventDefault();
+//         if (agree) {
+//             const data = {
+//                 birthday: formData.birthday,
+//                 gender: formData.gender,
+//                 height: formData.height,
+//                 weight: formData.weight,
+//                 mbti: formData.mbti,
+//                 religion: formData.religion,
+//                 drinkAmount: formData.drinkAmount,
+//                 smoke: formData.smoke,
+//                 address: formData.address
+//             }
+//             const mongoData = {
+//                     memberId: userId,
+//                     name: userName,
+//                     gender: localStorage.getItem("userGender") === "남성"? "MALE" : "FEMALE",
+//             }
+//             try {
+//                 await postData(`/users/${userId}/profile`, data, "honjaya")
+//                 await postData(`/user`, mongoData, "groupChat")
+//                 setIsModalOpen(true);
+//             } catch (error) {
+//                 console.error('Failed to register user preferences:', error);
+//                 alert('취향 정보를 등록하는 데 실패했습니다.');
+//             }
+//         } else {
+//             console.log(formData)
+//             alert("위치 정보 제공에 동의해주세요.");
+//         }
+//     };
+
+//     const setPresentLocation = () => {
+//         const getLocation = () => {
+//             try {
+//                 setCurrentLocation();
+//             }
+//             catch (error) {
+//                 console.log(error)
+//             }
+//         }
+//         getLocation();
+//     }
+
+//     const handleAgreeButton = () => {
+//         setPresentLocation();
+
+//         if (location.lat === 0 && location.lon === 0) {
+//             handleAgreeButton();
+//         }
+
+//         setAgree((prev) => {
+//             if (prev) return false;
+
+//             const kakaoLocation = getData(`/local/geo/coord2regioncode.json?x=${location.lon}&y=${location.lat}`, "kakao");
+//             console.log(kakaoLocation);
+//             kakaoLocation.then((result) => {
+//                 console.log(result);
+//                 updateFormData({ address: result.documents[0].address_name.split(" ")[1] });
+//             });
+//             return true;
+//         })
+//     }
+
+//     const handleGoToSurvey = () => {
+//         try {
+//             localStorage.setItem("user_id", userId);
+//             router.push('/landing');
+//         } catch (e) {
+//             localStorage.removeItem("user_id");
+//             console.log(e);
+//         }
+//     };
+
+//     return (
+//         <div className="flex items-center justify-center min-h-screen">
+//             <div className="w-full max-w-xl p-12 bg-white shadow-md rounded-lg border-4 border-red-300">
+//                 <StepIndicator currentStep={4} />
+//                 <form onSubmit={handleSubmit} className="space-y-6">
+//                     <label className="block text-4xl text-center mb-40">위치 정보 제공</label>
+//                     <div className="text-center">
+//                         <button
+//                             type="button"
+//                             onClick={handleAgreeButton}
+//                             className={`py-2 px-6 border-4 rounded-lg text-2xl ${agree ? 'border-red-500 bg-red-300 text-white' : 'border-red-300 bg-white text-black'}`}
+//                         >
+//                             {agree ? '동의 완료' : '위치 정보 제공에 동의'}
+//                         </button>
+//                     </div>
+//                     <NavigationButtons onNext={handleSubmit} onPrevious={prevStep} />
+//                 </form>
+//             </div>
+//             {isModalOpen && (
+//                 <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+//                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full flex flex-col items-center">
+//                         <h2 className="text-2xl text-center mb-4">회원 정보 입력이 완료되었습니다.</h2>
+//                         <button
+//                             onClick={handleGoToSurvey}
+//                             className="text-xl font-bold py-1 px-20 border-red-300 rounded-md shadow-sm text-white bg-gradient-to-br from-red-300 via-red-200 to-white hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400"
+//                         >
+//                             취향 조사하러가기
+//                         </button>
+//                     </div>
+//                 </div>
+
+//             )}
+//         </div>
+//     );
+// }

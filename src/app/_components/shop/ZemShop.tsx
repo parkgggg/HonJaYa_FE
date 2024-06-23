@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import ItemPurchase from '@/app/(route)/modal/@modal/shop/ItemPurchase';
 import LoginModal from '@/app/(route)/modal/@modal/shop/LoginModal';
-import { requestPayment,getUserZem } from '@/app/api/payment';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/state/reducers/rootReducer';
 import { verifyUser } from '@/app/utils/verifyUser';
 import { approve } from '@/state/actions';
+import { postData } from '@/app/api/api';
 
 const ZemShop = () => {
     const [selectedItem, setSelectedItem] = useState<number | null>(null);
@@ -113,7 +113,7 @@ const ZemShop = () => {
         }
 
         try {
-            const data = await requestPayment(payInfoDto, userId, token);
+            const data = await postData(`/payment/ready?userId=${localStorage.getItem('user_id')}`, payInfoDto, "honjaya")
             const redirectUrl = data.redirectUrl;
             window.location.href = redirectUrl;
         } catch (error) {

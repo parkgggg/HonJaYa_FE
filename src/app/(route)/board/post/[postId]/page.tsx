@@ -100,7 +100,7 @@ const PostPage: React.FC = () => {
 
   const handleDeleteComment = async (commentId: number) => {
     try {
-      await deleteData(`/comments/${commentId}`, "honjaya");
+      await deleteData(`/comments/${commentId}`, "", "honjaya");
       fetchComments(Number(postId));
     } catch (error) {
       console.error("Error deleting comment:", error);
@@ -131,7 +131,7 @@ const PostPage: React.FC = () => {
 
   const handleDelete = async () => {
     try {
-      await deleteData(`/boards/${postId}`, "honjaya");
+      await deleteData(`/boards/${postId}`, "", "honjaya");
       alert("게시물이 삭제되었습니다.");
       router.push("/board");
     } catch (error) {

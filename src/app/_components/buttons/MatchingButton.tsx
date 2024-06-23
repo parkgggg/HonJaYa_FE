@@ -1,8 +1,6 @@
 'use client'
 
-import { postData } from "@/app/api/api";
 import { setMatchingModalOpen } from "@/state/actions";
-import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 
 const MatchingButton = () => {

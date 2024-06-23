@@ -7,7 +7,7 @@ import { RootState } from '@/state/reducers/rootReducer';
 import KakaoLoginButton from '../buttons/KakaoLoginButton';
 import { init } from '@/state/actions';
 import Link from 'next/link';
-import { postData, postWithoutBody } from '@/app/api/api';
+import { postData } from '@/app/api/api';
 
 const Navigationbar = () => {
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
@@ -21,7 +21,7 @@ const Navigationbar = () => {
     };
 
     const handleLogout = async () => {
-        const response = await postWithoutBody("/logout", "honjaya");
+        const response = await postData("/logout", "", "honjaya");
         console.log(response);
         if (response.status === "error") {
             alert(response.message);

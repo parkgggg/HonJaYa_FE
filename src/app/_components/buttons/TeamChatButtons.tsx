@@ -3,8 +3,6 @@
 import Image from "next/image";
 import TeamCreateModal from "../wait/TeamCreateModal";
 import TeamJoinModal from "../wait/TeamJoinModal";
-import { useSelector } from "react-redux";
-import { RootState } from "@/state/reducers/rootReducer";
 import GroupChatCreateModal from "../wait/GroupChatCreateModal";
 import TeamEditModal from "../wait/TeamEditModal";
 import { useEffect, useState } from "react";
@@ -52,14 +50,6 @@ const TeamChatButtons = ({
     }, [openTeamCreateModal, openTeamJoinModal]);
 
     return (
-        // <div className="w-full h-full flex justify-center items-center">
-        //     <button
-        //         className="w-1/10 h-5/10 flex justify-center"
-        //         onClick={setOpenTeamCreateModal}>
-        //         <Image src="https://www.svgrepo.com/show/498940/add-circle.svg" width={40} height={40} alt="Team Create Button" />
-        //     </button>
-        //     {openTeamCreateModal && <TeamCreateModal setOpenTeamCreateModal={setOpenTeamCreateModal}/>}
-        // </div>
         <div className="w-full h-full flex justify-center items-center">
             <div className="w-1/2 h-1/2 flex">
                 {onGroup ? isLeader ?

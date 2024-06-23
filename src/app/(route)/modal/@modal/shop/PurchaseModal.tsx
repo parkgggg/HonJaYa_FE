@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { purchaseItem } from '@/app/api/payment'; 
 import { postData } from '@/app/api/api';
 
 interface Item {

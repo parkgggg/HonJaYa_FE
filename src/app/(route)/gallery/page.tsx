@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, ChangeEvent } from 'react';
-import { getData, postData, deleteData, deleteImages } from '@/app/api/api';
+import { getData, postData, deleteData } from '@/app/api/api';
 import { useRouter } from 'next/navigation';
 import Navigationbar from '@/app/_components/common/Navigationbar';
 import Image from 'next/image';
@@ -102,7 +102,7 @@ const GalleryPage = () => {
     const deleteDto = {
       profileImagesIds: Array.from(selectedImages),
     };
-    const response = await deleteImages(`/users/${userId}/profile-images`, deleteDto, 'honjaya');
+    const response = await deleteData(`/users/${userId}/profile-images`, deleteDto, 'honjaya');
     if (response.status === "error") {
       alert(response.message);
       return;
