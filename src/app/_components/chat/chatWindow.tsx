@@ -22,9 +22,6 @@ interface Message {
     createAt: string;
 }
 
-// 로그인 시스템 대신 임시 방편
-
-
 const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [profileImage, setProfileImage] = useState<string>("")
@@ -65,17 +62,18 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
         getProfileImage();
 
         if (isGroupChat) {
-            const usernameElement = document.querySelector("#username");
+            // const usernameElement = document.querySelector("#username");
 
-            if (usernameElement) {
-                usernameElement.innerHTML = localStorage.getItem("username") || "unknown user";
-            }
+            // if (usernameElement) {
+            //     usernameElement.innerHTML = localStorage.getItem("username") || "unknown user";
+            // }
 
-            const eventSource = new EventSource(`http://localhost:8081/chat/roomNum/${roomId}`);
+            const eventSource = new EventSource(`http://localhost:8081/chat/roomId/${roomId}`);
             eventSource.onmessage = (event) => {
                 try {
                     const message = JSON.parse(event.data);
                     handleNewMessage(message);
+                    console.log(message);
                 } catch (error) {
                     console.error('Failed to parse message:', error);
                 }
@@ -97,7 +95,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 } catch (error) {
                     console.error(error);
                 }
-                
             }   
             getMessageHistory();
             const socket = new SockJS('http://localhost:8080/api/ws');
@@ -112,8 +109,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
 
                 subscriptionRef.current = stompClient.current?.subscribe(`/topic/chat/${roomId}`, (data) => {
                     try {
-                        console.log(data)
-                        console.log("메시지:" + data.body)
                         const message = JSON.parse(data.body);
                         handleNewMessage(message);
                         console.log(`${roomId}번 방에서 새로운 메시지 수신 : `, message);
@@ -136,14 +131,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
     }, [roomId]);
 
     const handleSendMessage = async (message: string) => {
-
         if (isGroupChat) {
             const newMessage = {
                 id: `${Date.now()}`,
                 msg: message,
                 sender: localStorage.getItem("username"),
-                receiver: "", // 수신자 이름 필요
-                roomNum: roomId,
+                senderId: localStorage.getItem("user_id"),
+                senderProfile: profileImage,
+                // receiver: "", // 수신자 이름 필요
+                roomId: roomId,
                 isOwnMessage: true,
                 createAt: new Date().toISOString(),
             };
@@ -155,6 +151,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                         "Content-Type": "application/json; charset=utf-8"
                     }
                 });
+                console.log(newMessage)
             } catch (error) {
                 console.error('Failed to send message:', error);
             }
@@ -165,7 +162,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 sender: localStorage.getItem("username"),
                 senderId: localStorage.getItem("user_id"),
                 senderProfile: profileImage,
-                roomNum: roomNum,
+                roomNum: roomId,
                 isOwnMessage: true,
                 createAt: new Date().toISOString(),
             };
@@ -185,7 +182,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                     <div className="text-center text-gray-500">No messages yet</div>
                 ) : (
 
-                    // ChatMessage 컴포넌트에 각 메시지의 속성을 props로 전달하여 해당 메시지를 렌더링한다.
                     messages.map((msg, index) => {
                         const nextMsg = messages[index + 1]; // 다음 메시지
                         const isLast =

@@ -14,7 +14,7 @@ interface Props {
     objectsPerPage: number;
 }
 
-const TeamContainers = ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage }: Props) => {
+const GroupChatContainers = ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage }: Props) => {
 
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const [currentObjects, setCurrentObjects] = useState<any[]>([])
@@ -25,7 +25,6 @@ const TeamContainers = ({ objects, prevSlide, nextSlide, currentPage, objectsPer
     const router = useRouter();
 
     useEffect(() => {
-
         const startIndex = currentPage * objectsPerPage;
         const currentObjects = objects.slice(startIndex, startIndex + objectsPerPage);
         setCurrentObjects(currentObjects);
@@ -38,7 +37,6 @@ const TeamContainers = ({ objects, prevSlide, nextSlide, currentPage, objectsPer
         const getGroupChatServerUser = async () => {
           try {
             const response = await getData(`/user/${localStorage.getItem('user_id')}`, "groupChat")
-            console.log(response);
             setGroupChatServerId(response.id)
             setIsLeader(response.leader);
             setOnGroup(response.party);
@@ -86,7 +84,7 @@ const TeamContainers = ({ objects, prevSlide, nextSlide, currentPage, objectsPer
             }
             <div className="w-9/10 h-full flex flex-wrap items-center justify-center">
                 {currentObjects && currentObjects.map((object, index) => (
-                    object.gender === localStorage.getItem("userGender")? <Team object={object} key={index}/> : <></>
+                    <Team object={object} key={index}/>
                 ))}
                 {placeholders && placeholders.map((_, index) => (
                     <div key={`placeholder-${index}`} className="w-1/5 h-2/5 mx-5 py-4 bg-gray-200 box-border shadow-lg rounded-lg"></div>
@@ -100,4 +98,4 @@ const TeamContainers = ({ objects, prevSlide, nextSlide, currentPage, objectsPer
     )
 }
 
-export default TeamContainers;
+export default GroupChatContainers;

@@ -12,7 +12,7 @@ interface Props {
     objectsPerPage: number;
 }
 
-const PartnerContainers = ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage }: Props) => {
+const PartnerContainer = ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage }: Props) => {
 
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const [currentObjects, setCurrentObjects] = useState<any[]>([])
@@ -56,4 +56,4 @@ const PartnerContainers = ({ objects, prevSlide, nextSlide, currentPage, objects
     )
 }
 
-export default PartnerContainers;
+export default PartnerContainer;

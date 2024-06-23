@@ -24,4 +24,4 @@ const ToggleSwitch = ({}) => {
     );
 };
 
-    export default ToggleSwitch;
+export default ToggleSwitch;

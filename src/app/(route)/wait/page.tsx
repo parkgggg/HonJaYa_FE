@@ -16,8 +16,8 @@ import { verifyUser } from "@/app/utils/verifyUser";
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { getData } from "@/app/api/api";
-import TeamContainers from "@/app/_components/wait/TeamContainers";
-import PartnerContainers from "@/app/_components/wait/PartnerContainers";
+import GroupChatContainers from "@/app/_components/wait/GroupChatContainer";
+import PartnerContainer from "@/app/_components/wait/PartnerContainer";
 
 const WaitingRoom = () => {
     const [groupObjects, setGroupObjects] = useState("");
@@ -79,7 +79,7 @@ const WaitingRoom = () => {
                 localStorage.setItem('mongoId', response.id);
                 setIsLeader(response.leader);
                 setOnGroup(response.party);
-                console.log(response);
+
                 // if(response.isParty) {
                 //     dispatch(joinGroup())
                 // } else {
@@ -106,11 +106,11 @@ const WaitingRoom = () => {
 
         const getGroupObjects = async () => {
             try {
-                const response = await getData(`/chat_room`, "groupChat");
+                const response:any = await getData(`/chat_room`, "groupChat");
                 console.log(response);
                 const objects = response;
                 setGroupObjects(() => (objects.filter((object: any) => {
-                    if (object.gender === localStorage.getItem("userGender")) {
+                    if (object.gender !== localStorage.getItem("userGender")) {
                         return true;
                     }
                 })))
@@ -210,14 +210,14 @@ const WaitingRoom = () => {
                 {/* 매칭되어 있는 유저 리스팅 */}
                 {
                     isTeam ? onGroup ?
-                        <TeamContainers
+                        <GroupChatContainers
                             objects={groupObjects}
                             prevSlide={prevSlide}
                             nextSlide={nextSlide}
                             currentPage={currentPage}
                             objectsPerPage={objectsPerPage}
                         /> : <div className="w-full h-3/10"></div> :
-                        <PartnerContainers
+                        <PartnerContainer
                             objects={partnerObjects}
                             prevSlide={prevSlide}
                             nextSlide={nextSlide}

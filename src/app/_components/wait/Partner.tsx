@@ -12,8 +12,8 @@ const Partner = ({ object }: any) => {
     const now = new Date().getTime();
     const createdAt = new Date(object.createdAt).getTime();
     const remain_time_by_second = (86400000 - (now - createdAt)) / 1000
-    setRemainHour(Math.floor(remain_time_by_second / 3600)); // 시간 계산
-    setRemainMinute(Math.floor((remain_time_by_second % 3600) / 60)); // 분 계산
+    setRemainHour(Math.floor(remain_time_by_second / 3600));
+    setRemainMinute(Math.floor((remain_time_by_second % 3600) / 60)); 
 
     if (object.participants[0].id.toString() === localStorage.getItem("user_id")) {
       setPartnerProfile(() => object.participants[1].profileImageUrl);

@@ -145,9 +145,10 @@ export default function Step4({ nextStep, prevStep, updateFormData, formData }: 
         // })
     }
 
-    const handleGoToSurvey = () => {
+    const backToHome = () => {
         try {
             localStorage.setItem("user_id", userId);
+            localStorage.setItem("username", userName);
             router.push('/landing');
         } catch (e) {
             localStorage.removeItem("user_id");
@@ -203,7 +204,7 @@ export default function Step4({ nextStep, prevStep, updateFormData, formData }: 
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full flex flex-col items-center">
                         <h2 className="text-2xl text-center mb-4">회원 정보 입력이 완료되었습니다.</h2>
                         <button
-                            onClick={handleGoToSurvey}
+                            onClick={backToHome}
                             className="text-xl font-bold py-1 px-20 border-red-300 rounded-md shadow-sm text-white bg-gradient-to-br from-red-300 via-red-200 to-white hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400"
                         >
                             홈으로

@@ -15,7 +15,6 @@ const GroupChatCreateModal = ({ setOpenGroupChatCreateModal }: Props) => {
   const [description, setDescription] = useState<string>("");
   const [createSuccess, setCreateSuccess] = useState<boolean>(false);
 
-
   const [groupChatServerUser, setGroupChatServerUser] = useState<{}>()
 
   const [groupInfo, setGroupInfo] = useState<{}>()
@@ -115,7 +114,9 @@ const GroupChatCreateModal = ({ setOpenGroupChatCreateModal }: Props) => {
             onChange={(e) => setDescription(e.target.value)}
             className=" w-8/10 h-5/10 border-main-color border-2 flex text-center justify-center items-center rounded-xl outline-none"
           ></textarea>
-          <button type="button" onClick={handleClick} className="w-5/10 h-1/10 font-jua text-lg text-white shadow-sm bg-gradient-to-r from-main-color to-orange-300 rounded-md hover:ring-4 hover:ring-red-100 active:bg-gradient-to-bl">제출하기</button>
+          <button type="button" onClick={handleClick} className="w-5/10 h-1/10 font-jua text-lg text-white shadow-sm bg-gradient-to-r from-main-color to-orange-300 rounded-md hover:ring-4 hover:ring-red-100 active:bg-gradient-to-bl">
+            생성하기
+          </button>
         </div>
       </form>
     </div>

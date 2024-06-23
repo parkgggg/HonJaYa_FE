@@ -1,10 +1,9 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import CustomNumberInput from "../customNum";
 import Image from "next/image";
-import { getData, postData, putData } from "@/app/api/api";
-import { useDispatch, useSelector } from "react-redux";
+import { getData, putData } from "@/app/api/api";
+import { useDispatch } from "react-redux";
 import { RootState } from "@/state/reducers/rootReducer";
 import { exitGroup, joinGroup } from "@/state/actions";
 
