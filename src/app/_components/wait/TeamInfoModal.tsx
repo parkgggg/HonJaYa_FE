@@ -1,46 +1,49 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import CustomNumberInput from "../customNum";
 import Image from "next/image";
-import { getData, postData, putData } from "@/app/api/api";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/state/reducers/rootReducer";
-import { exitGroup, joinGroup } from "@/state/actions";
+import { getData, putData } from "@/app/api/api";
+import { useDispatch } from "react-redux";
+
 
 type Props = {
     setOpenTeamEditModal: () => void;
 }
 
 const TeamEditModal = ({ setOpenTeamEditModal }: Props) => {
-    const [title, setTitle] = useState<string>("")
-    const [numOfMembers, setNumoOfMembers] = useState<number>(1);
-    const [description, setDescription] = useState<string>("");
+
     const [myId, setMyId] = useState<string>("");
     const [applicants, setApplicants] = useState<string[]>([]);
     const [isLeader, setIsLeader] = useState<boolean>(false);
+    const [enterButton, setEnterButton] = useState<boolean>(false);
+    const [roomId, setRoomId] = useState<String>("");
+    const [refresh, setRefresh] = useState<boolean>(false)
+    const [title, setTitle] = useState<string>("")
+    const [content, setContent] = useState<String>("");
+    const [members, setMembers] = useState<string[]>([]);
     // const onGroup = useSelector((state: RootState) => state.onGroup.onGroup)
     const dispatch = useDispatch()
 
     useEffect(() => {
-        const getGroupChatServerUser = async () => {
+        const getGroup = async () => {
             try {
-                const response = await getData(`/user/${localStorage.getItem('user_id')}`, "groupChat");
+                const response = await getData(`/group/user/${localStorage.getItem('mongoId')}`, "groupChat")
                 console.log(response);
-                setIsLeader(response.leader);
-                setApplicants(response.applicants);
-                setMyId(response.id);
-                // if (response.isParty) {
-                //     dispatch(joinGroup())
-                // } else {
-                //     dispatch(exitGroup())
-                // }
+                if (response.roomId) {
+                    setEnterButton(true)
+                    setRoomId(response.roomId)
+                    setTitle(response.title)
+                    setContent(response.content)
+                    setMembers(response.members)
+                
+                }
             } catch (error) {
                 console.log(error);
             }
         }
-        getGroupChatServerUser();
-    }, []);
+        getGroup();
+        if(refresh) setRefresh(false);
+    }, [refresh,]);
 
     const exitModal = () => {
         setOpenTeamEditModal();
@@ -55,7 +58,7 @@ const TeamEditModal = ({ setOpenTeamEditModal }: Props) => {
 
             console.log(Data);
             await putData('/group', Data, "groupChat");
-            
+
             // Remove the selected applicant from the applicants list
             setApplicants(prev => prev.filter(applicant => applicant !== selectedApplyer));
         } catch (e) {

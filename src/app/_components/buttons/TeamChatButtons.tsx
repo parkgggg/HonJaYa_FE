@@ -49,7 +49,7 @@ const TeamChatButtons = ({
             }
         }
         getGroupChatServerUser();
-    }, [openTeamCreateModal]);
+    }, [openTeamCreateModal, openTeamJoinModal]);
 
     return (
         // <div className="w-full h-full flex justify-center items-center">
@@ -68,11 +68,11 @@ const TeamChatButtons = ({
                             className=" w-4/10 h-full font-jua text-2xl text-white shadow-sm bg-gradient-to-r from-main-color to-orange-300 rounded-md hover:ring-4 hover:ring-red-100 active:bg-gradient-to-bl"
                             onClick={setOpenTeamEditModal}
                         >
-                            나의 팀
+                            팀 관리
                         </button>
                         <button
                             className=" w-4/10 h-full font-jua text-2xl text-white shadow-sm bg-gradient-to-r from-main-color to-orange-300 rounded-md hover:ring-4 hover:ring-red-100 active:bg-gradient-to-bl"
-                            onClick={setOpenTeamJoinModal}
+                            onClick={setOpenGroupChatCreateModal}
                         >
                             채팅 방 생성
                         </button>
@@ -82,7 +82,7 @@ const TeamChatButtons = ({
                             className=" w-4/10 h-full font-jua text-2xl text-white shadow-sm bg-gradient-to-r from-main-color to-orange-300 rounded-md hover:ring-4 hover:ring-red-100 active:bg-gradient-to-bl"
                             onClick={setOpenTeamEditModal}
                         >
-                            나의 팀
+                            팀 정보
                         </button>
                     </div>
                     :

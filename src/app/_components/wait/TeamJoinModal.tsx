@@ -16,6 +16,8 @@ type groupObjectType = {
   profileImages: string[]
 }
 
+//
+
 const TeamJoinModal = ({ setOpenTeamJoinModal }: Props) => {
   const [groupObjects, setGroupObjects] = useState<groupObjectType[]>([]);
   const [mongoDBuserId, setMongoDBUserId] = useState<string>("");
@@ -115,9 +117,9 @@ const TeamJoinModal = ({ setOpenTeamJoinModal }: Props) => {
               leaderUserId: objectLeaderId,
               invitedUserId: mongoDBuserId,
             }
-            console.log(Data)
-            await putData('/user/apply', Data, "groupChat");
 
+            await putData('/user/apply', Data, "groupChat");
+            setOpenTeamJoinModal();
         } catch (e) {
           console.log(e)
         }

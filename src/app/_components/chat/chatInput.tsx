@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import EmojiPicker from './emojipicker';
 import ScheduleModal from '@/app/(route)/modal/@modal/chat/ScheduleModal';
 import { useRouter } from 'next/navigation'
+import { useSelector } from 'react-redux';
+import { RootState } from '@/state/reducers/rootReducer';
 interface ChatInputProps {
     onSendMessage: (message: string) => void;
 }
@@ -11,6 +13,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showScheduleModal, setShowScheduleModal] = useState(false);
     const router = useRouter()
+    const isTeam = useSelector((state: RootState) => state.modeCheck.isTeam)
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();

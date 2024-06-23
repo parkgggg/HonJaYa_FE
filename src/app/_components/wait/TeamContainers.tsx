@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Team from "./Team";
 import { getData } from "@/app/api/api";
+import { useRouter } from "next/navigation";
 
 // Props 타입 객체
 interface Props {
@@ -21,6 +22,7 @@ const TeamContainers = ({ objects, prevSlide, nextSlide, currentPage, objectsPer
     const [groupChatServerId, setGroupChatServerId] = useState<string>("");
     const [isLeader, setIsLeader] = useState<boolean>(false);
     const [onGroup, setOnGroup] = useState<boolean>(false);
+    const router = useRouter();
 
     useEffect(() => {
 
@@ -31,7 +33,6 @@ const TeamContainers = ({ objects, prevSlide, nextSlide, currentPage, objectsPer
         const placeholders = Array(emptySlots).fill("");
         setPlaceholders(placeholders);
     }, [currentPage, objects, objectsPerPage])
-
 
     useEffect(() => {
         const getGroupChatServerUser = async () => {
@@ -47,6 +48,21 @@ const TeamContainers = ({ objects, prevSlide, nextSlide, currentPage, objectsPer
         }
         getGroupChatServerUser();
       }, []);
+
+    //   useEffect(() => {
+    //     if(onGroup) {
+    //         const getGroup = async () => {
+    //             try {
+    //                 const response = await getData(`/group/user/${localStorage.getItem('mongoId')}`, "groupChat")
+    //                 console.log(response);
+    //                 if(response.roomId) router.push(`chat/${response.roomId}`)
+    //             } catch (error) {
+    //                 console.log(error);
+    //             }
+    //         }
+    //         getGroup();
+    //     }
+    // }, [onGroup])
         // //본 서비스에서 유저 이름, 유저 성별 가져오기 -> 몽고 디비에 저장 용도
         // const getUserData = async () => {
         //   try {

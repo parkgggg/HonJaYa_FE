@@ -43,15 +43,14 @@ export const getData = async (endpoint: any, dest: any) => {
       }
     );
     console.log(response);
-    if (!response.ok) {
-      throw new Error(
-        `Failed to get data from ${endpoint}: ${response.statusText}`
-      );
-    }
+    // if (!response.ok) {
+    //   throw new Error(
+    //     `Failed to get data from ${endpoint}: ${response.statusText}`
+    //   );
+    // }
     return await response.json();
   } catch (error) {
-    console.error(`Failed to get data from ${endpoint}:`, error);
-    throw error;
+    console.log(`Failed to get data from ${endpoint}:`, error);
   }
 };
 
@@ -80,7 +79,7 @@ export const postData = async (endpoint: any, data: any, dest: any) => {
     }
     return await response.json();
   } catch (error) {
-    console.error(`Failed to post data to ${endpoint}:`, error);
+    console.log(`Failed to post data to ${endpoint}:`, error);
   }
 };
 
@@ -109,7 +108,7 @@ export const putData = async (endpoint: any, data: any, dest: any) => {
     }
     return await response.json();
   } catch (error) {
-    console.error(`Failed to put data to ${endpoint}:`, error);
+    console.log(`Failed to put data to ${endpoint}:`, error);
   }
 };
 

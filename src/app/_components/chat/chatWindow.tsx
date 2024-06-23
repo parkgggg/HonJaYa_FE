@@ -14,6 +14,7 @@ interface Message {
     id: string;
     msg: string;
     sender: string;
+    senderId: string;
     senderProfile: string;
     receiver: string;
     roomNum: number;
@@ -50,10 +51,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 id: message.id,
                 msg: message.msg,
                 sender: message.sender,
+                senderId: message.senderId,
                 senderProfile: message.senderProfile,
                 receiver: message.receiver,
                 roomNum: message.roomNum,
-                isOwnMessage: message.sender === localStorage.getItem("username"),
+                isOwnMessage: message.senderId === localStorage.getItem("user_id"),
                 createAt: message.createAt,
             };
             console.log(formattedMessage);
@@ -98,7 +100,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 
             }   
             getMessageHistory();
-            const socket = new SockJS('https://k2b3bc621690aa.user-app.krampoline.com/api/ws');
+            const socket = new SockJS('http://localhost:8080/api/ws');
             stompClient.current = Stomp.over(socket);
 
             const connectCallback = (frame : any) => {
@@ -161,6 +163,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                 type: "CHAT",
                 msg: message,
                 sender: localStorage.getItem("username"),
+                senderId: localStorage.getItem("user_id"),
                 senderProfile: profileImage,
                 roomNum: roomNum,
                 isOwnMessage: true,
@@ -194,6 +197,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ roomId, isGroupChat }) => {
                                 key={index}
                                 message={msg.msg}
                                 sender={msg.sender}
+                                senderId={msg.senderId}
                                 senderProfile={msg.senderProfile}
                                 isOwnMessage={msg.isOwnMessage}
                                 timestamp={msg.createAt}

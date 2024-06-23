@@ -9,12 +9,13 @@ interface ChatMessageProps {
     isOwnMessage: boolean;
     timestamp: string;
     sender: string;
+    senderId: string;
     senderProfile: string;
     isLast: boolean;
     onDelete: () => void; // 삭제(아직 미구현)
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, sender, senderProfile, isOwnMessage, timestamp, isLast, onDelete }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, sender, senderId, senderProfile, isOwnMessage, timestamp, isLast, onDelete }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
 

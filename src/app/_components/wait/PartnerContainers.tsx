@@ -19,12 +19,15 @@ const PartnerContainers = ({ objects, prevSlide, nextSlide, currentPage, objects
     const [placeholders, setPlaceholders] = useState<string[]>([])
 
     useEffect(() => {
-        const startIndex = currentPage * objectsPerPage;
-        const currentObjects = objects.slice(startIndex, startIndex + objectsPerPage);
-        setCurrentObjects(currentObjects);
-        const emptySlots = objectsPerPage - currentObjects.length;
-        const placeholders = Array(emptySlots).fill("");
-        setPlaceholders(placeholders);
+        if(objects){
+            const startIndex = currentPage * objectsPerPage;
+            const currentObjects = objects.slice(startIndex, startIndex + objectsPerPage);
+            setCurrentObjects(currentObjects);
+            const emptySlots = objectsPerPage - currentObjects.length;
+            const placeholders = Array(emptySlots).fill("");
+            setPlaceholders(placeholders);
+        }
+
     }, [currentPage, objects, objectsPerPage])
 
     return (

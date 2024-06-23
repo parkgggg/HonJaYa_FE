@@ -73,23 +73,24 @@ const WaitingRoom = () => {
 
     useEffect(() => {
         const getGroupChatServerUser = async () => {
-          try {
-            const response = await getData(`/user/${localStorage.getItem('user_id')}`, "groupChat")
-            setGroupChatServerId(response.id)
-            setIsLeader(response.leader);
-            setOnGroup(response.party);
-            console.log(response);
-            // if(response.isParty) {
-            //     dispatch(joinGroup())
-            // } else {
-            //     dispatch(exitGroup())
-            // }
-          } catch (error) {
-            console.log(error);
-          }
+            try {
+                const response = await getData(`/user/${localStorage.getItem('user_id')}`, "groupChat")
+                setGroupChatServerId(response.id)
+                localStorage.setItem('mongoId', response.id);
+                setIsLeader(response.leader);
+                setOnGroup(response.party);
+                console.log(response);
+                // if(response.isParty) {
+                //     dispatch(joinGroup())
+                // } else {
+                //     dispatch(exitGroup())
+                // }
+            } catch (error) {
+                console.log(error);
+            }
         }
         getGroupChatServerUser();
-      }, [openTeamCreateModal, openTeamJoinModal]);
+    }, [openTeamCreateModal, openTeamJoinModal]);
 
     useEffect(() => {
         const getPartnerObjects = async () => {
@@ -105,7 +106,7 @@ const WaitingRoom = () => {
 
         const getGroupObjects = async () => {
             try {
-                const response = await getData(`/group/list`, "groupChat");
+                const response = await getData(`/chat_room`, "groupChat");
                 console.log(response);
                 const objects = response;
                 setGroupObjects(() => (objects.filter((object: any) => {
@@ -144,6 +145,7 @@ const WaitingRoom = () => {
     //     prevState.current = isMatchingModalOpened;
     // }, [isMatchingModalOpened])
 
+
     const nextSlide = () => {
         if ((currentPage + 1) * objectsPerPage < (isTeam ? groupObjects.length : partnerObjects.length)) {
             setCurrentPage(currentPage + 1);
@@ -167,7 +169,7 @@ const WaitingRoom = () => {
             <div style={{ height: "90%" }} className="w-full overflow-y-auto">
                 <div className="w-full h-auto min-h-4"></div>
                 <div className="w-full h-1/10 text-3xl font-jua flex items-end justify-around box-border pt-2 px-10">
-                    {isTeam ? <div className="flex items-end w-3/10 h-full text-4xl">참여중인 팀</div> : <div className="flex w-3/10 items-end h-full text-4xl">매칭된 상대</div>}
+                    {isTeam ? <div className="flex items-end w-3/10 h-full text-4xl">채팅방</div> : <div className="flex w-3/10 items-end h-full text-4xl">매칭된 상대</div>}
                     <div className="w-3/10 h-full flex justify-center items-center">
                         <img src="https://www.svgrepo.com/show/436843/person-fill.svg" width={20} height={20} alt="single" />
                         <ToggleSwitch />
@@ -186,7 +188,21 @@ const WaitingRoom = () => {
                                     )}
                                 </>
                             ) : (
-                                onGroup ? <div>팀있음</div> : <div>팀없음</div>
+                                <div className="text-sm flex mr-14">
+                                    <img
+                                        src="https://www.svgrepo.com/show/449376/handshake.svg"
+                                        alt="onGroup"
+                                        className="w-8/10 h-full"
+                                    />
+                                    {onGroup ?
+                                        <div className="w-full flex flex-col items-center justify-center ">
+                                            <div className="w-full h-1/2 bg-green-600 border-2 border-black shadow-neutral-400 rounded-full"></div>
+                                        </div> :
+                                        <div className="w-full flex flex-col items-center justify-center ">
+                                            <div className="w-full h-1/2 bg-gray-400 border-2 border-black shadow-neutral-400 rounded-full">
+                                            </div>
+                                        </div>}
+                                </div>
                             )
                         }
                     </div>
@@ -200,19 +216,19 @@ const WaitingRoom = () => {
                             nextSlide={nextSlide}
                             currentPage={currentPage}
                             objectsPerPage={objectsPerPage}
-                        /> : <div className="w-full h-3/10"></div> : 
+                        /> : <div className="w-full h-3/10"></div> :
                         <PartnerContainers
-                        objects={partnerObjects}
-                        prevSlide={prevSlide}
-                        nextSlide={nextSlide}
-                        currentPage={currentPage}
-                        objectsPerPage={objectsPerPage}
-                    />
+                            objects={partnerObjects}
+                            prevSlide={prevSlide}
+                            nextSlide={nextSlide}
+                            currentPage={currentPage}
+                            objectsPerPage={objectsPerPage}
+                        />
                 }
 
                 <div className="w-full h-2/10">
                     {isTeam ?
-                        <TeamChatButtons                        
+                        <TeamChatButtons
                             openTeamCreateModal={openTeamCreateModal}
                             setOpenTeamCreateModal={() => { setOpenTeamCreateModal((prev) => (!prev)) }}
                             openTeamJoinModal={openTeamJoinModal}

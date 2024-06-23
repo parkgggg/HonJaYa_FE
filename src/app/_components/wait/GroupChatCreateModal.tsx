@@ -7,51 +7,136 @@ import { getData, postData } from "@/app/api/api";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/state/reducers/rootReducer";
 import { joinGroup } from "@/state/actions";
+import { useRouter } from "next/navigation";
 
 type Props = {
   setOpenGroupChatCreateModal: () => void;
 }
 ///전체 수정 필요
 const GroupChatCreateModal = ({ setOpenGroupChatCreateModal }: Props) => {
-  const [title, setTitle] = useState<string>("")
+  const [groupName, setGroupName] = useState<string>("")
   const [numOfMembers, setNumoOfMembers] = useState<number>(1);
   const [description, setDescription] = useState<string>("");
-  const [groupChatServerId, setGroupChatServerId] = useState<string>("");
-  const onGroup = useSelector((state:RootState) => state.onGroup.onGroup)
+  // const [groupChatServerId, setGroupChatServerId] = useState<string>("");
+  // const [groupChatServerName, setGroupChatServerName] = useState<string>("");
+  // const [isLeader, setIsLeader] = useState<boolean>(false);
+  // const [isParty, setIsParty] = useState<boolean>(false);
+  const [createSuccess, setCreateSuccess] = useState<boolean>(false);
+
+
+  const [groupChatServerUser, setGroupChatServerUser] = useState<{}>()
+    // id: string,
+    // name: string,
+    // gender: string,
+    // leader: boolean,
+    // isParty: boolean,
+    // memberId: number,
+  // }>({id: "", name:"", gender: "", leader: false, isParty: false, memberId: 0})
+
+
+  const [groupInfo, setGroupInfo] = useState<{}>()
+  //   id: string,
+  //   title: string,
+  //   content: string,
+  //   gender: string,
+  //   status: string,
+  //   roomId: string,
+  //   members: string[],
+  // }>({id: "", title:"", content: "", gender: "", status: "", roomId: "", members:[]})
+
+
+  // const [groupChatServer, setGroupChatServerId] = useState<string>("");
+  // const onGroup = useSelector((state:RootState) => state.onGroup.onGroup)
   const dispatch = useDispatch()
+  const router = useRouter();
 
   useEffect(() => {
     const getGroupChatServerUser = async () => {
       try {
         const response = await getData(`/user/${localStorage.getItem('user_id')}`, "groupChat")
         console.log(response);
-        setGroupChatServerId(response.id)
+        // setGroupChatServerUser({
+        //   id: response.id, 
+        //   name: response.name, 
+        //   gender: response.gender,
+        //   leader: response.leader, 
+        //   isParty: response.party,
+        //   memberId: response.memberId
+        // })
+        setGroupChatServerUser(response)
       } catch (error) {
         console.log(error);
       }
     }
+    const getGroup = async () => {
+      try {
+        const response = await getData(`/group/user/${localStorage.getItem('mongoId')}`, "groupChat")
+        console.log(response);
+        // setGroupInfo({
+        //   id: response.id,
+        //   title: response.title,
+        //   content: response.content,
+        //   gender: response.gender,
+        //   status: response.status,
+        //   roomId: response.roomId,
+        //   members: response.members,
+        // })
+        setGroupInfo(response)
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     getGroupChatServerUser();
+    getGroup();
   }, []);
+
+  useEffect(() => {
+    if(createSuccess) {
+        const getGroup = async () => {
+            try {
+                const response = await getData(`/group/user/${localStorage.getItem('mongoId')}`, "groupChat")
+                console.log(response);
+                if(response.roomId) router.push(`chat/${response.roomId}`)
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        getGroup();
+    }
+}, [createSuccess])
 
   const exitModal = () => {
     setOpenGroupChatCreateModal();
   }
 
   const handleClick = async () => {
-    const groupData = {
-      title: title,
-      content: description,
-      gender: (localStorage.getItem("userGender")),
-      status: "모집중",
-      members: [groupChatServerId, ],
-      profileImages: ["방장프로필url", ]
-    }
+    const chatRoomAndUser = {
+      chatRoom: {
+          chatName: groupName,
+          gender: localStorage.getItem('userGender') === "남성"? "MALE" : "FEMALE",
+      },
+      user: groupChatServerUser,
+      // {
+      //     id: groupChatServerUser.id,
+      //     memberId: groupChatServerUser.id,
+      //     name: groupChatServerUser.name,
+      //     gender: groupChatServerUser.gender,
+      //     leader: groupChatServerUser.leader,
+      //     isParty: groupChatServerUser.isParty,
+      //     applicants: [],
+      // }, 
+      group: groupInfo,
+  };
 
-    console.log(groupData)
+    console.log(chatRoomAndUser)
     try {
-      await postData("/group", groupData, "groupChat");
-      setOpenGroupChatCreateModal();
-      dispatch(joinGroup())
+      await postData("/chat_room", chatRoomAndUser, "groupChat");
+      setCreateSuccess(true);
+      // router.push(`/chat/${response.id}`)
+      // setOpenGroupChatCreateModal();
+      
+      // dispatch(joinGroup())
     } catch (error) {
       console.log(error);
     }
@@ -77,11 +162,11 @@ const GroupChatCreateModal = ({ setOpenGroupChatCreateModal }: Props) => {
             type="text"
             placeholder="Title"
             required
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            value={groupName}
+            onChange={(e) => setGroupName(e.target.value)}
             className=" w-1/2 h-1/10 border-main-color border-b-2 text-center outline-none  "
           ></input>
-          <div className="w-1/2 h-2/10 flex justify-center items-center">
+          {/* <div className="w-1/2 h-2/10 flex justify-center items-center">
             <input
               type="number"
               id="numofmembers"
@@ -93,7 +178,7 @@ const GroupChatCreateModal = ({ setOpenGroupChatCreateModal }: Props) => {
               className="outline-none w-full h-full text-center"
             >
             </input><span>명</span>
-          </div>
+          </div> */}
           <textarea
             placeholder="Description"
             required

@@ -17,7 +17,7 @@ const TeamCreateModal = ({ setOpenTeamCreateModal }: Props) => {
   const [numOfMembers, setNumoOfMembers] = useState<number>(1);
   const [description, setDescription] = useState<string>("");
   const [groupChatServerId, setGroupChatServerId] = useState<string>("");
-  const onGroup = useSelector((state:RootState) => state.onGroup.onGroup)
+  // const onGroup = useSelector((state:RootState) => state.onGroup.onGroup)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -44,13 +44,12 @@ const TeamCreateModal = ({ setOpenTeamCreateModal }: Props) => {
       gender: (localStorage.getItem("userGender")),
       status: "모집중",
       members: [groupChatServerId, ],
-      profileImages: ["방장프로필url", ]
+      // profileImages: ["방장프로필url", ]
     }
 
-    console.log(groupData)
     try {
       await postData("/group", groupData, "groupChat");
-      dispatch(joinGroup())
+      // dispatch(joinGroup())
       setOpenTeamCreateModal();
     } catch (error) {
       console.log(error);
@@ -81,7 +80,7 @@ const TeamCreateModal = ({ setOpenTeamCreateModal }: Props) => {
             onChange={(e) => setTitle(e.target.value)}
             className=" w-1/2 h-1/10 border-main-color border-b-2 text-center outline-none  "
           ></input>
-          <div className="w-1/2 h-2/10 flex justify-center items-center">
+          {/* <div className="w-1/2 h-2/10 flex justify-center items-center">
             <input
               type="number"
               id="numofmembers"
@@ -93,7 +92,7 @@ const TeamCreateModal = ({ setOpenTeamCreateModal }: Props) => {
               className="outline-none w-full h-full text-center"
             >
             </input><span>명</span>
-          </div>
+          </div> */}
           <textarea
             placeholder="Description"
             required
