@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Link from 'next/link';
 import Image from 'next/image';
 
-const Partner = ({ object }: any) => {
+const SingleChatRoom = ({ object }: any) => {
   const [partnerProfile, setPartnerProfile] = useState<string>("")
   const [roomId, setRoomId] = useState<string>("")
   const [remainHour, setRemainHour] = useState<number>()
@@ -42,4 +42,4 @@ const Partner = ({ object }: any) => {
   )
 }
 
-export default Partner;
+export default SingleChatRoom;

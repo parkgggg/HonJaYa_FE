@@ -5,7 +5,7 @@ type Props = {
   object: any;
 }
 
-const Team = ({ object }: Props) => {
+const GroupChatRoom = ({ object }: Props) => {
   // const [title, setTitle] = useState<string>("");
   // const [content, setContent] = useState<string>("")
   const [gender, setGender] = useState<string>("");
@@ -25,17 +25,14 @@ const Team = ({ object }: Props) => {
   
 
   return (
-    <div className="w-1/5 h-2/5 mx-5 py-1 flex flex-col justify-around bg-gray-200 box-border shadow-lg rounded-md hover:border-main-color hover:border-2" >
-      <Link className="w-full h-full" href={`/chat/${object.id}`}>
-        <div>
+    <div className="w-1/5 h-2/5 mx-5 py-1 flex flex-col justify-around bg-white box-border shadow-lg rounded-md border-main-color border-2 hover:border-4" >
+      <Link className="w-full h-full flex flex-col justify-around items-center" href={`/chat/${object.id}`}>
+        <div className='w-full h-2/10'>
           {chatName}
-        </div>
-        <div>
-          {gender}
         </div>
       </Link>
     </div>
   )
 }
 
-export default Team
+export default GroupChatRoom;

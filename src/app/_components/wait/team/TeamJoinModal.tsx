@@ -113,13 +113,13 @@ const TeamJoinModal = ({ setOpenTeamJoinModal }: Props) => {
     if (mongoDBuserId !== objectLeaderId) {
       const apply = async () => {
         try {
-            const Data = {
-              leaderUserId: objectLeaderId,
-              invitedUserId: mongoDBuserId,
-            }
+          const Data = {
+            leaderUserId: objectLeaderId,
+            invitedUserId: mongoDBuserId,
+          }
 
-            await putData('/user/apply', Data, "groupChat");
-            setOpenTeamJoinModal();
+          await putData('/user/apply', Data, "groupChat");
+          setOpenTeamJoinModal();
         } catch (e) {
           console.log(e)
         }
@@ -131,16 +131,14 @@ const TeamJoinModal = ({ setOpenTeamJoinModal }: Props) => {
   return (
     <div className="z-20 w-screen h-screen flex justify-center items-center fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm">
       <form className='z-30 absolute flex-col flex justify-around items-center bg-white w-4/10 h-7/10 border-main-color border-4 rounded-lg'>
-        <div className="w-full h-1/10 flex justify-end box-border p-1">
+        <div className="w-full h-1/10 pr-4 flex flex-col items-end justify-end box-border p-1">
           <button
             type="button"
-            className="w-1/10 h-1/10 bg-gray"
+            className="w-1/10 h-6/10 text-white outline-none rounded-sm bg-main-color hover:ring-2 hover:ring-red-100 active:mt-1 active:border-none active:ring-0"
             onClick={exitModal}>
-            <Image src={'https://www.svgrepo.com/show/499053/cancel.svg'}
-              width={35}
-              height={35}
-              alt="cancel"
-            />
+            <div className="w-full h-full flex-col flex items-center justify-center text-center outline-none active:border-l-gray-500 active:border-t-gray-500 active:border-b-white active:border-r-white active:border-2">
+              X
+            </div>
           </button>
         </div>
         <div className='w-full h-9/10 flex-col flex justify-around items-center'>

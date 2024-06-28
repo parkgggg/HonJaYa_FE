@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import Team from "./Team";
+import GroupChatRoom from "./GroupChatRoom";
 import { getData } from "@/app/api/api";
 import { useRouter } from "next/navigation";
 
@@ -14,13 +14,13 @@ interface Props {
     objectsPerPage: number;
 }
 
-const GroupChatContainers = ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage }: Props) => {
+const GroupChatContainer= ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage }: Props) => {
 
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const [currentObjects, setCurrentObjects] = useState<any[]>([])
     const [placeholders, setPlaceholders] = useState<string[]>([])
     const [groupChatServerId, setGroupChatServerId] = useState<string>("");
-    const [isLeader, setIsLeader] = useState<boolean>(false);
+    // const [isLeader, setIsLeader] = useState<boolean>(false);
     const [onGroup, setOnGroup] = useState<boolean>(false);
     const router = useRouter();
 
@@ -38,7 +38,7 @@ const GroupChatContainers = ({ objects, prevSlide, nextSlide, currentPage, objec
           try {
             const response = await getData(`/user/${localStorage.getItem('user_id')}`, "groupChat")
             setGroupChatServerId(response.id)
-            setIsLeader(response.leader);
+            // setIsLeader(response.leader);
             setOnGroup(response.party);
           } catch (error) {
             console.log(error);
@@ -84,10 +84,10 @@ const GroupChatContainers = ({ objects, prevSlide, nextSlide, currentPage, objec
             }
             <div className="w-9/10 h-full flex flex-wrap items-center justify-center">
                 {currentObjects && currentObjects.map((object, index) => (
-                    <Team object={object} key={index}/>
+                    <GroupChatRoom object={object} key={index}/>
                 ))}
                 {placeholders && placeholders.map((_, index) => (
-                    <div key={`placeholder-${index}`} className="w-1/5 h-2/5 mx-5 py-4 bg-gray-200 box-border shadow-lg rounded-lg"></div>
+                    <div key={`placeholder-${index}`} className="w-1/5 h-2/5 mx-5 py-4 flex flex-col justify-center items-center border-gray-400 border-2 box-border shadow-lg rounded-lg">•</div>
                 ))}
             </div>
             {isHovered &&
@@ -98,4 +98,4 @@ const GroupChatContainers = ({ objects, prevSlide, nextSlide, currentPage, objec
     )
 }
 
-export default GroupChatContainers;
+export default GroupChatContainer;

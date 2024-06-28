@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import Partner from "./Partner";
+import SingleChatRoom from "./SingleChatRoom";
 
 // Props 타입 객체
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
     objectsPerPage: number;
 }
 
-const PartnerContainer = ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage }: Props) => {
+const SingleChatContainer = ({ objects, prevSlide, nextSlide, currentPage, objectsPerPage }: Props) => {
 
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const [currentObjects, setCurrentObjects] = useState<any[]>([])
@@ -42,7 +42,7 @@ const PartnerContainer = ({ objects, prevSlide, nextSlide, currentPage, objectsP
             } */}
             <div className="w-4/10 h-full flex flex-wrap items-center justify-center">
                 {currentObjects && currentObjects.reverse().map((object, index) => (
-                    <Partner object={object} key={index}/>
+                    <SingleChatRoom object={object} key={index}/>
                 ))}
                 {placeholders && placeholders.map((_, index) => (
                     <div key={`placeholder-${index}`} className="w-4/5 h-4/5 mx-5 py-4 bg-gray-200 box-border shadow-lg rounded-lg"></div>
@@ -56,4 +56,4 @@ const PartnerContainer = ({ objects, prevSlide, nextSlide, currentPage, objectsP
     )
 }
 
-export default PartnerContainer;
+export default SingleChatContainer;

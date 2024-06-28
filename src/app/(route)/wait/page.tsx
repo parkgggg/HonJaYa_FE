@@ -16,8 +16,8 @@ import { verifyUser } from "@/app/utils/verifyUser";
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { getData } from "@/app/api/api";
-import GroupChatContainers from "@/app/_components/wait/GroupChatContainer";
-import PartnerContainer from "@/app/_components/wait/PartnerContainer";
+import GroupChatContainer from "@/app/_components/wait/team/GroupChatContainer";
+import SingleChatContainer from "@/app/_components/wait/single/SingleChatContainer";
 
 const WaitingRoom = () => {
     const [groupObjects, setGroupObjects] = useState("");
@@ -28,7 +28,8 @@ const WaitingRoom = () => {
     const [openTeamCreateModal, setOpenTeamCreateModal] = useState<boolean>(false)
     const [openTeamJoinModal, setOpenTeamJoinModal] = useState<boolean>(false)
     const [openGroupChatCreateModal, setOpenGroupChatCreateModal] = useState<boolean>(false)
-    const [openTeamEditModal, setOpenTeamEditModal] = useState<boolean>(false)
+    const [openAcceptMemberModal, setOpenAcceptMemberModal] = useState<boolean>(false)
+    const [openTeamInfoModal, setOpenTeamInfoModal] = useState<boolean>(false)
     const [onGroup, setOnGroup] = useState<boolean>(false);
     const [groupChatServerId, setGroupChatServerId] = useState<string>("");
     const [isLeader, setIsLeader] = useState<boolean>(false);
@@ -110,7 +111,7 @@ const WaitingRoom = () => {
                 console.log(response);
                 const objects = response;
                 setGroupObjects(() => (objects.filter((object: any) => {
-                    if (object.gender !== localStorage.getItem("userGender")) {
+                    if (object.gender !== (localStorage.getItem("userGender") === "남성"? "MALE" : "FEMALE")) {
                         return true;
                     }
                 })))
@@ -207,17 +208,16 @@ const WaitingRoom = () => {
                         }
                     </div>
                 </div>
-                {/* 매칭되어 있는 유저 리스팅 */}
                 {
                     isTeam ? onGroup ?
-                        <GroupChatContainers
+                        <GroupChatContainer
                             objects={groupObjects}
                             prevSlide={prevSlide}
                             nextSlide={nextSlide}
                             currentPage={currentPage}
                             objectsPerPage={objectsPerPage}
                         /> : <div className="w-full h-3/10"></div> :
-                        <PartnerContainer
+                        <SingleChatContainer
                             objects={partnerObjects}
                             prevSlide={prevSlide}
                             nextSlide={nextSlide}
@@ -235,8 +235,10 @@ const WaitingRoom = () => {
                             setOpenTeamJoinModal={() => { setOpenTeamJoinModal((prev) => (!prev)) }}
                             openGroupChatCreateModal={openGroupChatCreateModal}
                             setOpenGroupChatCreateModal={() => { setOpenGroupChatCreateModal((prev) => (!prev)) }}
-                            openTeamEditModal={openTeamEditModal}
-                            setOpenTeamEditModal={() => { setOpenTeamEditModal((prev) => (!prev)) }}
+                            openAcceptMemberModal={openAcceptMemberModal}
+                            setOpenAcceptMemberModal={() => { setOpenAcceptMemberModal((prev) => (!prev)) }}
+                            openTeamInfoModal={openTeamInfoModal}
+                            setOpenTeamInfoModal={() => { setOpenTeamInfoModal((prev) => (!prev)) }}
                         /> : <MatchingButton />}
                 </div>
             </div>
